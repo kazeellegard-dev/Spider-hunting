@@ -27,6 +27,27 @@ public final class Web {
         return thread
     }
 
+    /// F-03: if `weight` overloads `thread`'s strength, tears it apart at
+    /// `segmentIndex` (an insect punching through) instead of discarding the
+    /// whole strand — the stubs on either side of the tear stay in the web,
+    /// still anchored on their original ends. Returns whether it broke.
+    @discardableResult
+    public func breakThread(_ thread: SilkThread, atSegmentIndex segmentIndex: Int, byWeight weight: Double) -> Bool {
+        guard weight > thread.strength else { return false }
+        let (before, after) = thread.sever(atSegmentIndex: segmentIndex)
+
+        // Discard stubs too short to read as a remaining strand (the tear
+        // landed right next to an anchor) rather than leaving a flickering
+        // single-segment sliver.
+        if before.count >= 3 {
+            threads.append(SilkThread(rawPoints: before, segmentLength: thread.segmentLength, strength: thread.strength))
+        }
+        if after.count >= 3 {
+            threads.append(SilkThread(rawPoints: after, segmentLength: thread.segmentLength, strength: thread.strength))
+        }
+        return true
+    }
+
     public func update(gravity: Vector2) {
         threads.removeAll { $0.isBroken }
         for thread in threads {

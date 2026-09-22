@@ -70,4 +70,18 @@ final class SilkThreadTests: XCTestCase {
 
         XCTAssertNotEqual(thread.points[5].position, before)
     }
+
+    func testSeverSplitsThreadAtSegmentAndFreesTornEnds() {
+        let thread = SilkThread(start: Vector2(x: 0, y: 0), end: Vector2(x: 100, y: 0), segmentCount: 10, slack: 0, strength: 1.0)
+
+        let (before, after) = thread.sever(atSegmentIndex: 4)
+
+        XCTAssertTrue(thread.isBroken)
+        XCTAssertEqual(before.count, 5)
+        XCTAssertEqual(after.count, 6)
+        XCTAssertTrue(before.first!.isPinned, "original start anchor should stay pinned")
+        XCTAssertFalse(before.last!.isPinned, "torn end should now be free to dangle")
+        XCTAssertFalse(after.first!.isPinned, "torn end should now be free to dangle")
+        XCTAssertTrue(after.last!.isPinned, "original end anchor should stay pinned")
+    }
 }

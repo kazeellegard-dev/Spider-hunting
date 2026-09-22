@@ -34,6 +34,15 @@ public final class SilkThread {
         }
     }
 
+    /// Builds a thread stub directly from an existing point chain (used by
+    /// `sever(atSegmentIndex:)` to keep the torn-off remainder of a snapped
+    /// thread rather than rebuilding it from scratch).
+    init(rawPoints: [VerletPoint], segmentLength: Double, strength: Double) {
+        self.points = rawPoints
+        self.segmentLength = segmentLength
+        self.strength = strength
+    }
+
     public func update(gravity: Vector2, damping: Double = 0.985, constraintIterations: Int = 8) {
         guard !isBroken else { return }
         for point in points {
@@ -104,5 +113,24 @@ public final class SilkThread {
             isBroken = true
         }
         return isBroken
+    }
+
+    /// Tears the thread apart at `segmentIndex` — e.g. a heavy insect
+    /// punching straight through it — instead of discarding the whole
+    /// strand. Marks this thread broken and hands back the point chains on
+    /// either side of the tear, each still pinned on its original anchor
+    /// end with the torn end now free to dangle and sag under gravity.
+    public func sever(atSegmentIndex segmentIndex: Int) -> (before: [VerletPoint], after: [VerletPoint]) {
+        isBroken = true
+        let tearStart = VerletPoint(position: points[segmentIndex].position, isPinned: false)
+        let tearEnd = VerletPoint(position: points[segmentIndex + 1].position, isPinned: false)
+
+        var before = Array(points[0...segmentIndex])
+        before[before.count - 1] = tearStart
+
+        var after = Array(points[(segmentIndex + 1)...])
+        after[0] = tearEnd
+
+        return (before, after)
     }
 }

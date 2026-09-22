@@ -52,16 +52,19 @@ final class GameScene: SKScene {
         hudLabel.fontSize = 14
         hudLabel.fontColor = .darkGray
         hudLabel.horizontalAlignmentMode = .left
-        // Offset below the safe area so the label clears the notch/Dynamic
-        // Island instead of sitting under it.
-        let topInset = view.safeAreaInsets.top
-        hudLabel.position = CGPoint(x: 12 + view.safeAreaInsets.left, y: size.height - topInset - 20)
         addChild(hudLabel)
+        positionHUD()
 
         run(.repeatForever(.sequence([
             .run { [weak self] in self?.spawnInsect() },
             .wait(forDuration: 1.6)
         ])))
+    }
+
+    private func positionHUD() {
+        let topInset = view?.safeAreaInsets.top ?? 0
+        let leftInset = view?.safeAreaInsets.left ?? 0
+        hudLabel.position = CGPoint(x: 12 + leftInset, y: size.height - topInset - 24)
     }
 
     // MARK: - Input
@@ -101,6 +104,12 @@ final class GameScene: SKScene {
     override func update(_ currentTime: TimeInterval) {
         let dt = lastUpdateTime == 0 ? 1.0 / 60.0 : currentTime - lastUpdateTime
         lastUpdateTime = currentTime
+
+        // Re-derive the HUD position every frame instead of once in
+        // didMove(to:) — at that point the view often hasn't finished its
+        // layout pass yet, so `safeAreaInsets` reads as zero and the label
+        // ends up under the notch/Dynamic Island.
+        positionHUD()
 
         web.update(gravity: gravity)
         syncThreadNodes()
@@ -176,8 +185,14 @@ final class GameScene: SKScene {
                 let captured = insect
                 insects.removeAll { $0 === insect }
                 captured.playCaptureAnimation {}
-            } else if hit.thread.breakIfOverloaded(byWeight: insect.weight) {
+            } else if web.breakThread(hit.thread, atSegmentIndex: hit.segmentIndex, byWeight: insect.weight) {
                 insect.velocity = CGVector(dx: insect.velocity.dx * 0.6, dy: insect.velocity.dy * 0.6)
+                // Punch the insect just past the collision radius so it
+                // doesn't immediately re-trigger a break against one of the
+                // fresh stubs left dangling right where it just tore through.
+                let vx = insect.velocity.dx
+                let nudge: CGFloat = vx >= 0 ? 14 : -14
+                insect.position.x += nudge
             }
         }
     }
