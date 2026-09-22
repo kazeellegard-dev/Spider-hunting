@@ -7,12 +7,12 @@ final class Insect: SKShapeNode {
     var velocity: CGVector
     private(set) var isCaptured = false
 
-    init(at position: CGPoint, velocity: CGVector, weight: Double, radius: CGFloat = 6) {
+    init(at position: CGPoint, velocity: CGVector, weight: Double, threadStrength: Double, radius: CGFloat = 6) {
         self.weight = weight
         self.velocity = velocity
         super.init()
         path = CGPath(ellipseIn: CGRect(x: -radius, y: -radius, width: radius * 2, height: radius * 2), transform: nil)
-        fillColor = Insect.color(forWeight: weight)
+        fillColor = Insect.color(forWeight: weight, threadStrength: threadStrength)
         strokeColor = .clear
         self.position = position
     }
@@ -21,13 +21,17 @@ final class Insect: SKShapeNode {
         fatalError("init(coder:) has not been implemented")
     }
 
-    private static func color(forWeight weight: Double) -> SKColor {
-        // Heavier insects read as visibly bigger threats even before they hit a thread.
-        switch weight {
-        case ..<1.0: return .systemYellow
-        case ..<2.5: return .systemOrange
-        default: return .systemRed
-        }
+    /// Color must promise the truth about what happens on impact: red means
+    /// "will snap a freshly-spun thread", full stop. Deriving the red
+    /// threshold from `threadStrength` (rather than a fixed absolute number)
+    /// keeps that promise even if `threadStrength` gets tuned later — a
+    /// fixed threshold previously let e.g. weight 2.2 show orange while
+    /// threadStrength was 2.0, so an "orange" insect could still snap the
+    /// thread it touched.
+    private static func color(forWeight weight: Double, threadStrength: Double) -> SKColor {
+        if weight > threadStrength { return .systemRed }
+        if weight > threadStrength * 0.5 { return .systemOrange }
+        return .systemYellow
     }
 
     func step(dt: TimeInterval) {

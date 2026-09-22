@@ -40,6 +40,15 @@ final class GameScene: SKScene {
     private var lastUpdateTime: TimeInterval = 0
     private var hudLabel: SKLabelNode!
 
+    /// Set from the SwiftUI layer (see SpiderWebPrototypeApp.swift), which
+    /// gets safe-area insets from SwiftUI's own GeometryReader instead of
+    /// asking the SKView for them. SKView.safeAreaInsets has been reported
+    /// as reading 0 in this SpriteView(...).ignoresSafeArea() setup even
+    /// several frames in — if that turns out to be a real SpriteKit/SwiftUI
+    /// interaction quirk (vs. e.g. a stale build on the test device), this
+    /// sidesteps it. Falls back to view?.safeAreaInsets if never set.
+    var externalSafeAreaInsets: UIEdgeInsets?
+
     override func didMove(to view: SKView) {
         backgroundColor = SKColor(white: 0.95, alpha: 1)
         web = Web(maxTotalLength: maxWebLength)
@@ -62,9 +71,8 @@ final class GameScene: SKScene {
     }
 
     private func positionHUD() {
-        let topInset = view?.safeAreaInsets.top ?? 0
-        let leftInset = view?.safeAreaInsets.left ?? 0
-        hudLabel.position = CGPoint(x: 12 + leftInset, y: size.height - topInset - 24)
+        let insets = externalSafeAreaInsets ?? view?.safeAreaInsets ?? .zero
+        hudLabel.position = CGPoint(x: 12 + insets.left, y: size.height - insets.top - 24)
     }
 
     // MARK: - Input
@@ -87,16 +95,10 @@ final class GameScene: SKScene {
     }
 
     private func spinThread(from start: CGPoint, to end: CGPoint) {
-        guard let thread = web.spinThread(from: Vector2(start), to: Vector2(end), strength: threadStrength) else {
-            hudLabel.text = "silk depleted — cannot spin a new thread"
-            return
-        }
-        let node = SKShapeNode()
-        node.strokeColor = .darkGray
-        node.lineWidth = 1.5
-        node.zPosition = -1
-        addChild(node)
-        threadNodes[ObjectIdentifier(thread)] = node
+        // Node creation is handled uniformly in syncThreadNodes() for every
+        // thread that shows up in web.threads, including this one and any
+        // stubs a punch-through leaves behind — see its doc comment for why.
+        web.spinThread(from: Vector2(start), to: Vector2(end), strength: threadStrength)
     }
 
     // MARK: - Game loop
@@ -126,16 +128,35 @@ final class GameScene: SKScene {
         hudLabel.text = hud
     }
 
-    /// Redraws each live thread's path from its current point positions, and
-    /// drops the SKShapeNode for any thread that snapped this frame.
+    /// Keeps `threadNodes` in exact sync with `web.threads`: creates an
+    /// SKShapeNode the first time a thread shows up (a freshly-spun thread,
+    /// or — just as importantly — one of the two stubs a punch-through
+    /// leaves behind via Web.breakThread, which never went through
+    /// spinThread() and previously never got a node at all, making split
+    /// threads invisible even though they were still alive and collidable),
+    /// drops nodes for threads no longer present, and redraws the rest from
+    /// their current point positions.
     private func syncThreadNodes() {
-        threadNodes = threadNodes.filter { id, node in
-            let stillAlive = web.threads.contains { ObjectIdentifier($0) == id }
-            if !stillAlive { node.removeFromParent() }
-            return stillAlive
+        let currentIDs = Set(web.threads.map { ObjectIdentifier($0) })
+
+        for (id, node) in threadNodes where !currentIDs.contains(id) {
+            node.removeFromParent()
+            threadNodes.removeValue(forKey: id)
         }
+
         for thread in web.threads {
-            guard let node = threadNodes[ObjectIdentifier(thread)] else { continue }
+            let id = ObjectIdentifier(thread)
+            let node: SKShapeNode
+            if let existing = threadNodes[id] {
+                node = existing
+            } else {
+                node = SKShapeNode()
+                node.strokeColor = .darkGray
+                node.lineWidth = 1.5
+                node.zPosition = -1
+                addChild(node)
+                threadNodes[id] = node
+            }
             let path = CGMutablePath()
             let points = thread.points.map { $0.position.cgPoint }
             path.addLines(between: points)
@@ -157,7 +178,7 @@ final class GameScene: SKScene {
             ? Double.random(in: 0.3...1.6)
             : Double.random(in: 2.1...3.2)
 
-        let insect = Insect(at: CGPoint(x: startX, y: y), velocity: CGVector(dx: vx, dy: 0), weight: weight)
+        let insect = Insect(at: CGPoint(x: startX, y: y), velocity: CGVector(dx: vx, dy: 0), weight: weight, threadStrength: threadStrength)
         addChild(insect)
         insects.append(insect)
     }
