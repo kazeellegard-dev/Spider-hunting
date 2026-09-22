@@ -61,6 +61,10 @@ final class GameScene: SKScene {
         hudLabel.fontSize = 14
         hudLabel.fontColor = .darkGray
         hudLabel.horizontalAlignmentMode = .left
+        // Multi-line + top-anchored: a single long line ran off the right
+        // edge on iPhone widths (this was the real "HUD overlaps" issue).
+        hudLabel.verticalAlignmentMode = .top
+        hudLabel.numberOfLines = 0
         addChild(hudLabel)
         positionHUD()
 
@@ -72,7 +76,7 @@ final class GameScene: SKScene {
 
     private func positionHUD() {
         let insets = externalSafeAreaInsets ?? view?.safeAreaInsets ?? .zero
-        hudLabel.position = CGPoint(x: 12 + insets.left, y: size.height - insets.top - 24)
+        hudLabel.position = CGPoint(x: 12 + insets.left, y: size.height - insets.top - 8)
     }
 
     // MARK: - Input
@@ -119,11 +123,11 @@ final class GameScene: SKScene {
         resolveCollisions()
 
         var hud = String(
-            format: "silk left: %.0f / %.0f   threads: %d   strength: %.1f",
+            format: "silk left: %.0f / %.0f\nthreads: %d   strength: %.1f",
             web.remainingLength, maxWebLength, web.threads.count, threadStrength
         )
         if web.remainingLength <= 0 {
-            hud += "  [SILK DEPLETED]"
+            hud += "\n[SILK DEPLETED]"
         }
         hudLabel.text = hud
     }

@@ -51,6 +51,24 @@ final class WebTests: XCTestCase {
         XCTAssertFalse(web.threads.contains { $0 === thread })
     }
 
+    func testBreakingAStubAgainDropsThePieceWithNoAnchor() {
+        let web = Web(maxTotalLength: 1000)
+        let thread = web.spinThread(from: Vector2(x: 0, y: 0), to: Vector2(x: 100, y: 0), strength: 1)!
+        web.breakThread(thread, atSegmentIndex: 8, byWeight: 5)
+        web.update(gravity: Vector2(x: 0, y: -0.3))
+        let stub = web.threads.first { $0.points.first!.isPinned }!
+        XCTAssertEqual(stub.points.count, 9)
+
+        // Tearing the anchored stub again leaves one piece still on the
+        // anchor and one piece hanging off nothing; the latter would just
+        // free-fall off-screen forever, so it must not be kept in the web.
+        web.breakThread(stub, atSegmentIndex: 4, byWeight: 5)
+        web.update(gravity: Vector2(x: 0, y: -0.3))
+
+        XCTAssertEqual(web.threads.count, 2)
+        XCTAssertTrue(web.threads.allSatisfy { thread in thread.points.contains { $0.isPinned } })
+    }
+
     func testBreakThreadDiscardsSliverStubNearAnchor() {
         let web = Web(maxTotalLength: 1000)
         let thread = web.spinThread(from: Vector2(x: 0, y: 0), to: Vector2(x: 100, y: 0), strength: 1)!

@@ -38,12 +38,11 @@ public final class Web {
 
         // Discard stubs too short to read as a remaining strand (the tear
         // landed right next to an anchor) rather than leaving a flickering
-        // single-segment sliver.
-        if before.count >= 3 {
-            threads.append(SilkThread(rawPoints: before, segmentLength: thread.segmentLength, strength: thread.strength))
-        }
-        if after.count >= 3 {
-            threads.append(SilkThread(rawPoints: after, segmentLength: thread.segmentLength, strength: thread.strength))
+        // single-segment sliver. Also discard pieces with no anchor left
+        // (tearing an already-dangling stub again): they'd free-fall off
+        // screen forever while still counting as live threads.
+        for stub in [before, after] where stub.count >= 3 && stub.contains(where: { $0.isPinned }) {
+            threads.append(SilkThread(rawPoints: stub, segmentLength: thread.segmentLength, strength: thread.strength))
         }
         return true
     }

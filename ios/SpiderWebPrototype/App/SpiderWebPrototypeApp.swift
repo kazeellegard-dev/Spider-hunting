@@ -18,7 +18,7 @@ struct SpiderWebPrototypeApp: App {
                 SpriteView(scene: Self.scene)
                     .ignoresSafeArea()
                     .onAppear { Self.scene.externalSafeAreaInsets = UIEdgeInsets(proxy.safeAreaInsets) }
-                    .onChange(of: proxy.safeAreaInsets) { newValue in
+                    .onChange(of: proxy.safeAreaInsets) { _, newValue in
                         Self.scene.externalSafeAreaInsets = UIEdgeInsets(newValue)
                     }
             }
