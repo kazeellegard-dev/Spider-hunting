@@ -25,7 +25,10 @@ final class GameScene: SKScene {
     private var threadStrength = 2.0
 
     /// Total silk length available before the web can't be extended further (F-15).
-    private let maxWebLength = 2000.0
+    /// Bumped up from the original 2000 — that ran out after ~2-3 taps on a
+    /// typical phone screen, which read as "silk stopped coming out" almost
+    /// immediately rather than as a meaningful budget to manage.
+    private let maxWebLength = 6000.0
 
     // MARK: - State
 
@@ -49,12 +52,15 @@ final class GameScene: SKScene {
         hudLabel.fontSize = 14
         hudLabel.fontColor = .darkGray
         hudLabel.horizontalAlignmentMode = .left
-        hudLabel.position = CGPoint(x: 12, y: size.height - 24)
+        // Offset below the safe area so the label clears the notch/Dynamic
+        // Island instead of sitting under it.
+        let topInset = view.safeAreaInsets.top
+        hudLabel.position = CGPoint(x: 12 + view.safeAreaInsets.left, y: size.height - topInset - 20)
         addChild(hudLabel)
 
         run(.repeatForever(.sequence([
             .run { [weak self] in self?.spawnInsect() },
-            .wait(forDuration: 1.2)
+            .wait(forDuration: 1.6)
         ])))
     }
 
@@ -67,10 +73,13 @@ final class GameScene: SKScene {
         let distance = hypot(target.x - from.x, target.y - from.y)
         let duration = max(0.15, TimeInterval(distance / 400))
 
+        // Spin the thread immediately, before the spider finishes walking
+        // over, so the silk appears to trail the spider instead of lagging
+        // behind its arrival.
         isSpiderMoving = true
+        spinThread(from: from, to: target)
         spider.move(to: target, duration: duration) { [weak self] in
             self?.isSpiderMoving = false
-            self?.spinThread(from: from, to: target)
         }
     }
 
@@ -98,10 +107,14 @@ final class GameScene: SKScene {
         stepInsects(dt: dt)
         resolveCollisions()
 
-        hudLabel.text = String(
+        var hud = String(
             format: "silk left: %.0f / %.0f   threads: %d   strength: %.1f",
             web.remainingLength, maxWebLength, web.threads.count, threadStrength
         )
+        if web.remainingLength <= 0 {
+            hud += "  [SILK DEPLETED]"
+        }
+        hudLabel.text = hud
     }
 
     /// Redraws each live thread's path from its current point positions, and
@@ -122,13 +135,18 @@ final class GameScene: SKScene {
     }
 
     private func spawnInsect() {
-        guard insects.count < 12 else { return }
+        guard insects.count < 8 else { return }
         let fromLeft = Bool.random()
         let y = CGFloat.random(in: frame.minY + 40...frame.maxY - 40)
         let startX = fromLeft ? frame.minX - 20 : frame.maxX + 20
         let speed = CGFloat.random(in: 80...160)
         let vx = fromLeft ? speed : -speed
-        let weight = Double.random(in: 0.5...3.0)
+        // Skew toward catchable weights so breaks read as a notable event
+        // rather than the common case (threadStrength is 2.0): ~75% land
+        // safely below it, ~25% are heavy enough to snap the thread.
+        let weight = Double.random(in: 0...1) < 0.75
+            ? Double.random(in: 0.3...1.6)
+            : Double.random(in: 2.1...3.2)
 
         let insect = Insect(at: CGPoint(x: startX, y: y), velocity: CGVector(dx: vx, dy: 0), weight: weight)
         addChild(insect)
@@ -151,7 +169,8 @@ final class GameScene: SKScene {
             guard let hit = web.threadNear(Vector2(insect.position), within: 10) else { continue }
 
             if hit.thread.strength >= insect.weight {
-                let impulse = Vector2(x: Double(insect.velocity.dx), y: Double(insect.velocity.dy)) * 0.02
+                // Bumped from 0.02 — the original jolt was barely visible.
+                let impulse = Vector2(x: Double(insect.velocity.dx), y: Double(insect.velocity.dy)) * 0.06
                 hit.thread.applyImpact(atSegmentIndex: hit.segmentIndex, impulse: impulse)
                 insect.position = hit.point.cgPoint
                 let captured = insect
