@@ -70,6 +70,13 @@
       };
     }
 
+    // challenge stages lend a random outfit for the stage; otherwise the player's own
+    costume() {
+      const s = root.SH.save.data;
+      const id = this.mode === 'play' && this.runMode === 'challenge' ? s.challenge.costume : s.costume;
+      return D.COSTUMES.find(c => c.id === id) || D.COSTUMES[0];
+    }
+
     resetWorld() {
       this.web = new Web();
       this.insects = [];
@@ -513,7 +520,6 @@
       save.exp += run.score;
       let levels = 0;
       while (save.exp >= D.levelExp(save.level)) { save.exp -= D.levelExp(save.level); save.level++; levels++; }
-      for (const k in run.caught) save.caught[k] = (save.caught[k] || 0) + run.caught[k];
       save.plays++;
       if (run.tutorial) save.tutorialDone = true;
       if (cleared) {
@@ -799,7 +805,8 @@
       const pts = Math.round(def.score * mult);
       run.score += pts;
       run.catches++;
-      if (!run.caught[ins.type] && !root.SH.save.data.caught[ins.type]) {
+      // the Bugdex belongs to Normal mode; challenge runs don't fill it
+      if (run.mode !== 'challenge' && !run.caught[ins.type] && !root.SH.save.data.caught[ins.type]) {
         this.floatText(ins.x, ins.y - 64, 'NEW! ' + def.name[root.SH.i18n.lang], '#8fd3ff', 16);
         audio.play('area');
       }
@@ -953,8 +960,7 @@
       for (const tr of this.treats) R.drawTreat(g, tr, this.time);
       for (const it of this.specials) R.drawSpool(g, it, this.time);
       for (const ins of this.insects) R.drawInsect(g, ins, this.time);
-      const costume = D.COSTUMES.find(c => c.id === root.SH.save.data.costume) || D.COSTUMES[0];
-      R.drawSpider(g, sp, this.time, costume);
+      R.drawSpider(g, sp, this.time, this.costume());
       if (sp.action === 'spin') this.drawTapMark(g, sp.tapX, sp.tapY);
 
       for (const p of this.particles) {

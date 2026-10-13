@@ -16,7 +16,9 @@
     init(game) {
       this.game = game;
       this.applyTexts();
-      document.querySelectorAll('[data-open]').forEach(b => b.addEventListener('click', () => { audio.play('button'); this.open(b.dataset.open); }));
+      document.querySelectorAll('[data-open]').forEach(b => b.addEventListener('click', () => { audio.play('button'); this.open(b.dataset.open, b.dataset.howto); }));
+      $('faceMain').addEventListener('click', () => { audio.unlock(); audio.play('button'); this.open('mainScr'); });
+      $('faceChallenge').addEventListener('click', () => { audio.unlock(); audio.play('button'); this.open('challengeScr'); });
       document.querySelectorAll('[data-close]').forEach(b => b.addEventListener('click', () => { audio.play('button'); this.closeSheet(b.closest('.screen').id); }));
       $('playBtn').addEventListener('click', () => this.startGame());
       $('sgStart').addEventListener('click', () => this.startStage());
@@ -51,7 +53,9 @@
       document.title = i18n.lang === 'ja' ? 'クモの巣ハンティング' : 'Spider Hunting';
     },
 
-    open(id) {
+    open(id, howto) {
+      if (id === 'howtoScr') $('howtoBody').textContent = t(howto === 'challenge' ? 'howtoChallenge' : 'howtoBody');
+      if (id === 'mainScr' || id === 'challengeScr') { $('sgConfirm').hidden = true; this.refreshTitle(); }
       if (id === 'upgradeScr') this.renderUpgrades();
       if (id === 'wardrobeScr') this.renderWardrobe();
       if (id === 'zukanScr') this.renderZukan();
@@ -71,6 +75,9 @@
       $('tCoins').textContent = s.coins.toLocaleString();
       $('tBest').textContent = s.bestScore.toLocaleString();
       $('tDay').textContent = s.bestDay ? this.game.dayText(s.bestDay) : '—';
+      $('mainStat').textContent = `${t('level')} ${s.level} ・ ${t('bestDay')} ${s.bestDay ? this.game.dayText(s.bestDay) : '—'}`;
+      const ch = s.challenge, last = root.SH.STAGES.length;
+      $('chStat').textContent = ch.allClear ? t('allClear') : `${t('stage')} ${Math.min(ch.stage, last - 1) + 1} / ${last}`;
       $('tLvBar').style.width = Math.min(100, s.exp / D.levelExp(s.level) * 100) + '%';
       document.querySelectorAll('.coinval').forEach(el => { el.textContent = s.coins.toLocaleString(); });
       this.renderChallenge();
@@ -91,7 +98,8 @@
       $('modePrev').addEventListener('click', () => this.turnMode(-1));
       document.addEventListener('keydown', e => {
         if ($('title').hidden || document.querySelector('.screen.dim:not([hidden])')) return;
-        if (e.key === 'ArrowRight') this.turnMode(1);
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); this.open(this.modeIdx ? 'challengeScr' : 'mainScr'); }
+        else if (e.key === 'ArrowRight') this.turnMode(1);
         else if (e.key === 'ArrowLeft') this.turnMode(-1);
       });
       // drag: the drum follows the finger, then settles on the nearest face
@@ -190,12 +198,23 @@
       this.fillGoals($('sgGoals'), st.goals.map(goal => ({ goal, cur: 0, target: goal.n, done: false })));
       const ups = D.UPGRADES.filter(u => n.upgrades[u.id]).map(u => `<span>${t('upgradeNames')[u.id]} Lv${n.upgrades[u.id]}</span>`);
       $('sgUps').innerHTML = ups.length ? ups.join('') : `<span>${t('none')}</span>`;
+      // a random outfit, lent for this stage only (kept for retries, re-rolled on the next stage)
+      if (n.costumeStage !== idx || !D.COSTUMES.some(c => c.id === n.costume)) {
+        const pool = D.COSTUMES.filter(c => c.id !== n.costume);
+        n.costume = pool[Math.floor(Math.random() * pool.length)].id;
+        n.costumeStage = idx;
+        save.write();
+      }
+      const dress = D.COSTUMES.find(c => c.id === n.costume);
+      $('sgDress').textContent = t('costumeNames')[dress.id];
+      const dg = this.prepCanvas($('sgDressCv'), 52);
+      R.drawSpider(dg, { x: 26, y: 28, lookX: 0, lookY: 0.3, scale: 0.85, happy: 1 }, 0.5, dress);
     },
 
     startStage() {
       audio.unlock();
       audio.play('button');
-      ['title', 'failScr', 'clearScr', 'resultScr', 'overScr', 'pauseScr'].forEach(id => { $(id).hidden = true; });
+      ['title', 'challengeScr', 'failScr', 'clearScr', 'resultScr', 'overScr', 'pauseScr'].forEach(id => { $(id).hidden = true; });
       $('hud').hidden = false; $('hint').hidden = true;
       $('missionBox').hidden = false; $('bestHud').hidden = true;
       this.hudCache = {};
@@ -270,18 +289,20 @@
       $('hud').hidden = false;
       $('hint').hidden = true;
       $('missionBox').hidden = true; $('bestHud').hidden = false;
-      ['failScr', 'clearScr'].forEach(id => { $(id).hidden = true; });
+      ['mainScr', 'challengeScr', 'failScr', 'clearScr'].forEach(id => { $(id).hidden = true; });
       this.hudCache = {};
       this.game.startRun();
     },
+    // mode 1: back from a challenge stage, straight to the stage menu
     toTitle(mode) {
       if (mode != null) this.setMode(mode);
-      ['resultScr', 'overScr', 'pauseScr', 'failScr', 'clearScr'].forEach(id => { $(id).hidden = true; });
+      ['mainScr', 'challengeScr', 'resultScr', 'overScr', 'pauseScr', 'failScr', 'clearScr'].forEach(id => { $(id).hidden = true; });
       $('hud').hidden = true; $('tutorial').hidden = true; $('hint').hidden = true;
       $('title').hidden = false;
       this.game.startDemo();
       audio.music('title');
       this.refreshTitle();
+      if (mode === 1) this.open('challengeScr');
     },
     pause() {
       const g = this.game;

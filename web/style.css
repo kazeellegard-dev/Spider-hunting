@@ -108,7 +108,7 @@ button:focus-visible { outline: 3px solid var(--sky); outline-offset: 2px; }
   padding: calc(var(--sat) + 18px) 16px 18px;
   overflow-y: auto; -webkit-overflow-scrolling: touch; touch-action: pan-y;
 }
-.screen.dim { background: rgba(26, 20, 44, 0.62); justify-content: center; }
+.screen.dim { background: rgba(26, 20, 44, 0.62); justify-content: center; z-index: 5; }
 .sheet {
   width: 100%; max-width: 440px; background: var(--panel); border: 2px solid rgba(255,255,255,0.18);
   border-radius: 24px; padding: 20px 18px; display: grid; gap: 14px;
@@ -145,7 +145,7 @@ button:focus-visible { outline: 3px solid var(--sky); outline-offset: 2px; }
 .logo .l1 { font-size: clamp(34px, 11vw, 52px); }
 .logo .l2 { font-size: clamp(40px, 13vw, 62px); color: var(--honey); letter-spacing: 0.02em; }
 .logo .tag { margin-top: 10px; font-size: 13px; font-weight: 800; padding: 5px 12px; border-radius: 99px; background: var(--panel); }
-.title-panel { width: 100%; max-width: 440px; display: grid; gap: 12px; }
+.title-panel { width: 100%; max-width: 360px; display: grid; gap: 10px; margin-bottom: 6px; }
 .statline {
   display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; text-align: center;
   background: var(--panel); border-radius: 18px; padding: 10px 8px;
@@ -154,7 +154,7 @@ button:focus-visible { outline: 3px solid var(--sky); outline-offset: 2px; }
 .statline span { font-size: 11px; letter-spacing: 0.06em; color: #cfc6ee; font-weight: 800; }
 .lvbar { grid-column: 1 / -1; height: 6px; border-radius: 4px; background: rgba(255,255,255,0.15); overflow: hidden; }
 .lvbar i { display: block; height: 100%; background: var(--sky); }
-.menu-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.menu-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
 .menu-grid .btn { font-size: 14px; padding: 12px 4px; }
 .menu-foot { display: flex; justify-content: center; gap: 14px; }
 .link { background: none; border: 0; color: #e9e3ff; font-size: 13px; font-weight: 800; text-decoration: underline; cursor: pointer; padding: 6px; }
@@ -194,7 +194,7 @@ dl.kv dd { margin: 0; font-weight: 900; text-align: right; font-variant-numeric:
 .ranking li::before { counter-increment: r; content: counter(r); color: var(--honey); width: 1.6em; }
 .ranking li span:first-of-type { flex: 1; }
 
-#toast {
+#toast { z-index: 10;
   position: absolute; left: 50%; top: 40%; transform: translateX(-50%);
   background: var(--danger); color: #fff; font-weight: 900; padding: 10px 18px; border-radius: 14px; pointer-events: none;
 }
@@ -240,7 +240,10 @@ ul.goals li.done .p { color: var(--leaf); }
 .mission li .p { font-variant-numeric: tabular-nums; }
 .mission li.done { color: var(--leaf); }
 
-/* title mode select: two faces on a turning drum, like picking a cabinet in an arcade */
+/* title mode select: two mode cards on a turning drum, like picking a cabinet in an arcade.
+   The cards stay small so the demo spider behind them stays in view. */
+.gear { position: absolute; top: calc(var(--sat) + 12px); right: 14px; z-index: 3; }
+.gear svg { width: 22px; height: 22px; }
 .modesel { position: relative; }
 .drum-wrap { perspective: 1100px; touch-action: pan-y; }
 .drum {
@@ -250,33 +253,30 @@ ul.goals li.done .p { color: var(--leaf); }
 }
 .drum.dragging { transition: none; }
 .mface {
-  grid-area: 1 / 1; align-self: start;
+  grid-area: 1 / 1; align-self: stretch; cursor: pointer; font: inherit; color: inherit; text-align: center;
   -webkit-backface-visibility: hidden; backface-visibility: hidden;
-  display: grid; gap: 10px; padding: 0 16px 16px; border-radius: 24px;
+  display: grid; gap: 8px; justify-items: center; padding: 0 16px 14px; border-radius: 24px;
   background: var(--panel); border: 3px solid var(--honey);
   box-shadow: 0 10px 30px rgba(10,6,24,0.45), inset 0 0 0 2px rgba(255,255,255,0.06);
 }
 .mface.main { transform: rotateY(0deg) translateZ(70px); }
 .mface.challenge { transform: rotateY(180deg) translateZ(70px); border-color: var(--berry); }
 .marquee {
+  display: block; justify-self: stretch;
   margin: -3px -19px 0; padding: 9px 12px 8px; border-radius: 22px 22px 14px 14px; text-align: center;
   background: linear-gradient(180deg, #ffe08a, var(--honey) 55%, var(--honey-deep));
   color: var(--ink); font-size: 22px; font-weight: 900; letter-spacing: 0.06em;
   box-shadow: 0 4px 0 rgba(0,0,0,0.18);
 }
-.mface.challenge .marquee { background: linear-gradient(180deg, #ffb3c8, var(--berry) 55%, #d9446f); color: #fff; text-shadow: 0 2px 0 rgba(42,34,68,0.35); }
-.mdesc { margin: 0; text-align: center; font-size: 13px; font-weight: 800; color: #d9d2f2; line-height: 1.5; }
-.mface .statline { background: rgba(255,255,255,0.07); }
-.mface.challenge .btn.primary { background: var(--berry); color: #fff; box-shadow: 0 5px 0 #d9446f; }
-.mface.challenge .btn.primary:active { box-shadow: 0 2px 0 #d9446f; }
-.sghead { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 2px 10px; }
-.sghead b { font-size: 18px; font-weight: 900; white-space: nowrap; }
-.sghead span { font-size: 12px; font-weight: 800; color: #cfc6ee; white-space: nowrap; }
-.mface .stagedots { grid-template-columns: repeat(15, 1fr); gap: 4px; }
-.mface .stagedots i { font-size: 8px; }
-.mface .goalbox { padding: 10px 12px; }
-.mface ul.goals li { font-size: 14px; }
-.mface .link { justify-self: center; }
+.challenge .marquee { background: linear-gradient(180deg, #ffb3c8, var(--berry) 55%, #d9446f); color: #fff; text-shadow: 0 2px 0 rgba(42,34,68,0.35); }
+.mdesc { font-size: 13px; font-weight: 800; color: #d9d2f2; line-height: 1.5; }
+.mstat { font-size: 16px; font-weight: 900; }
+.mopen {
+  font-size: 13px; font-weight: 900; padding: 6px 16px; border-radius: 99px;
+  background: var(--honey); color: var(--ink); box-shadow: 0 3px 0 var(--honey-deep);
+  animation: bob 1.6s ease-in-out infinite;
+}
+.mface.challenge .mopen { background: var(--berry); color: #fff; box-shadow: 0 3px 0 #d9446f; }
 .marrow {
   position: absolute; top: 50%; z-index: 2; width: 38px; height: 38px; margin-top: -19px; padding: 0;
   border: 2px solid rgba(255,255,255,0.5); border-radius: 50%; cursor: pointer;
@@ -292,17 +292,33 @@ ul.goals li.done .p { color: var(--leaf); }
 .mdots i.on { width: 20px; border-radius: 4px; background: var(--honey); }
 .mdots.ch i.on { background: var(--berry); }
 .mdots span { margin-left: 6px; font-size: 11px; font-weight: 800; color: #e9e3ff; }
-.mface .chips span { font-size: 11px; padding: 3px 9px; }
-/* short phones (SE class): tighten the title so the whole cabinet fits */
+
+/* the mode menus opened from a card */
+.sheet.mode { border: 3px solid var(--honey); padding-top: 0; }
+.sheet.mode.challenge { border-color: var(--berry); }
+.sheet.mode .marquee { margin: -3px -21px 0; }
+.sheet.mode .statline { background: rgba(255,255,255,0.07); }
+.sheet.mode.challenge .btn.primary { background: var(--berry); color: #fff; box-shadow: 0 5px 0 #d9446f; }
+.sheet.mode.challenge .btn.primary:active { box-shadow: 0 2px 0 #d9446f; }
+.sheet.mode .btn.ghost { padding: 10px 12px; }
+.sheet.mode .link { justify-self: center; }
+.sghead { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 2px 10px; }
+.sghead b { font-size: 18px; font-weight: 900; white-space: nowrap; }
+.sghead span { font-size: 12px; font-weight: 800; color: #cfc6ee; white-space: nowrap; }
+.sheet.mode .stagedots { grid-template-columns: repeat(15, 1fr); gap: 4px; }
+.sheet.mode .stagedots i { font-size: 8px; }
+.sheet.mode .goalbox { padding: 10px 12px; }
+.sheet.mode ul.goals li { font-size: 14px; }
+.sheet.mode .chips span { font-size: 11px; padding: 3px 9px; }
+.sgdress { display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.08); border-radius: 16px; padding: 6px 12px; }
+.sgdress canvas { width: 52px; height: 52px; flex: none; }
+.sgdress .dname { font-size: 16px; font-weight: 900; }
+/* short phones (SE class) */
 @media (max-height: 760px) {
   .logo .l1 { font-size: clamp(28px, 8.5vw, 40px); }
   .logo .l2 { font-size: clamp(32px, 10vw, 46px); }
-  .logo .tag { display: none; }
-  .title-panel { gap: 8px; }
-  .mface { gap: 8px; padding-bottom: 12px; }
+  .sheet.mode { gap: 10px; padding-bottom: 14px; }
   .marquee { font-size: 19px; padding: 7px 12px 6px; }
-  .mdesc { font-size: 12px; }
-  .mface .btn.primary { padding: 12px 18px; font-size: 20px; }
-  .mface .goalbox { padding: 8px 12px; gap: 4px; }
-  .menu-grid .btn { padding: 10px 4px; }
+  .sheet.mode .btn.primary { padding: 12px 18px; font-size: 20px; }
+  .sheet.mode .goalbox { padding: 8px 12px; gap: 4px; }
 }

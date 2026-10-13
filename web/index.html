@@ -49,8 +49,10 @@
   <div class="bubble" id="hint" hidden></div>
   <div id="toast" hidden></div>
 
-  <!-- title: an arcade-style mode select. The drum turns between the two modes -->
+  <!-- title: an arcade-style mode select. Only the mode names turn on the drum, so the
+       demo spider stays in view; tapping a mode opens its own menu -->
   <section class="screen" id="title">
+    <button class="icon-btn gear" data-open="settingsScr" aria-label="settings"><svg viewBox="0 0 24 24"><path d="M12 8.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7zm8.4 4.8.1-1.3-.1-1.3 2-1.6-2-3.4-2.4 1a8 8 0 0 0-2.2-1.3L15.4 3h-3.9l-.4 2.4a8 8 0 0 0-2.2 1.3l-2.4-1-2 3.4 2 1.6-.1 1.3.1 1.3-2 1.6 2 3.4 2.4-1a8 8 0 0 0 2.2 1.3l.4 2.4h3.9l.4-2.4a8 8 0 0 0 2.2-1.3l2.4 1 2-3.4z"/></svg></button>
     <div class="logo">
       <div class="l1" data-t="title1"></div>
       <div class="l2" data-t="title2"></div>
@@ -61,51 +63,76 @@
         <button class="marrow prev" id="modePrev" aria-label="prev"><svg viewBox="0 0 20 20"><path d="M13 3 6 10l7 7"/></svg></button>
         <div class="drum-wrap" id="drumWrap">
           <div class="drum" id="drum">
-            <!-- normal mode (endless days, coin upgrades) -->
-            <div class="mface main" id="faceMain">
-              <div class="marquee"><span data-t="modeMain"></span></div>
-              <p class="mdesc" data-t="mainDesc"></p>
-              <div class="statline">
-                <div><b id="tLevel">1</b><span data-t="level"></span></div>
-                <div><b id="tCoins">0</b><span data-t="coins"></span></div>
-                <div><b id="tBest">0</b><span data-t="best"></span></div>
-                <div><b id="tDay">—</b><span data-t="bestDay"></span></div>
-                <div class="lvbar"><i id="tLvBar" style="width:0%"></i></div>
-              </div>
-              <button class="btn primary" id="playBtn" data-t="play"></button>
-              <div class="row">
-                <button class="btn" data-open="upgradeScr" data-t="upgrade"></button>
-                <button class="btn" data-open="rankScr" data-t="ranking"></button>
-              </div>
-            </div>
-            <!-- challenge mode (30 mission stages, picks after each clear) -->
-            <div class="mface challenge" id="faceChallenge">
-              <div class="marquee"><span data-t="modeChallenge"></span></div>
-              <p class="mdesc" data-t="challengeDesc"></p>
-              <div class="sghead"><b id="sgTitle"></b><span id="sgSub"></span></div>
-              <div class="stagedots" id="sgDots"></div>
-              <div class="goalbox">
-                <div class="glabel" data-t="goalsTitle"></div>
-                <ul class="goals" id="sgGoals"></ul>
-              </div>
-              <div class="chips" id="sgUps"></div>
-              <button class="btn primary" id="sgStart" data-t="start"></button>
-              <button class="link" id="sgRestart" data-t="restartNormal"></button>
-              <div class="confirm" id="sgConfirm" hidden>
-                <p class="lead" data-t="restartConfirm"></p>
-                <div class="row"><button class="btn small" id="sgNo" data-t="back"></button><button class="btn small primary" id="sgYes" data-t="restartNormal"></button></div>
-              </div>
-            </div>
+            <button class="mface main" id="faceMain">
+              <span class="marquee"><span data-t="modeMain"></span></span>
+              <span class="mdesc" data-t="mainDesc"></span>
+              <span class="mstat" id="mainStat"></span>
+              <span class="mopen" data-t="tapOpen"></span>
+            </button>
+            <button class="mface challenge" id="faceChallenge">
+              <span class="marquee"><span data-t="modeChallenge"></span></span>
+              <span class="mdesc" data-t="challengeDesc"></span>
+              <span class="mstat" id="chStat"></span>
+              <span class="mopen" data-t="tapOpen"></span>
+            </button>
           </div>
         </div>
         <button class="marrow next" id="modeNext" aria-label="next"><svg viewBox="0 0 20 20"><path d="M7 3l7 7-7 7"/></svg></button>
       </div>
       <div class="mdots" id="modeDots"><i class="on"></i><i></i><span data-t="swipeHint"></span></div>
+    </div>
+  </section>
+
+  <!-- normal mode menu -->
+  <section class="screen dim" id="mainScr" hidden>
+    <div class="sheet mode main">
+      <div class="marquee"><span data-t="modeMain"></span></div>
+      <div class="statline">
+        <div><b id="tLevel">1</b><span data-t="level"></span></div>
+        <div><b id="tCoins">0</b><span data-t="coins"></span></div>
+        <div><b id="tBest">0</b><span data-t="best"></span></div>
+        <div><b id="tDay">—</b><span data-t="bestDay"></span></div>
+        <div class="lvbar"><i id="tLvBar" style="width:0%"></i></div>
+      </div>
+      <button class="btn primary" id="playBtn" data-t="play"></button>
       <div class="menu-grid">
+        <button class="btn" data-open="upgradeScr" data-t="upgrade"></button>
         <button class="btn" data-open="wardrobeScr" data-t="wardrobe"></button>
         <button class="btn" data-open="zukanScr" data-t="zukan"></button>
-        <button class="btn" data-open="settingsScr" data-t="settings"></button>
-        <button class="btn" data-open="howtoScr" data-t="howto"></button>
+        <button class="btn" data-open="rankScr" data-t="ranking"></button>
+      </div>
+      <div class="row">
+        <button class="btn ghost" data-open="howtoScr" data-howto="main" data-t="howto"></button>
+        <button class="btn ghost" data-close data-t="back"></button>
+      </div>
+    </div>
+  </section>
+
+  <!-- challenge mode: stage start -->
+  <section class="screen dim" id="challengeScr" hidden>
+    <div class="sheet mode challenge">
+      <div class="marquee"><span data-t="modeChallenge"></span></div>
+      <div class="sghead"><b id="sgTitle"></b><span id="sgSub"></span></div>
+      <div class="stagedots" id="sgDots"></div>
+      <div class="goalbox">
+        <div class="glabel" data-t="goalsTitle"></div>
+        <ul class="goals" id="sgGoals"></ul>
+      </div>
+      <div class="sgdress">
+        <canvas id="sgDressCv"></canvas>
+        <div><div class="glabel" data-t="stageDress"></div><div class="dname" id="sgDress"></div></div>
+      </div>
+      <div class="glabel" data-t="upgradesNow"></div>
+      <div class="chips" id="sgUps"></div>
+      <button class="btn primary" id="sgStart" data-t="start"></button>
+      <div class="row">
+        <button class="btn ghost" data-open="howtoScr" data-howto="challenge" data-t="howto"></button>
+        <button class="btn ghost" data-close data-t="back"></button>
+      </div>
+      <button class="link" id="sgRestart" data-t="restartNormal"></button>
+      <div class="confirm" id="sgConfirm" hidden>
+        <p class="lead" data-t="restartConfirm"></p>
+        <div class="row"><button class="btn small" id="sgNo" data-t="back"></button><button class="btn small primary" id="sgYes" data-t="restartNormal"></button></div>
       </div>
     </div>
   </section>
@@ -225,7 +252,7 @@
   <section class="screen dim" id="howtoScr" hidden>
     <div class="sheet">
       <h2 data-t="howto"></h2>
-      <p class="howto" data-t="howtoBody"></p>
+      <p class="howto" id="howtoBody"></p>
       <button class="btn" data-close data-t="close"></button>
     </div>
   </section>
