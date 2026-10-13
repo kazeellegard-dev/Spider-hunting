@@ -1,10 +1,10 @@
 name: Web版を公開（GitHub Pages）
 
-# main に push すると web/ を GitHub Pages に公開する。
-# 非公開リポジトリで Pages を使うには GitHub Pro 以上が必要（Settings > Pages で Source を "GitHub Actions" にする）。
+# 既定ブランチ（または main）に push すると web/ を GitHub Pages に公開する。
+# 最初に一度だけ Settings > Pages で Source を "GitHub Actions" にしておくこと。
 on:
   push:
-    branches: [main]
+    branches: [main, claude/zealous-newton-c8j104]
     paths: ['web/**', '.github/workflows/pages.yml']
   workflow_dispatch:
 

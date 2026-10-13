@@ -24,8 +24,8 @@ python3 -m http.server -d web 8080
 
 ### 確認端末で遊ぶ
 
-- **GitHub Pages**: `main` に push すると `.github/workflows/pages.yml` が `web/` を公開する。
-  非公開リポジトリでは GitHub Pro 以上が必要（Settings → Pages → Source を「GitHub Actions」）。
+- **GitHub Pages**: 既定ブランチに push すると `.github/workflows/pages.yml` が `web/` を
+  https://kazeellegard-dev.github.io/Spider-hunting/ に公開する（最初に一度 Settings → Pages → Source を「GitHub Actions」にする）。
 - **1ファイル版**: `node web/tools/bundle.mjs dist/spider-hunting.html` で、CSS・JSを埋め込んだ
   HTML 1枚ができる。好きな場所に置いて開けばそのまま遊べる。
 
