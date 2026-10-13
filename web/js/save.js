@@ -11,6 +11,7 @@
       costumes: ['classic'], costume: 'classic',
       bestScore: 0, bestArea: 0, bestDay: 0, scores: [],
       caught: {},
+      normal: { stage: 0, cleared: 0, allClear: false, upgrades: { strength: 0, silk: 0, sticky: 0, speed: 0, appetite: 0, lure: 0 } },
       plays: 0, tutorialDone: false,
       settings: { sound: true, music: true, vibration: true, lang: 'auto' },
     };

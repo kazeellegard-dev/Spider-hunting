@@ -1,8 +1,33 @@
 # クモの巣ハンティング（Spider Hunting）
 
 飛んでくる虫をクモの巣で捕らえて育てる、タップ操作のカジュアルゲーム。
-Webアプリとして開発してブラウザで動作確認し、最終的に Capacitor で iPhone / iPad アプリにする。
+Webアプリとして開発してブラウザで動作確認し、Capacitor で iPhone / iPad アプリにする（ねこだるまおとしと同じ構成）。
 
-- 遊び方・開発の手順: [web/README.md](web/README.md)
+- 遊び方・Web版の開発手順: [web/README.md](web/README.md)
 - 要件定義書: [docs/REQUIREMENTS.md](docs/REQUIREMENTS.md)
-- `ios/` … 方針転換前の SpriteKit 版プロトタイプ（糸の物理演算の検証用。参考として残している）
+- 公開中のWeb版: https://kazeellegard-dev.github.io/Spider-hunting/
+
+## フォルダ構成
+
+| 場所 | 中身 |
+|---|---|
+| `web/` | ゲーム本体（HTML5 Canvas）。GitHub Pages でそのまま公開 |
+| `ios/` | iOS アプリ（Capacitor）。`npm run sync` で `web/` の中身を取り込む |
+| `scripts/` | `www/` を作るスクリプト、AdMob プラグインの修正、証明書の後片付け |
+| `prototype/ios-spritekit/` | 方針転換前の SpriteKit 版プロトタイプ（糸の物理演算の検証用。参考として残している） |
+
+## アプリ版のビルド
+
+```bash
+npm install      # 依存パッケージ（AdMob / Preferences）
+npm run sync     # web/ → www/ → ios/App/App/public にコピー
+```
+
+- `ios/` などを push すると、GitHub Actions（`.github/workflows/ios.yml`）が署名なしのシミュレーター用ビルドで確認する
+- Actions 画面の「Run workflow」で TestFlight にアップロードできる（要: Secrets の `ASC_KEY_ID` / `ASC_ISSUER_ID` / `ASC_KEY_P8` / `APPLE_TEAM_ID`、App Store Connect にバンドルID `dev.kazeellegard.spiderhunting` のアプリ登録）
+
+### 広告（AdMob）
+
+- いまは **Google のテスト用ID** で動く（アプリID: `Info.plist` の `GADApplicationIdentifier`、バナー: `web/js/platform.js` の `ADMOB`）
+- 本番に切り替えるときは、AdMob で作ったアプリID・バナーIDに差し替え、`ADMOB.useTest` を `false` にする
+- バナーは画面のいちばん下（ホームバーのすぐ上）。ゲーム画面は最初からバナーの高さぶん上に収める。Web版は同じ場所を「AD」の帯であけてある

@@ -7,3 +7,7 @@
 *.xcworkspace/xcuserdata/
 DerivedData/
 *.xcuserstate
+
+# Capacitor / npm
+node_modules/
+www/

@@ -1,0 +1,10 @@
+{
+  "appId": "dev.kazeellegard.spiderhunting",
+  "appName": "クモの巣ハンティング",
+  "webDir": "www",
+  "ios": {
+    "contentInset": "never",
+    "scrollEnabled": false,
+    "backgroundColor": "#2a2244"
+  }
+}

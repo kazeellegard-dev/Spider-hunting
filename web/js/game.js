@@ -54,15 +54,19 @@
       this.bgPrev = null;
     }
 
-    stats() {
-      const s = root.SH.save.data, u = s.upgrades;
+    // endless: coin upgrades + level bonus. normal: the stage run's own picks, no level bonus
+    stats(mode) {
+      const s = root.SH.save.data;
+      const normal = (mode || this.runMode) === 'normal';
+      const u = normal ? s.normal.upgrades : s.upgrades;
+      const lv = normal ? 0 : s.level - 1;
       return {
-        strength: B.baseStrength + u.strength * B.strengthPerUpgrade + (s.level - 1) * B.strengthPerLevel,
+        strength: B.baseStrength + (u.strength || 0) * B.strengthPerUpgrade + lv * B.strengthPerLevel,
         maxHunger: B.baseHunger,
-        maxSilk: B.baseMaxSilk + u.silk * B.silkPerUpgrade + (s.level - 1) * B.silkPerLevel,
-        struggle: B.baseStruggle + u.sticky * B.strugglePerUpgrade,
-        speed: B.baseSpeed * (1 + u.speed * B.speedPerUpgrade),
-        appetite: 1 + u.appetite * B.appetitePerUpgrade,
+        maxSilk: B.baseMaxSilk + (u.silk || 0) * B.silkPerUpgrade + lv * B.silkPerLevel,
+        struggle: B.baseStruggle + (u.sticky || 0) * B.strugglePerUpgrade,
+        speed: B.baseSpeed * (1 + (u.speed || 0) * B.speedPerUpgrade),
+        appetite: 1 + (u.appetite || 0) * B.appetitePerUpgrade,
         lure: 1 + (u.lure || 0) * B.lurePerUpgrade,
       };
     }
@@ -101,6 +105,8 @@
 
     startDemo() {
       this.mode = 'demo';
+      this.runMode = 'endless';
+      this.stage = null; this.stageIdx = -1;
       this.st = this.stats();
       this.resetWorld();
       // the title screen follows the player's real clock
@@ -115,8 +121,13 @@
       this.paused = false;
     }
 
-    startRun() {
+    // opts.stage: 0-based stage index for normal mode; omitted = endless
+    startRun(opts) {
+      opts = opts || {};
+      const stage = opts.stage != null ? root.SH.STAGES[opts.stage] : null;
       this.mode = 'play';
+      this.runMode = stage ? 'normal' : 'endless';
+      this.stage = stage; this.stageIdx = stage ? opts.stage : -1;
       this.st = this.stats();
       this.resetWorld();
       const save = root.SH.save.data;
@@ -124,19 +135,22 @@
         score: 0, silk: this.st.maxSilk, hunger: this.st.maxHunger, glow: 0, time: 0, combo: 0, lastEat: -99, maxCombo: 0, catches: 0,
         bonusGauge: 0, bonusTimer: 0, coins: 0, caught: {}, continued: false, over: false, dying: 0,
         windTimer: rand(22, 34), wind: 0, windLeft: 0, maxArea: 0, day: 1, phase: 0, phaseT: 0,
-        gustTimer: B.gustFirst, gustLeft: 0, gusts: 0,
+        gustTimer: -1, gustLeft: 0, gusts: 0, mode: this.runMode,
+        kinds: {}, treats: 0, bosses: 0, weights: [], timeLeft: stage ? stage.time : 0, gustDone: false,
         tutorial: save.tutorialDone ? 0 : 1, tutorialTimer: 0, heavyHinted: !!save.tutorialDone && save.plays > 3,
       };
       const hub = this.buildStarterWeb(this.W / 2, this.H * 0.42, 6, Math.min(this.W * 0.2, 80), [0.55]);
       this.spider.node = hub; this.spider.x = hub.x; this.spider.y = hub.y;
       this.spawnTimer = run.tutorial ? 3 : 1.2;
       this.specials = []; this.specialTimer = 0;
-      this.bg = R.makeBackground(D.AREAS[0], this.W, this.H, this.dpr);
+      this.areaIdx = stage ? stage.area : 0;
+      this.bg = R.makeBackground(D.AREAS[this.areaIdx], this.W, this.H, this.dpr);
       this.bgPrev = null;
       this.particles = []; this.texts = [];
       this.paused = false;
-      audio.music('day');
-      this.hooks.banner(this.dayText(1), t('areaNames')[0], 'area');
+      audio.music(this.musicMode());
+      if (stage) this.hooks.banner(t('stage') + ' ' + (opts.stage + 1), t('areaNames')[this.areaIdx], 'area');
+      else this.hooks.banner(this.dayText(1), t('areaNames')[0], 'area');
       if (run.tutorial) this.hooks.tutorial(t('tut1'));
     }
 
@@ -294,13 +308,15 @@
       // the tummy drains over time and faster as the run goes on (the run's clock)
       const tutorialFree = run.tutorial && run.tutorial < 4;
       if (!tutorialFree) {
-        const drain = Math.min(B.drainMax, B.drainBase + run.time * B.drainRamp);
+        const st = this.stage;
+        const drain = st ? st.drain + run.time * st.ramp : Math.min(B.drainMax, B.drainBase + run.time * B.drainRamp);
         run.hunger -= drain * dt * (inBonus ? 0.5 : 1);
       }
       if (!run.tutorial) {
         if (run.hunger < this.st.maxHunger * 0.25 && !run.lowHinted) { run.lowHinted = true; this.hooks.hint(t('lowHunger')); }
         if (run.silk < this.st.maxSilk * 0.15 && !run.lowSilkHinted) { run.lowSilkHinted = true; this.hooks.hint(t('lowSilk')); }
       }
+      if (run.hunger <= 0 && run.mode === 'normal') { run.hunger = 0; this.failStage('hunger'); return; }
       if (run.hunger <= 0) {
         run.hunger = 0;
         run.dying = 1.3;
@@ -314,13 +330,18 @@
       this.spawnTimer -= dt;
       if (!inBonus && this.spawnTimer <= 0) {
         const area = D.AREAS[this.areaIdx];
-        const ramp = 1 - Math.min(0.4, (run.day - 1) * 0.08 + Math.min(0.1, run.time / 900));
+        const ramp = this.stage ? this.stage.spawn * (1 - Math.min(0.15, run.time / 800))
+          : 1 - Math.min(0.4, (run.day - 1) * 0.08 + Math.min(0.1, run.time / 900));
         let interval = area.spawn * ramp;
         if (run.tutorial && run.tutorial < 3) interval = 99;
         else if (run.tutorial === 3) interval = 2.2;
         this.spawnTimer = interval * rand(0.75, 1.25);
         let type = pickWeighted(this.spawnTable(area));
-        if (run.glow > 0 && (this.bossNext || Math.random() < 0.3)) { type = pickWeighted({ oniyanma: 3, hornet: 3, hercules: 1.2 }); this.bossNext = false; }
+        if (run.glow > 0 && (this.bossNext || Math.random() < 0.3)) {
+          const want = this.stage && this.stage.goals.find(gl => gl.type === 'type' && D.INSECTS[gl.key].boss);
+          type = want && Math.random() < 0.7 ? want.key : pickWeighted({ oniyanma: 3, hornet: 3, hercules: 1.2 });
+          this.bossNext = false;
+        }
         if (run.tutorial === 3) type = Math.random() < 0.5 ? 'butterfly' : 'fly';
         else if (Math.random() < D.GOLDEN_CHANCE * this.st.lure) type = 'golden';
         this.spawnInsect(type, run.tutorial === 3);
@@ -367,10 +388,11 @@
           if (before > 1.6 && run.gustLeft <= 1.6) this.gustBlast();
           if (run.gustLeft <= 0) { run.gustLeft = 0; run.wind = 0; }
         } else {
-          run.gustTimer -= dt;
-          if (run.gustTimer <= 0) {
+          // at most one gust per day, armed at dawn (see enterPhase); -1 = none pending
+          if (run.gustTimer > 0) run.gustTimer -= dt;
+          if (run.gustTimer > -1 && run.gustTimer <= 0) {
+            run.gustTimer = -1;
             run.gustLeft = 4.0; run.windDir = Math.random() < 0.5 ? -1 : 1; run.windLeft = 0;
-            run.gustTimer = B.gustEvery * Math.max(0.4, 1 - run.time / 400) * rand(0.8, 1.2);
             audio.play('wind');
             this.hooks.banner(t('gustWarn'), t('gustSub'), 'wind');
             platform.haptic('medium');
@@ -379,7 +401,7 @@
       }
       // wind
       if (run.gustLeft > 0) { /* gust owns the wind */ }
-      else if ((run.day > 1 || run.phase >= 1) && !inBonus) {
+      else if ((this.stage ? this.stage.wind : run.day > 1 || run.phase >= 1) && !inBonus) {
         if (run.windLeft > 0) {
           run.windLeft -= dt;
           const k = Math.sin(Math.PI * (1 - run.windLeft / 4.5));
@@ -394,8 +416,9 @@
           }
         }
       } else run.wind = 0;
+      if (run.mode === 'normal') { if (this.updateStage(dt)) return; }
       // time of day: morning -> daytime -> evening -> night -> next morning
-      if (!run.tutorial || run.tutorial >= 4) {
+      else if (!run.tutorial || run.tutorial >= 4) {
         run.phaseT += dt;
         if (run.phaseT >= D.PHASES[run.phase].len) {
           run.phaseT = 0;
@@ -418,7 +441,94 @@
       if (sp.happy > 0) sp.happy -= dt;
     }
 
-    bonusNeed() { return B.bonusNeed + (this.run.bonuses || 0) * B.bonusNeedStep; }
+    bonusNeed() {
+      if (this.stage) return this.stage.bonusNeed + (this.run.bonuses || 0) * 4;
+      return B.bonusNeed + (this.run.bonuses || 0) * B.bonusNeedStep;
+    }
+
+    // ---------- normal mode ----------
+    updateStage(dt) {
+      const run = this.run, st = this.stage;
+      if (run.tutorial && run.tutorial < 4) return false;
+      run.timeLeft = Math.max(0, run.timeLeft - dt);
+      if (st.gust && !run.gustDone && run.time >= st.gust) { run.gustDone = true; run.gustTimer = 0.01; }
+      const goals = this.goalStates();
+      const timed = goals.some(gs => gs.goal.type === 'survive');
+      if (!timed && goals.every(gs => gs.done)) { this.clearStage(); return true; }
+      if (run.timeLeft <= 0) {
+        if (goals.every(gs => gs.done || gs.goal.type === 'survive')) this.clearStage();
+        else this.failStage('time');
+        return true;
+      }
+      return false;
+    }
+
+    goalProgress(goal) {
+      const run = this.run;
+      switch (goal.type) {
+        case 'catch': return run.catches;
+        case 'kind': return run.kinds[goal.key] || 0;
+        case 'type': return run.caught[goal.key] || 0;
+        case 'score': return run.score;
+        case 'combo': return run.maxCombo;
+        case 'treats': return run.treats;
+        case 'boss': return run.bosses;
+        case 'heavy': return run.weights.filter(w => w >= goal.key).length;
+        case 'survive': return Math.floor(this.stage.time - run.timeLeft);
+        default: return 0;
+      }
+    }
+
+    goalStates() {
+      return this.stage.goals.map(goal => {
+        const cur = this.goalProgress(goal);
+        const target = goal.type === 'survive' ? this.stage.time : goal.n;
+        return { goal, cur: Math.min(cur, target), target, done: goal.type === 'survive' ? this.run.timeLeft <= 0 : cur >= target };
+      });
+    }
+
+    clearStage() {
+      const run = this.run;
+      if (run.over) return;
+      run.over = true;
+      audio.stopMusic();
+      audio.play('levelup');
+      platform.haptic('heavy');
+      this.burst(this.spider.x, this.spider.y, '#ffe066');
+      this.spider.happy = 3;
+      setTimeout(() => this.hooks.stageClear(), 900);
+    }
+
+    failStage(reason) {
+      const run = this.run;
+      if (run.over) return;
+      run.over = true;
+      this.spider.sad = true;
+      audio.stopMusic();
+      audio.play('gameover');
+      platform.haptic('heavy');
+      setTimeout(() => this.hooks.stageFail(reason), 900);
+    }
+
+    // rewards for a finished normal stage; on clear, unlock the next stage
+    finishStage(cleared) {
+      const run = this.run, save = root.SH.save.data;
+      const coins = Math.floor(run.score * B.coinsPerScore) + run.coins + (cleared ? 20 + this.stageIdx * 5 : 0);
+      save.coins += coins;
+      save.exp += run.score;
+      let levels = 0;
+      while (save.exp >= D.levelExp(save.level)) { save.exp -= D.levelExp(save.level); save.level++; levels++; }
+      for (const k in run.caught) save.caught[k] = (save.caught[k] || 0) + run.caught[k];
+      save.plays++;
+      if (run.tutorial) save.tutorialDone = true;
+      if (cleared) {
+        save.normal.cleared = Math.max(save.normal.cleared || 0, this.stageIdx + 1);
+        save.normal.stage = Math.min(this.stageIdx + 1, root.SH.STAGES.length - 1);
+        if (this.stageIdx + 1 >= root.SH.STAGES.length) save.normal.allClear = true;
+      }
+      root.SH.save.write();
+      return { score: run.score, coins, levels, level: save.level, stage: this.stageIdx };
+    }
 
     endTutorial() {
       const run = this.run;
@@ -432,6 +542,7 @@
     enterPhase() {
       const run = this.run;
       const idx = D.phaseArea(run.phase, run.day);
+      if (run.phase === 0 && run.day >= B.gustFromDay && run.mode !== 'normal') run.gustTimer = rand(B.gustDelay[0], B.gustDelay[1]);
       if (run.phase === 0) {
         const record = run.day > (root.SH.save.data.bestDay || 0) && root.SH.save.data.bestDay > 0;
         this.enterArea(idx, this.dayText(run.day), record ? t('newDayRecord') : t('areaNames')[idx]);
@@ -529,11 +640,13 @@
     // heavy bugs ease in over the first days; the lure upgrade favors rare ones
     spawnTable(area) {
       const day = this.run ? this.run.day : 3;
-      const heavy = Math.min(1, 0.2 + (day - 1) * 0.4);
+      const heavy = this.stage ? this.stage.heavy : Math.min(1, 0.2 + (day - 1) * 0.4);
       const out = {};
       for (const k in area.table) {
         const d = D.INSECTS[k];
-        out[k] = area.table[k] * (d.rare ? this.st.lure : 1) * (d.weight > 2.4 ? heavy : 1);
+        // bugs a stage mission asks for show up twice as often and are never thinned out
+        const wanted = this.stage && this.stage.goals.some(gl => (gl.type === 'type' && gl.key === k) || (gl.type === 'kind' && gl.key === d.kind));
+        out[k] = area.table[k] * (d.rare ? this.st.lure : 1) * (wanted ? 2 : d.weight > 2.4 ? heavy : 1);
       }
       return out;
     }
@@ -696,6 +809,9 @@
         audio.play('area');
       }
       run.caught[ins.type] = (run.caught[ins.type] || 0) + 1;
+      run.kinds[def.kind] = (run.kinds[def.kind] || 0) + 1;
+      run.weights.push(def.weight);
+      if (def.boss) run.bosses++;
       run.hunger = Math.min(this.st.maxHunger, run.hunger + def.silk * this.st.appetite);
       run.silk = Math.min(this.st.maxSilk, run.silk + def.silk * B.silkPerFood * (def.silkBonus || 1));
       if (run.bonusTimer <= 0) run.bonusGauge = Math.min(this.bonusNeed(), run.bonusGauge + 1 + (run.combo >= 5 ? 0.5 : 0));
@@ -731,7 +847,7 @@
           const run = this.run;
           const mult = Math.min(3, 1 + Math.max(0, run.combo - 1) * 0.1);
           const pts = Math.round(tr.def.score * mult);
-          run.score += pts; run.coins += tr.def.coins;
+          run.score += pts; run.coins += tr.def.coins; run.treats++;
           audio.play('treat');
           this.burst(tr.x, tr.y, tr.def.color);
           this.floatText(tr.x, tr.y - 16, '+' + pts, '#fff6c2', 16);
@@ -772,7 +888,7 @@
     gustBlast() {
       const run = this.run;
       run.gusts++;
-      const p = Math.min(0.8, B.gustPower + run.time / 600);
+      const p = B.gustPower;
       const dir = run.windDir || 1;
       for (const th of this.web.threads.slice()) {
         if (th.broken || Math.random() > p) continue;

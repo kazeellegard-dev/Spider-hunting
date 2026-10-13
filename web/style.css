@@ -13,6 +13,11 @@
   --panel: rgba(42, 34, 68, 0.88);
   --font: "M PLUS Rounded 1c", "Hiragino Maru Gothic ProN", "Arial Rounded MT Bold", system-ui, sans-serif;
   color-scheme: dark;
+  /* Insets. The app overwrites these with values from the native SafeArea plugin
+     (env() can read 0 inside the iOS web view); --adh is the bottom banner's height. */
+  --sat: env(safe-area-inset-top, 0px);
+  --sab: env(safe-area-inset-bottom, 0px);
+  --adh: 60px;
 }
 
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -27,14 +32,17 @@ button { font-family: inherit; color: inherit; touch-action: manipulation; }
 button:focus-visible { outline: 3px solid var(--sky); outline-offset: 2px; }
 [hidden] { display: none !important; }
 
-#stage { position: fixed; inset: 0; overflow: hidden; }
+#stage { position: fixed; top: 0; left: 0; right: 0; bottom: calc(var(--sab) + var(--adh)); overflow: hidden; }
+/* banner ad area: AdMob draws the real banner here in the app; the web shows where it will go */
+#adSlot { position: fixed; left: 0; right: 0; bottom: var(--sab); height: var(--adh); display: grid; place-items: center; background: #1f1934; color: rgba(255,255,255,0.35); font-size: 11px; font-weight: 800; letter-spacing: 0.1em; border-top: 1px dashed rgba(255,255,255,0.18); }
+#adSlot.native { background: #1f1934; border: 0; color: transparent; }
 #game { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
 
 /* ---------- HUD ---------- */
 #hud {
   position: absolute; left: 0; right: 0; top: 0; pointer-events: none;
   max-width: 600px; margin-inline: auto;
-  padding: calc(env(safe-area-inset-top, 0px) + 10px) 14px 0;
+  padding: calc(var(--sat) + 10px) 14px 0;
   display: grid; grid-template-columns: 1fr auto; gap: 6px 10px; align-items: start;
 }
 .hud-silk { display: grid; gap: 4px; min-width: 0; }
@@ -85,7 +93,7 @@ button:focus-visible { outline: 3px solid var(--sky); outline-offset: 2px; }
   100% { opacity: 0; transform: translateY(-14px); }
 }
 .bubble {
-  position: absolute; left: 16px; right: 16px; bottom: calc(env(safe-area-inset-bottom, 0px) + 22px);
+  position: absolute; left: 16px; right: 16px; bottom: 16px;
   margin: 0 auto; max-width: 420px; padding: 12px 16px; border-radius: 16px;
   background: var(--silk); color: var(--ink); font-weight: 800; font-size: 15px; line-height: 1.5; text-align: center;
   box-shadow: 0 6px 0 rgba(42,34,68,0.35); pointer-events: none;
@@ -97,7 +105,7 @@ button:focus-visible { outline: 3px solid var(--sky); outline-offset: 2px; }
 /* ---------- screens ---------- */
 .screen {
   position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center;
-  padding: calc(env(safe-area-inset-top, 0px) + 18px) 16px calc(env(safe-area-inset-bottom, 0px) + 18px);
+  padding: calc(var(--sat) + 18px) 16px 18px;
   overflow-y: auto; -webkit-overflow-scrolling: touch; touch-action: pan-y;
 }
 .screen.dim { background: rgba(26, 20, 44, 0.62); justify-content: center; }
@@ -206,3 +214,34 @@ dl.kv dd { margin: 0; font-weight: 900; text-align: right; font-variant-numeric:
 .zdetail .zcatch.ng { color: var(--berry); }
 .zdetail .zcatch.boss { color: var(--honey); }
 .zcard.boss { box-shadow: inset 0 0 0 2px rgba(255, 224, 102, 0.9), 0 0 10px rgba(255, 224, 102, 0.35); }
+
+/* mode buttons */
+.mode-row .btn { display: grid; gap: 2px; justify-items: center; padding: 14px 8px; }
+.mode-row .btn small { font-size: 11px; font-weight: 800; opacity: 0.75; }
+.btn.primary.endless { background: var(--sky); box-shadow: 0 5px 0 #4f9fd0; }
+.btn.primary.endless:active { box-shadow: 0 2px 0 #4f9fd0; }
+
+/* normal mode */
+.glabel { font-size: 12px; font-weight: 900; letter-spacing: 0.08em; color: #cfc6ee; }
+.goalbox { display: grid; gap: 6px; background: rgba(255,255,255,0.08); border-radius: 16px; padding: 12px 14px; }
+ul.goals { margin: 0; padding: 0; list-style: none; display: grid; gap: 6px; }
+ul.goals li { display: flex; justify-content: space-between; gap: 10px; font-weight: 800; font-size: 15px; line-height: 1.4; }
+ul.goals li .p { font-variant-numeric: tabular-nums; color: var(--honey); white-space: nowrap; }
+ul.goals li.done { color: var(--leaf); }
+ul.goals li.done .p { color: var(--leaf); }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chips span { font-size: 12px; font-weight: 800; padding: 4px 10px; border-radius: 99px; background: rgba(255,255,255,0.1); }
+.stagedots { display: grid; grid-template-columns: repeat(10, 1fr); gap: 5px; }
+.stagedots i { aspect-ratio: 1; max-width: 100%; border-radius: 50%; background: rgba(255,255,255,0.12); font-style: normal; font-size: 9px; font-weight: 900; display: grid; place-items: center; color: #cfc6ee; }
+.stagedots i.done { background: var(--leaf); color: #fff; }
+.stagedots i.now { background: var(--honey); color: var(--ink); box-shadow: 0 0 0 2px #fff; }
+.confirm { display: grid; gap: 10px; background: rgba(255,90,90,0.15); border-radius: 14px; padding: 12px; }
+
+/* in-game mission panel */
+.mission { grid-column: 1 / -1; display: grid; gap: 3px; background: rgba(42,34,68,0.6); border-radius: 12px; padding: 6px 10px; }
+.mission .mtime { font-size: 12px; font-weight: 900; color: var(--honey); font-variant-numeric: tabular-nums; }
+.mission .mtime.low { color: var(--danger); }
+.mission ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 2px; }
+.mission li { display: flex; justify-content: space-between; gap: 8px; font-size: 12px; font-weight: 800; text-shadow: 0 1px 2px rgba(0,0,0,0.5); }
+.mission li .p { font-variant-numeric: tabular-nums; }
+.mission li.done { color: var(--leaf); }

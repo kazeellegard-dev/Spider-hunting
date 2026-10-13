@@ -1,3 +1,6 @@
+> **注意**: これは方針転換前（SpriteKit 版）のプロトタイプです。いまのゲームは `web/`、アプリ版は `ios/`（Capacitor）にあります。
+> 下の文中の `ios/...` は、この `prototype/ios-spritekit/...` に読み替えてください。
+
 # T-02 プロトタイプ: 糸のVerlet物理演算
 
 `docs/REQUIREMENTS.md` のT-02（糸の物理演算実装方法の調査）に対応するプロトタイプ。

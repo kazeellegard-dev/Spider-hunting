@@ -1,0 +1,21 @@
+{
+  "name": "spider-hunting",
+  "version": "1.0.0",
+  "private": true,
+  "description": "クモの巣ハンティング — iPhone / iPad アプリ版（Capacitor）",
+  "scripts": {
+    "postinstall": "node scripts/patch-admob.mjs",
+    "build": "node scripts/build-web.mjs",
+    "sync": "npm run build && npx cap sync ios",
+    "test": "node --test web/tests/*.test.js"
+  },
+  "dependencies": {
+    "@capacitor-community/admob": "^8.2.1",
+    "@capacitor/core": "8.5.3",
+    "@capacitor/ios": "8.5.3",
+    "@capacitor/preferences": "8.0.1"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "8.5.3"
+  }
+}

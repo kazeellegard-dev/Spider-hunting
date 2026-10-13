@@ -1,0 +1,145 @@
+name: iOS アプリ
+
+# ・ios/ などを変更して push したとき：署名なしでビルドできるかだけ確認（シミュレーター用）
+# ・Actions 画面の「Run workflow」：ビルドして TestFlight にアップロード
+on:
+  push:
+    branches:
+      - main
+      - claude/zealous-newton-c8j104
+    paths:
+      - 'ios/**'
+      - 'web/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'capacitor.config.json'
+      - 'scripts/**'
+      - '.github/workflows/ios.yml'
+  workflow_dispatch:
+    inputs:
+      upload:
+        description: 'TestFlight にアップロードする'
+        type: boolean
+        default: true
+      diagnostics:
+        description: '「アプリの状態」画面とテスト広告を使えるようにする（TestFlight で調べる用。App Store に出すビルドではオフ）'
+        type: boolean
+        default: false
+
+concurrency:
+  group: ios-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: macos-26
+    timeout-minutes: 45
+    env:
+      UPLOAD: ${{ github.event_name == 'workflow_dispatch' && inputs.upload }}
+      PROJECT: ios/App/App.xcodeproj
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Web ファイルをアプリにコピー
+        run: |
+          npm ci
+          npm run sync
+
+      - name: Xcode のバージョン
+        run: xcodebuild -version
+
+      - name: ビルド確認（署名なし・シミュレーター用）
+        if: env.UPLOAD != 'true'
+        run: |
+          xcodebuild -project "$PROJECT" -scheme App -configuration Debug \
+            -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' \
+            CODE_SIGNING_ALLOWED=NO build -quiet
+
+      - name: App Store Connect API キーを用意
+        if: env.UPLOAD == 'true'
+        env:
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+          ASC_KEY_P8: ${{ secrets.ASC_KEY_P8 }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+        run: |
+          for v in ASC_KEY_ID ASC_ISSUER_ID ASC_KEY_P8 APPLE_TEAM_ID; do
+            if [ -z "${!v}" ]; then echo "::error::GitHub の Secrets に $v が登録されていません"; exit 1; fi
+          done
+          KEY_PATH="$RUNNER_TEMP/AuthKey_$ASC_KEY_ID.p8"
+          printf '%s\n' "$ASC_KEY_P8" > "$KEY_PATH"
+          {
+            echo "KEY_PATH=$KEY_PATH"
+            echo "ASC_KEY_ID=$ASC_KEY_ID"
+            echo "ASC_ISSUER_ID=$ASC_ISSUER_ID"
+            echo "APPLE_TEAM_ID=$APPLE_TEAM_ID"
+          } >> "$GITHUB_ENV"
+
+      # 毎回まっさらな Mac で署名するので、開発用の証明書がビルドのたびに1枚作られる。
+      # 放っておくとアカウントの上限に達するので、作る前の一覧を記録し、最後にこのビルドで増えたものだけを取り消す
+      - name: 証明書の一覧を記録
+        if: env.UPLOAD == 'true'
+        run: node scripts/asc-certs.mjs snapshot "$RUNNER_TEMP/certs-before.json"
+
+      - name: アーカイブ（署名つきビルド）
+        if: env.UPLOAD == 'true'
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          echo "バージョン $VERSION（ビルド ${{ github.run_number }}）"
+          # アプリ内の「アプリの状態」画面にビルド番号を出す
+          sed -i '' "s|<meta name=\"build\" content=\"[^\"]*\">|<meta name=\"build\" content=\"$VERSION (${{ github.run_number }})\">|" ios/App/App/public/index.html
+          if [ "${{ inputs.diagnostics }}" = "true" ]; then
+            sed -i '' 's|<meta name="diag" content="0">|<meta name="diag" content="1">|' ios/App/App/public/index.html
+          fi
+          grep -o '<meta name="\(build\|diag\)"[^>]*>' ios/App/App/public/index.html
+          xcodebuild -project "$PROJECT" -scheme App -configuration Release \
+            -destination 'generic/platform=iOS' \
+            -archivePath "$RUNNER_TEMP/App.xcarchive" \
+            DEVELOPMENT_TEAM="$APPLE_TEAM_ID" CODE_SIGN_STYLE=Automatic \
+            MARKETING_VERSION="$VERSION" CURRENT_PROJECT_VERSION="${{ github.run_number }}" \
+            -allowProvisioningUpdates \
+            -authenticationKeyPath "$KEY_PATH" \
+            -authenticationKeyID "$ASC_KEY_ID" \
+            -authenticationKeyIssuerID "$ASC_ISSUER_ID" \
+            archive -quiet
+
+      - name: TestFlight にアップロード
+        if: env.UPLOAD == 'true'
+        run: |
+          cat > "$RUNNER_TEMP/ExportOptions.plist" <<PLIST
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+            <key>method</key><string>app-store-connect</string>
+            <key>destination</key><string>upload</string>
+            <key>teamID</key><string>$APPLE_TEAM_ID</string>
+            <key>signingStyle</key><string>automatic</string>
+            <key>manageAppVersionAndBuildNumber</key><false/>
+          </dict>
+          </plist>
+          PLIST
+          xcodebuild -exportArchive \
+            -archivePath "$RUNNER_TEMP/App.xcarchive" \
+            -exportOptionsPlist "$RUNNER_TEMP/ExportOptions.plist" \
+            -exportPath "$RUNNER_TEMP/export" \
+            -allowProvisioningUpdates \
+            -authenticationKeyPath "$KEY_PATH" \
+            -authenticationKeyID "$ASC_KEY_ID" \
+            -authenticationKeyIssuerID "$ASC_ISSUER_ID"
+          echo "アップロードしました。App Store Connect で処理が終わると TestFlight に出てきます（10〜30分ほど）"
+
+      # アップロードしたビルドは Apple 側の配布用の証明書で署名されているので、開発用の証明書を消しても影響はない
+      - name: このビルドで作られた証明書を取り消す
+        if: always() && env.UPLOAD == 'true' && env.KEY_PATH != ''
+        run: |
+          if [ -f "$RUNNER_TEMP/certs-before.json" ]; then node scripts/asc-certs.mjs revoke-new "$RUNNER_TEMP/certs-before.json"; fi
+
+      - name: API キーを削除
+        if: always()
+        run: rm -f "$RUNNER_TEMP"/AuthKey_*.p8

@@ -19,11 +19,28 @@
       document.querySelectorAll('[data-open]').forEach(b => b.addEventListener('click', () => { audio.play('button'); this.open(b.dataset.open); }));
       document.querySelectorAll('[data-close]').forEach(b => b.addEventListener('click', () => { audio.play('button'); this.closeSheet(b.closest('.screen').id); }));
       $('playBtn').addEventListener('click', () => this.startGame());
+      $('normalBtn').addEventListener('click', () => { audio.unlock(); audio.play('button'); this.openStage(); });
+      $('sgStart').addEventListener('click', () => this.startStage());
+      $('sgBack').addEventListener('click', () => { audio.play('button'); $('stageScr').hidden = true; this.refreshTitle(); });
+      $('sgRestart').addEventListener('click', () => { $('sgConfirm').hidden = false; });
+      $('sgNo').addEventListener('click', () => { $('sgConfirm').hidden = true; });
+      $('sgYes').addEventListener('click', () => {
+        const d = save.defaults().normal;
+        save.data.normal = d; save.write();
+        $('sgConfirm').hidden = true; audio.play('button'); this.openStage();
+      });
+      $('fRetry').addEventListener('click', () => this.startStage());
+      $('fStages').addEventListener('click', () => { audio.play('button'); this.toTitle(); this.openStage(); });
+      $('clHome').addEventListener('click', () => { audio.play('button'); this.toTitle(); });
       $('retryBtn').addEventListener('click', () => this.startGame());
       $('homeBtn').addEventListener('click', () => { audio.play('button'); this.toTitle(); });
       $('pauseBtn').addEventListener('click', () => this.pause());
       $('resumeBtn').addEventListener('click', () => this.resume());
-      $('quitBtn').addEventListener('click', () => { audio.play('button'); $('pauseScr').hidden = true; this.game.paused = false; this.game.run.over = true; this.showResult(); });
+      $('quitBtn').addEventListener('click', () => {
+        audio.play('button'); $('pauseScr').hidden = true; this.game.paused = false; this.game.run.over = true;
+        if (this.game.runMode === 'normal') { this.game.finishStage(false); this.toTitle(); this.openStage(); }
+        else this.showResult();
+      });
       $('continueBtn').addEventListener('click', () => this.continueGame());
       $('giveUpBtn').addEventListener('click', () => { audio.play('button'); $('overScr').hidden = true; this.showResult(); });
       this.initSettings();
@@ -54,23 +71,134 @@
       $('tLevel').textContent = s.level;
       $('tCoins').textContent = s.coins.toLocaleString();
       $('tBest').textContent = s.bestScore.toLocaleString();
+      const n = s.normal;
+      $('normalSub').textContent = n.allClear ? t('allClear') : `${t('stage')} ${Math.min(n.stage, root.SH.STAGES.length - 1) + 1}`;
+      $('endlessSub').textContent = s.bestDay ? `${t('bestDay')} ${this.game.dayText(s.bestDay)}` : '';
       $('tDay').textContent = s.bestDay ? this.game.dayText(s.bestDay) : '—';
       $('tLvBar').style.width = Math.min(100, s.exp / D.levelExp(s.level) * 100) + '%';
       document.querySelectorAll('.coinval').forEach(el => { el.textContent = s.coins.toLocaleString(); });
     },
 
     // ---------- flow ----------
+    // ---------- normal mode ----------
+    goalText(goal) {
+      const tpl = t('goal')[goal.type];
+      const k = goal.type === 'kind' ? t('kindNames')[goal.key] : goal.type === 'type' ? this.insectName(goal.key) : goal.key;
+      return tpl.replace('{n}', goal.n).replace('{k}', k);
+    },
+
+    fillGoals(ul, states) {
+      ul.innerHTML = '';
+      for (const gs of states) {
+        const li = document.createElement('li');
+        if (gs.done) li.className = 'done';
+        const a = document.createElement('span'); a.textContent = (gs.done ? '✓ ' : '・') + this.goalText(gs.goal);
+        const b = document.createElement('span'); b.className = 'p';
+        b.textContent = gs.goal.type === 'survive' ? '' : `${gs.cur}/${gs.target}`;
+        li.append(a, b); ul.append(li);
+      }
+    },
+
+    openStage() {
+      const n = save.data.normal;
+      const STAGES = root.SH.STAGES;
+      const idx = Math.min(n.stage, STAGES.length - 1);
+      const st = STAGES[idx];
+      $('sgTitle').textContent = n.allClear ? `${t('allClear')}  ${t('stage')} ${idx + 1}` : `${t('stage')} ${idx + 1} / ${STAGES.length}`;
+      $('sgSub').textContent = `${t('areaNames')[st.area]} ・ ${t('timeLimit')} ${st.time}${t('sec')}`;
+      $('sgDots').innerHTML = STAGES.map((_, i) => `<i class="${i < n.cleared ? 'done' : ''} ${i === idx ? 'now' : ''}">${i + 1}</i>`).join('');
+      this.fillGoals($('sgGoals'), st.goals.map(goal => ({ goal, cur: 0, target: goal.n, done: false })));
+      const ups = D.UPGRADES.filter(u => n.upgrades[u.id]).map(u => `<span>${t('upgradeNames')[u.id]} Lv${n.upgrades[u.id]}</span>`);
+      $('sgUps').innerHTML = ups.length ? ups.join('') : `<span>${t('none')}</span>`;
+      $('sgConfirm').hidden = true;
+      $('stageScr').hidden = false;
+      $('stageScr').scrollTop = 0;
+    },
+
+    startStage() {
+      audio.unlock();
+      audio.play('button');
+      ['title', 'stageScr', 'failScr', 'clearScr', 'resultScr', 'overScr', 'pauseScr'].forEach(id => { $(id).hidden = true; });
+      $('hud').hidden = false; $('hint').hidden = true;
+      $('missionBox').hidden = false; $('bestHud').hidden = true;
+      this.hudCache = {};
+      this.game.startRun({ stage: Math.min(save.data.normal.stage, root.SH.STAGES.length - 1) });
+    },
+
+    stageClear() {
+      const g = this.game;
+      const idx = g.stageIdx;
+      const r = g.finishStage(true);
+      $('hud').hidden = true; $('tutorial').hidden = true; $('hint').hidden = true;
+      $('clSub').textContent = `${t('stage')} ${idx + 1}`;
+      $('clScore').textContent = r.score.toLocaleString();
+      $('clCoins').textContent = '+' + r.coins.toLocaleString();
+      $('clLevel').hidden = !r.levels;
+      $('clLevel').textContent = `${t('levelUp')} ${t('level')} ${r.level}`;
+      const last = idx + 1 >= root.SH.STAGES.length;
+      $('clPickLead').textContent = last ? t('allClearSub') : t('pickUpgrade');
+      $('clHome').hidden = !last;
+      if (last) { $('pickList').innerHTML = ''; $('clSub').textContent = t('allClear'); }
+      else this.renderPicks();
+      $('clearScr').hidden = false;
+      $('clearScr').scrollTop = 0;
+      this.refreshTitle();
+    },
+
+    renderPicks() {
+      const list = $('pickList');
+      list.innerHTML = '';
+      const ups = save.data.normal.upgrades;
+      for (const u of D.UPGRADES) {
+        const lv = ups[u.id] || 0;
+        const el = document.createElement('div');
+        el.className = 'item';
+        const icon = document.createElement('canvas');
+        this.drawUpgradeIcon(icon, u.id);
+        const mid = document.createElement('div');
+        mid.innerHTML = '<div class="name"></div><div class="effect"></div>';
+        mid.querySelector('.name').textContent = `${t('upgradeNames')[u.id]}  Lv${lv}`;
+        mid.querySelector('.effect').textContent = this.upgradeEffect(u.id, lv, u.max);
+        const btn = document.createElement('button');
+        btn.className = 'btn small primary';
+        btn.textContent = lv >= u.max ? t('max') : t('pick');
+        btn.disabled = lv >= u.max;
+        btn.addEventListener('click', () => {
+          save.data.normal.upgrades[u.id] = lv + 1;
+          save.write(); audio.play('buy');
+          $('clearScr').hidden = true;
+          this.toTitle(); this.openStage();
+        });
+        el.append(icon, mid, btn);
+        list.append(el);
+      }
+    },
+
+    stageFail(reason) {
+      const g = this.game;
+      const states = g.goalStates();
+      const r = g.finishStage(false);
+      $('hud').hidden = true; $('tutorial').hidden = true; $('hint').hidden = true;
+      $('fReason').textContent = reason === 'time' ? t('failTime') : t('failHunger');
+      this.fillGoals($('fGoals'), states);
+      $('fCoins').textContent = '+' + r.coins.toLocaleString();
+      $('failScr').hidden = false;
+      this.refreshTitle();
+    },
+
     startGame() {
       audio.unlock();
       audio.play('button');
       ['title', 'resultScr', 'overScr', 'pauseScr'].forEach(id => { $(id).hidden = true; });
       $('hud').hidden = false;
       $('hint').hidden = true;
+      $('missionBox').hidden = true; $('bestHud').hidden = false;
+      ['stageScr', 'failScr', 'clearScr'].forEach(id => { $(id).hidden = true; });
       this.hudCache = {};
       this.game.startRun();
     },
     toTitle() {
-      ['resultScr', 'overScr', 'pauseScr'].forEach(id => { $(id).hidden = true; });
+      ['resultScr', 'overScr', 'pauseScr', 'failScr', 'clearScr'].forEach(id => { $(id).hidden = true; });
       $('hud').hidden = true; $('tutorial').hidden = true; $('hint').hidden = true;
       $('title').hidden = false;
       this.game.startDemo();
@@ -151,6 +279,17 @@
         $('bonusBar').classList.toggle('glow', glowing);
         $('bonusLabel').textContent = glowing ? t('glowGauge') : t('bonusGauge');
       }
+      if (g.runMode === 'normal' && g.stage) {
+        const states = g.goalStates();
+        const key = states.map(x => x.cur + (x.done ? '!' : '')).join(',') + '|' + Math.ceil(run.timeLeft);
+        if (c.mission !== key) {
+          c.mission = key;
+          const tl = Math.ceil(run.timeLeft);
+          $('mTime').textContent = `${t('stage')} ${g.stageIdx + 1} ・ ${t('timeLeft')} ${tl}${t('sec')}`;
+          $('mTime').classList.toggle('low', tl <= 10);
+          this.fillGoals($('mGoals'), states);
+        }
+      }
       if (c.score !== run.score) { c.score = run.score; $('score').textContent = run.score.toLocaleString(); }
       if (c.combo !== run.combo) {
         const el = $('combo');
@@ -162,7 +301,7 @@
       if (c.area !== dayKey) {
         c.area = dayKey;
         const icon = D.AREAS[g.areaIdx].night ? '☾' : '☀';
-        $('areaName').textContent = `${icon} ${g.dayText(run.day)}・${t('areaNames')[g.areaIdx]}`;
+        $('areaName').textContent = g.runMode === 'normal' ? `${icon} ${t('areaNames')[g.areaIdx]}` : `${icon} ${g.dayText(run.day)}・${t('areaNames')[g.areaIdx]}`;
       }
       if (c.best === undefined) { c.best = save.data.bestScore; $('bestHud').textContent = t('best') + ' ' + save.data.bestScore.toLocaleString(); }
     },

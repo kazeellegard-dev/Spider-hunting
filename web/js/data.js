@@ -178,9 +178,9 @@
     drainMax: 40,
     silkPerFood: 0.4,        // silk refilled per meal = insect.silk * this (* silkBonus)
     glowDuration: 15,        // seconds of glowing silk after bonus time
-    gustFirst: 50,           // first gust (s); later ones come faster
-    gustEvery: 32,
-    gustPower: 0.4,          // share of threads a gust blows away (grows with time)
+    gustFromDay: 3,          // endless: gusts start on this day...
+    gustDelay: [15, 85],     // ...once per day, this many seconds after dawn
+    gustPower: 0.33,         // share of threads a gust tears or blows away
     comboWindow: 3.0,
     bonusNeed: 14,           // meals to fill the bonus gauge (first time)
     bonusNeedStep: 8,        // each later bonus needs this many more meals
