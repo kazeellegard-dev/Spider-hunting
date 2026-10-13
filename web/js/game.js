@@ -58,6 +58,7 @@
       const s = root.SH.save.data, u = s.upgrades;
       return {
         strength: B.baseStrength + u.strength * B.strengthPerUpgrade + (s.level - 1) * B.strengthPerLevel,
+        maxHunger: B.baseHunger,
         maxSilk: B.baseMaxSilk + u.silk * B.silkPerUpgrade + (s.level - 1) * B.silkPerLevel,
         struggle: B.baseStruggle + u.sticky * B.strugglePerUpgrade,
         speed: B.baseSpeed * (1 + u.speed * B.speedPerUpgrade),
@@ -70,6 +71,7 @@
       this.web = new Web();
       this.insects = [];
       this.treats = [];
+      this.specials = [];
       this.areaIdx = 0;
       this.spider = { x: this.W / 2, y: this.H * 0.4, node: null, action: 'idle', moving: false, lookX: 0, lookY: 0, hurt: 0, happy: 0, sad: false, scale: 1 };
       this.queuedTap = null;
@@ -117,14 +119,16 @@
       this.resetWorld();
       const save = root.SH.save.data;
       const run = this.run = {
-        score: 0, silk: this.st.maxSilk, time: 0, combo: 0, lastEat: -99, maxCombo: 0, catches: 0,
+        score: 0, silk: this.st.maxSilk, hunger: this.st.maxHunger, glow: 0, time: 0, combo: 0, lastEat: -99, maxCombo: 0, catches: 0,
         bonusGauge: 0, bonusTimer: 0, coins: 0, caught: {}, continued: false, over: false, dying: 0,
         windTimer: rand(22, 34), wind: 0, windLeft: 0, maxArea: 0,
+        gustTimer: B.gustFirst, gustLeft: 0, gusts: 0,
         tutorial: save.tutorialDone ? 0 : 1, tutorialTimer: 0, heavyHinted: !!save.tutorialDone && save.plays > 3,
       };
       const hub = this.buildStarterWeb(this.W / 2, this.H * 0.42, 6, Math.min(this.W * 0.2, 80), [0.55]);
       this.spider.node = hub; this.spider.x = hub.x; this.spider.y = hub.y;
       this.spawnTimer = run.tutorial ? 3 : 1.2;
+      this.specials = []; this.specialTimer = 0;
       this.bg = R.makeBackground(D.AREAS[0], this.W, this.H, this.dpr);
       this.bgPrev = null;
       this.particles = []; this.texts = [];
@@ -137,14 +141,15 @@
     continueRun() {
       const run = this.run;
       run.continued = true; run.over = false; run.dying = 0;
-      run.silk = this.st.maxSilk * 0.5;
+      run.hunger = this.st.maxHunger * 0.5;
+      run.silk = Math.max(run.silk, this.st.maxSilk * 0.5);
       this.spider.sad = false;
       this.paused = false;
       audio.music(this.musicMode());
     }
 
     musicMode() {
-      if (this.run && this.run.bonusTimer > 0) return 'bonus';
+      if (this.run && (this.run.bonusTimer > 0 || this.run.glow > 0)) return 'bonus';
       const a = D.AREAS[this.areaIdx];
       return a.night ? 'night' : a.id === 'sunset' ? 'eve' : 'day';
     }
@@ -154,12 +159,19 @@
       if (this.paused) return;
       if (this.mode !== 'play' || this.run.over || this.run.dying) return;
       const sp = this.spider;
+      for (const it of this.specials) {
+        if (!it.dead && Math.hypot(it.x - x, it.y - y) < 42) { this.grabSpecial(it); return; }
+      }
       if (sp.action !== 'idle') { this.queuedTap = { x, y }; return; }
       this.handleTap(x, y);
     }
 
     handleTap(x, y) {
       const sp = this.spider;
+      // 0) the glowing spool (bonus time item) is grabbed by tapping it
+      for (const it of this.specials) {
+        if (!it.dead && Math.hypot(it.x - x, it.y - y) < 42) { this.grabSpecial(it); return; }
+      }
       // 1) a stuck bug near the tap? rush and wrap it
       let best = null, bd = B.tapInsectRadius;
       for (const ins of this.insects) {
@@ -241,6 +253,7 @@
       this.updateSpider(dt);
       this.updateInsects(dt);
       this.updateTreats(dt);
+      this.updateSpecials(dt);
       this.updateFx(dt);
     }
 
@@ -276,15 +289,18 @@
       }
       run.time += dt;
       const inBonus = run.bonusTimer > 0;
-      // silk drains over time (the run's clock)
+      // the tummy drains over time and faster as the run goes on (the run's clock)
       const tutorialFree = run.tutorial && run.tutorial < 4;
-      if (!inBonus && !tutorialFree) {
+      if (!tutorialFree) {
         const drain = Math.min(B.drainMax, B.drainBase + run.time * B.drainRamp);
-        run.silk -= drain * dt;
+        run.hunger -= drain * dt * (inBonus ? 0.5 : 1);
       }
-      if (run.silk < this.st.maxSilk * 0.2 && !run.lowHinted && !run.tutorial) { run.lowHinted = true; this.hooks.hint(t('lowSilk')); }
-      if (run.silk <= 0) {
-        run.silk = 0;
+      if (!run.tutorial) {
+        if (run.hunger < this.st.maxHunger * 0.25 && !run.lowHinted) { run.lowHinted = true; this.hooks.hint(t('lowHunger')); }
+        if (run.silk < this.st.maxSilk * 0.15 && !run.lowSilkHinted) { run.lowSilkHinted = true; this.hooks.hint(t('lowSilk')); }
+      }
+      if (run.hunger <= 0) {
+        run.hunger = 0;
         run.dying = 1.3;
         sp.sad = true;
         audio.play('gameover');
@@ -302,6 +318,7 @@
         else if (run.tutorial === 3) interval = 2.2;
         this.spawnTimer = interval * rand(0.75, 1.25);
         let type = pickWeighted(this.spawnTable(area));
+        if (run.glow > 0 && (this.bossNext || Math.random() < 0.3)) { type = pickWeighted({ oniyanma: 3, hornet: 3, hercules: 1.2 }); this.bossNext = false; }
         if (run.tutorial === 3) type = Math.random() < 0.5 ? 'butterfly' : 'fly';
         else if (Math.random() < D.GOLDEN_CHANCE * this.st.lure) type = 'golden';
         this.spawnInsect(type, run.tutorial === 3);
@@ -315,15 +332,52 @@
         run.bonusTimer -= dt;
         this.treatTimer -= dt;
         if (this.treatTimer <= 0) { this.treatTimer = rand(0.22, 0.38); this.spawnTreat(); }
-        if (run.bonusTimer <= 0) { run.bonusTimer = 0; run.bonusGauge = 0; audio.music(this.musicMode()); this.spawnTimer = 0.6; }
-      } else if (run.bonusGauge >= B.bonusNeed) {
+        if (this.specialTimer > 0) { this.specialTimer -= dt; if (this.specialTimer <= 0) this.spawnSpecial(); }
+        if (run.bonusTimer <= 0) {
+          run.bonusTimer = 0; run.bonusGauge = 0; run.bonuses = (run.bonuses || 0) + 1; this.spawnTimer = 0.6;
+          for (const it of this.specials) it.dead = true;
+          if (run.glow > 0) {
+            audio.play('bonus');
+            this.hooks.banner(t('glowTime'), t('glowSub'), 'bonus');
+            this.bossNext = true;
+          }
+          audio.music(this.musicMode());
+        }
+      } else if (run.bonusGauge >= this.bonusNeed()) {
         run.bonusTimer = B.bonusDuration; this.treatTimer = 0.3;
+        this.specialTimer = rand(1.2, 3.5);
         audio.play('bonus'); audio.music('bonus');
         this.hooks.banner(t('bonusTime'), t('bonusSub'), 'bonus');
         platform.haptic('medium');
       }
+      // glowing silk counts down once bonus time is over
+      if (run.glow > 0 && !inBonus) {
+        run.glow -= dt;
+        if (run.glow <= 0) { run.glow = 0; audio.music(this.musicMode()); }
+      }
+      // gusts: a warning, then a blast that tears away a chunk of the web
+      if (!inBonus && !run.tutorial) {
+        if (run.gustLeft > 0) {
+          const before = run.gustLeft;
+          run.gustLeft -= dt;
+          const k = Math.sin(Math.PI * Math.min(1, (2.6 - run.gustLeft) / 2.6));
+          run.wind = run.windDir * (run.gustLeft < 2.6 ? 4.5 * k : 0.3);
+          if (before > 1.6 && run.gustLeft <= 1.6) this.gustBlast();
+          if (run.gustLeft <= 0) { run.gustLeft = 0; run.wind = 0; }
+        } else {
+          run.gustTimer -= dt;
+          if (run.gustTimer <= 0) {
+            run.gustLeft = 4.0; run.windDir = Math.random() < 0.5 ? -1 : 1; run.windLeft = 0;
+            run.gustTimer = B.gustEvery * Math.max(0.4, 1 - run.time / 400) * rand(0.8, 1.2);
+            audio.play('wind');
+            this.hooks.banner(t('gustWarn'), t('gustSub'), 'wind');
+            platform.haptic('medium');
+          }
+        }
+      }
       // wind
-      if (this.areaIdx >= 1 && !inBonus) {
+      if (run.gustLeft > 0) { /* gust owns the wind */ }
+      else if (this.areaIdx >= 1 && !inBonus) {
         if (run.windLeft > 0) {
           run.windLeft -= dt;
           const k = Math.sin(Math.PI * (1 - run.windLeft / 4.5));
@@ -354,6 +408,8 @@
       if (sp.hurt > 0) sp.hurt -= dt;
       if (sp.happy > 0) sp.happy -= dt;
     }
+
+    bonusNeed() { return B.bonusNeed + (this.run.bonuses || 0) * B.bonusNeedStep; }
 
     endTutorial() {
       const run = this.run;
@@ -529,7 +585,9 @@
     hitThread(ins, hit, strength) {
       const def = ins.def;
       const th = hit.thread;
-      if (def.weight > strength) {
+      const glow = this.mode === 'play' && this.run.glow > 0;
+      const tooHeavy = this.mode === 'play' && !glow && (def.boss || def.weight > strength);
+      if (tooHeavy) {
         this.web.sever(th, hit.segmentIndex);
         ins.pass = 0.12; ins.vx *= 0.85;
         audio.play('snap');
@@ -583,7 +641,7 @@
       this.floatText(ins.x, ins.y - 20, t('escaped'), '#ffffff', 13);
       run.combo = 0;
       if (ins.def.sting) {
-        run.silk = Math.max(0.5, run.silk - ins.def.sting);
+        run.hunger = Math.max(0.5, run.hunger - ins.def.sting);
         this.spider.hurt = 0.5;
         audio.play('sting');
         platform.haptic('heavy');
@@ -610,8 +668,9 @@
         audio.play('area');
       }
       run.caught[ins.type] = (run.caught[ins.type] || 0) + 1;
-      run.silk = Math.min(this.st.maxSilk, run.silk + def.silk * this.st.appetite);
-      if (run.bonusTimer <= 0) run.bonusGauge = Math.min(B.bonusNeed, run.bonusGauge + 1 + (run.combo >= 5 ? 0.5 : 0));
+      run.hunger = Math.min(this.st.maxHunger, run.hunger + def.silk * this.st.appetite);
+      run.silk = Math.min(this.st.maxSilk, run.silk + def.silk * B.silkPerFood * (def.silkBonus || 1));
+      if (run.bonusTimer <= 0) run.bonusGauge = Math.min(this.bonusNeed(), run.bonusGauge + 1 + (run.combo >= 5 ? 0.5 : 0));
       if (def.coins) { run.coins += def.coins; audio.play('coin'); this.floatText(ins.x, ins.y - 44, '+' + def.coins + ' ' + t('coins'), '#ffd23f', 15); }
       audio.play('pop', run.combo);
       platform.haptic('light');
@@ -651,6 +710,56 @@
         }
       }
       this.treats = this.treats.filter(tr => !tr.dead);
+    }
+
+    // ---------- glowing spool & gusts ----------
+    spawnSpecial() {
+      const left = Math.random() < 0.5;
+      const y = rand(this.H * 0.25, this.H * 0.6);
+      this.specials.push({ x: left ? -30 : this.W + 30, y, baseY: y, vx: (left ? 1 : -1) * rand(55, 75), t: 0, dead: false });
+    }
+
+    updateSpecials(dt) {
+      for (const it of this.specials) {
+        it.t += dt;
+        it.x += it.vx * dt;
+        it.y = it.baseY + Math.sin(it.t * 2.2) * 22;
+        if (it.x < -60 || it.x > this.W + 60) it.dead = true;
+      }
+      this.specials = this.specials.filter(it => !it.dead);
+    }
+
+    grabSpecial(it) {
+      it.dead = true;
+      const run = this.run;
+      run.glow = B.glowDuration;
+      audio.play('levelup');
+      platform.haptic('medium');
+      this.burst(it.x, it.y, '#ffe066');
+      this.burst(it.x, it.y, '#ffffff');
+      this.floatText(it.x, it.y - 24, t('glowGet'), '#ffe066', 20);
+      this.hooks.hint(t('glowSoon'));
+    }
+
+    gustBlast() {
+      const run = this.run;
+      run.gusts++;
+      const p = Math.min(0.8, B.gustPower + run.time / 600);
+      const dir = run.windDir || 1;
+      for (const th of this.web.threads.slice()) {
+        if (th.broken || Math.random() > p) continue;
+        for (let i = 0; i < th.points.length; i += 2) {
+          const q = th.points[i];
+          this.particles.push({ x: q.x, y: q.y, vx: dir * rand(160, 320), vy: rand(-60, 20), life: 0.8, max: 0.8, color: 'rgba(255,255,255,0.9)', size: rand(1.5, 2.5), kind: 'dot' });
+        }
+        if (th.stub || Math.random() < 0.5) { th.broken = true; for (const q of th.points) if (q.owner === th) q.owner = null; }
+        else this.web.sever(th, Math.floor(rand(0, th.points.length - 1)));
+      }
+      this.web.prune();
+      audio.play('snap');
+      platform.haptic('heavy');
+      this.shake = 8;
+      this.floatText(this.W / 2, this.H * 0.35, t('gustHit'), '#ffffff', 30);
     }
 
     // ---------- fx ----------
@@ -696,7 +805,7 @@
       if (area.night) this.drawAmbientFireflies(g);
       if (run && run.wind) this.drawWind(g, run.wind);
 
-      R.drawThreads(g, this.web.threads, area.night);
+      R.drawThreads(g, this.web.threads, area.night, run && run.glow > 0 && run.bonusTimer <= 0 ? run.glow : 0, this.time);
       const sp = this.spider;
       if (sp.action === 'spin' && sp.from) {
         g.strokeStyle = 'rgba(255,255,255,0.95)'; g.lineWidth = 1.5;
@@ -704,6 +813,7 @@
       }
       R.drawNodes(g, this.web.nodes, this.time);
       for (const tr of this.treats) R.drawTreat(g, tr, this.time);
+      for (const it of this.specials) R.drawSpool(g, it, this.time);
       for (const ins of this.insects) R.drawInsect(g, ins, this.time);
       const costume = D.COSTUMES.find(c => c.id === root.SH.save.data.costume) || D.COSTUMES[0];
       R.drawSpider(g, sp, this.time, costume);

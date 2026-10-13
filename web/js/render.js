@@ -88,11 +88,19 @@
   }
 
   // ---------- silk ----------
-  function drawThreads(g, threads, night) {
+  // glow > 0: glowing silk (seconds left), drawn gold and pulsing; blinks when ending
+  function drawThreads(g, threads, night, glow, time) {
     g.lineCap = 'round'; g.lineJoin = 'round';
+    const lit = glow > 0 && (glow > 3 || Math.sin(time * 18) > 0);
     for (const pass of [0, 1]) {
-      g.strokeStyle = pass === 0 ? (night ? 'rgba(0,0,30,0.35)' : 'rgba(60,60,110,0.28)') : (night ? 'rgba(220,230,255,0.85)' : 'rgba(255,255,255,0.95)');
-      g.lineWidth = pass === 0 ? 3.2 : 1.5;
+      if (lit) {
+        const a = 0.75 + 0.25 * Math.sin(time * 6);
+        g.strokeStyle = pass === 0 ? `rgba(255,200,60,${0.45 * a})` : `rgba(255,246,190,${a})`;
+        g.lineWidth = pass === 0 ? 6 : 2.2;
+      } else {
+        g.strokeStyle = pass === 0 ? (night ? 'rgba(0,0,30,0.35)' : 'rgba(60,60,110,0.28)') : (night ? 'rgba(220,230,255,0.85)' : 'rgba(255,255,255,0.95)');
+        g.lineWidth = pass === 0 ? 3.2 : 1.5;
+      }
       g.beginPath();
       for (const t of threads) {
         const p = t.points;
@@ -446,6 +454,30 @@
     g.closePath(); g.fill();
   }
 
+  // ---------- glowing spool (bonus time special) ----------
+  function drawSpool(g, it, time) {
+    g.save(); g.translate(it.x, it.y);
+    const pulse = 1 + 0.08 * Math.sin(time * 8);
+    g.rotate(time * 0.8);
+    g.fillStyle = 'rgba(255,230,120,0.35)';
+    for (let i = 0; i < 8; i++) { g.rotate(TAU / 8); g.beginPath(); g.moveTo(0, 0); g.lineTo(-5, 40 * pulse); g.lineTo(5, 40 * pulse); g.closePath(); g.fill(); }
+    g.restore();
+    g.save(); g.translate(it.x, it.y); g.scale(pulse, pulse);
+    const gl = g.createRadialGradient(0, 0, 3, 0, 0, 30);
+    gl.addColorStop(0, 'rgba(255,250,200,0.95)'); gl.addColorStop(1, 'rgba(255,220,90,0)');
+    g.fillStyle = gl; g.beginPath(); g.arc(0, 0, 30, 0, TAU); g.fill();
+    g.fillStyle = '#c98a3b'; g.fillRect(-12, -14, 24, 5); g.fillRect(-12, 9, 24, 5);
+    g.fillStyle = '#fff2a0'; g.fillRect(-9, -9, 18, 18);
+    g.strokeStyle = '#ffc93a'; g.lineWidth = 1.2;
+    for (let y = -6; y <= 6; y += 3) { g.beginPath(); g.moveTo(-9, y); g.lineTo(9, y + 1.5); g.stroke(); }
+    g.restore();
+    g.save();
+    g.font = '900 13px ' + (root.SH.FONT || 'sans-serif'); g.textAlign = 'center';
+    g.lineWidth = 3; g.strokeStyle = 'rgba(40,30,60,0.8)'; g.strokeText('TAP!', it.x, it.y - 30);
+    g.fillStyle = '#fff6c2'; g.fillText('TAP!', it.x, it.y - 30);
+    g.restore();
+  }
+
   // ---------- treats (bonus time) ----------
   function drawTreat(g, tr, time) {
     const d = tr.def;
@@ -482,5 +514,5 @@
   }
 
   root.SH = root.SH || {};
-  root.SH.render = { makeBackground, drawThreads, drawNodes, drawSpider, drawInsect, drawTreat, star, TAU };
+  root.SH.render = { makeBackground, drawThreads, drawSpool, drawNodes, drawSpider, drawInsect, drawTreat, star, TAU };
 })(typeof globalThis !== 'undefined' ? globalThis : this);

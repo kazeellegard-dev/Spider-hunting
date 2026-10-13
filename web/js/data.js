@@ -48,11 +48,11 @@
                  name: { ja: 'オオミズアオ', en: 'Luna moth' }, note: { ja: 'あわいみどりのガ。夜にふわりと飛ぶ', en: 'Pale green, drifts by at night' } }),
     // --- bees ---
     bee:       I('bee', { score: 60, silk: 10, weight: 2.8, speed: 105, size: 12, struggle: 0.6, color: '#ffc531', color2: '#3a2a1a', sting: 14,
-                 name: { ja: 'ミツバチ', en: 'Honeybee' }, note: { ja: 'にがすとチクッとさされて、いとがへる', en: 'Let it escape and it stings, draining silk' } }),
+                 name: { ja: 'ミツバチ', en: 'Honeybee' }, note: { ja: 'にがすとチクッとさされて、おなかがへる', en: 'Let it escape and it stings you' } }),
     carpenter: I('bee', { score: 90, silk: 12, weight: 4.0, speed: 90, size: 15, struggle: 0.7, color: '#2a2230', color2: '#ffd84a', fuzzy: true, sting: 10,
                  name: { ja: 'クマバチ', en: 'Carpenter bee' }, note: { ja: 'まるくてもふもふ。ちょっと重い', en: 'Round and fuzzy. A bit heavy' } }),
-    hornet:    I('bee', { score: 150, silk: 14, weight: 5.5, speed: 130, size: 16, struggle: 0.5, color: '#ff9a1a', color2: '#2a1a10', sting: 25,
-                 name: { ja: 'スズメバチ', en: 'Giant hornet' }, note: { ja: 'つよくてこわい。にがすと大きくいとがへる', en: 'Fierce. Escaping costs lots of silk' } }),
+    hornet:    I('bee', { boss: true, score: 150, silk: 14, weight: 5.5, speed: 130, size: 16, struggle: 0.5, color: '#ff9a1a', color2: '#2a1a10', sting: 25,
+                 name: { ja: 'スズメバチ', en: 'Giant hornet' }, note: { ja: 'つよくてこわい。ひかる糸でしかつかまえられない。にがすとおなかが大きくへる', en: 'Fierce. Only glowing silk can hold it. Escaping hurts a lot' } }),
     // --- dragonflies ---
     dragonfly: I('dragonfly', { score: 70, silk: 14, weight: 3.6, speed: 165, size: 16, struggle: 0.8, pattern: 'dart', color: '#5aa8e0', color2: '#2a6aa0',
                  name: { ja: 'シオカラトンボ', en: 'Skimmer' }, note: { ja: 'あおいトンボ。とても速い', en: 'A blue dragonfly. Very fast' } }),
@@ -60,12 +60,12 @@
                  name: { ja: 'アキアカネ', en: 'Red darter' }, note: { ja: 'ゆうやけにあう、あかいトンボ', en: 'A red dragonfly of the sunset' } }),
     emperorfly: I('dragonfly', { score: 110, silk: 16, weight: 4.5, speed: 180, size: 19, struggle: 0.7, pattern: 'dart', color: '#4ac06a', color2: '#2a7ad0',
                  name: { ja: 'ギンヤンマ', en: 'Emperor dragonfly' }, note: { ja: 'みどりとあおの大きなヤンマ', en: 'A big green-and-blue hawker' } }),
-    oniyanma:  I('dragonfly', { score: 180, silk: 20, weight: 6.5, speed: 200, size: 23, struggle: 0.6, pattern: 'dart', color: '#2a2a2a', color2: '#ffd84a', stripes: true,
-                 name: { ja: 'オニヤンマ', en: 'Golden-ringed dragonfly' }, note: { ja: '日本でいちばん大きいトンボ。すぐ逃げる', en: 'Japan\'s largest dragonfly. Quick to escape' } }),
+    oniyanma:  I('dragonfly', { boss: true, score: 180, silk: 20, weight: 6.5, speed: 200, size: 23, struggle: 0.6, pattern: 'dart', color: '#2a2a2a', color2: '#ffd84a', stripes: true,
+                 name: { ja: 'オニヤンマ', en: 'Golden-ringed dragonfly' }, note: { ja: '日本でいちばん大きいトンボ。ひかる糸でしかつかまえられない', en: 'Japan\'s largest dragonfly. Only glowing silk can hold it' } }),
     // --- fireflies ---
-    firefly:   I('firefly', { score: 50, silk: 26, weight: 1.0, speed: 55, size: 9, struggle: 1.3, pattern: 'flutter', color: '#e8f26a', glow: true,
-                 name: { ja: 'ゲンジボタル', en: 'Firefly' }, note: { ja: 'ひかる虫。食べるといとが大きく回復', en: 'Glows. Restores lots of silk' } }),
-    firefly2:  I('firefly', { score: 40, silk: 20, weight: 0.7, speed: 60, size: 7, struggle: 1.3, pattern: 'flutter', color: '#b8ff7a', glow: true,
+    firefly:   I('firefly', { silkBonus: 3, score: 50, silk: 26, weight: 1.0, speed: 55, size: 9, struggle: 1.3, pattern: 'flutter', color: '#e8f26a', glow: true,
+                 name: { ja: 'ゲンジボタル', en: 'Firefly' }, note: { ja: 'ひかる虫。食べるといとがたくさん回復', en: 'Glows. Restores lots of silk' } }),
+    firefly2:  I('firefly', { silkBonus: 3, score: 40, silk: 20, weight: 0.7, speed: 60, size: 7, struggle: 1.3, pattern: 'flutter', color: '#b8ff7a', glow: true,
                  name: { ja: 'ヒメボタル', en: 'Little firefly' }, note: { ja: 'ちいさなホタル。いとがよく回復', en: 'A small firefly. Good silk' } }),
     // --- cicadas ---
     cicada:    I('cicada', { score: 60, silk: 14, weight: 3.2, speed: 95, size: 15, struggle: 0.8, pattern: 'straight', color: '#5a3a2a', color2: 'rgba(140,90,60,0.85)',
@@ -95,8 +95,8 @@
                  name: { ja: 'カブトムシ', en: 'Japanese rhino beetle' }, note: { ja: 'りっぱなツノの虫の王さま', en: 'The king of bugs, with a grand horn' } }),
     caucasus:  I('rhino', { score: 600, silk: 32, weight: 11, speed: 60, size: 22, struggle: 0.6, pattern: 'straight', color: '#2a2a2a', color2: '#7a8a6a', horn: 'caucasus', rare: true, coins: 30,
                  name: { ja: 'コーカサスオオカブト', en: 'Atlas beetle' }, note: { ja: '3本ヅノの大きなカブト。とても重い', en: 'Three horns. Extremely heavy' } }),
-    hercules:  I('rhino', { score: 800, silk: 35, weight: 12.5, speed: 60, size: 24, struggle: 0.6, pattern: 'straight', color: '#2a2018', color2: '#d8c070', horn: 'hercules', rare: true, coins: 40,
-                 name: { ja: 'ヘラクレスオオカブト', en: 'Hercules beetle' }, note: { ja: 'せかいいち長いカブト。さいきょうの巣でないとムリ', en: 'The longest beetle. Needs your strongest web' } }),
+    hercules:  I('rhino', { boss: true, score: 800, silk: 35, weight: 12.5, speed: 60, size: 24, struggle: 0.6, pattern: 'straight', color: '#2a2018', color2: '#d8c070', horn: 'hercules', rare: true, coins: 40,
+                 name: { ja: 'ヘラクレスオオカブト', en: 'Hercules beetle' }, note: { ja: 'せかいいち長いカブト。ひかる糸でしかつかまえられない', en: 'The longest beetle. Only glowing silk can hold it' } }),
   };
   const INSECT_ORDER = Object.keys(INSECTS);
 
@@ -156,14 +156,21 @@
     strugglePerUpgrade: 0.35,
     baseSpeed: 520,          // px/s while spinning or rushing
     speedPerUpgrade: 0.08,
-    appetitePerUpgrade: 0.1,
+    appetitePerUpgrade: 0.06,
     lurePerUpgrade: 0.2,      // rare spawn weight multiplier step
     silkCostPerPx: 1 / 16,
-    drainBase: 0.9,          // silk/s lost over time
-    drainRamp: 0.015,        // extra silk/s per second played
-    drainMax: 4.5,
+    baseHunger: 100,         // tummy gauge; the run ends at 0
+    drainBase: 1.0,          // tummy/s lost over time
+    drainRamp: 0.03,         // extra tummy/s per second played (keeps upgraded runs finite)
+    drainMax: 40,
+    silkPerFood: 0.4,        // silk refilled per meal = insect.silk * this (* silkBonus)
+    glowDuration: 15,        // seconds of glowing silk after bonus time
+    gustFirst: 50,           // first gust (s); later ones come faster
+    gustEvery: 32,
+    gustPower: 0.4,          // share of threads a gust blows away (grows with time)
     comboWindow: 3.0,
-    bonusNeed: 14,           // meals to fill the bonus gauge
+    bonusNeed: 14,           // meals to fill the bonus gauge (first time)
+    bonusNeedStep: 8,        // each later bonus needs this many more meals
     bonusDuration: 9,
     snapNode: 22,
     snapThread: 13,

@@ -125,20 +125,28 @@
       const g = this.game;
       if (g.mode !== 'play' || !g.run) return;
       const run = g.run, c = this.hudCache;
-      const silkPct = Math.round(run.silk / g.st.maxSilk * 1000) / 10;
-      if (c.silk !== silkPct) {
-        c.silk = silkPct;
-        const bar = $('silkBar');
-        bar.firstElementChild.style.width = silkPct + '%';
-        bar.classList.toggle('low', silkPct < 20);
-        bar.classList.toggle('mid', silkPct >= 20 && silkPct < 45);
-      }
-      const bonusPct = run.bonusTimer > 0 ? run.bonusTimer / D.BALANCE.bonusDuration * 100 : run.bonusGauge / D.BALANCE.bonusNeed * 100;
-      const bp = Math.round(bonusPct);
+      const setBar = (id, frac, warn) => {
+        const pct = Math.round(Math.max(0, Math.min(1, frac)) * 1000) / 10;
+        if (c[id] === pct) return;
+        c[id] = pct;
+        const bar = $(id);
+        bar.firstElementChild.style.width = pct + '%';
+        bar.classList.toggle('low', pct < warn);
+        bar.classList.toggle('mid', pct >= warn && pct < warn * 2.2);
+      };
+      setBar('hungerBar', run.hunger / g.st.maxHunger, 22);
+      setBar('silkBar', run.silk / g.st.maxSilk, 15);
+      // the bonus bar doubles as the glowing-silk timer after bonus time
+      const glowing = run.glow > 0 && run.bonusTimer <= 0;
+      const bonusFrac = run.bonusTimer > 0 ? run.bonusTimer / D.BALANCE.bonusDuration
+        : glowing ? run.glow / D.BALANCE.glowDuration : run.bonusGauge / g.bonusNeed();
+      const bp = Math.round(bonusFrac * 100) + (glowing ? 1000 : 0);
       if (c.bonus !== bp) {
         c.bonus = bp;
-        $('bonusBar').firstElementChild.style.width = bp + '%';
+        $('bonusBar').firstElementChild.style.width = Math.round(bonusFrac * 100) + '%';
         $('bonusBar').classList.toggle('full', run.bonusTimer > 0);
+        $('bonusBar').classList.toggle('glow', glowing);
+        $('bonusLabel').textContent = glowing ? t('glowGauge') : t('bonusGauge');
       }
       if (c.score !== run.score) { c.score = run.score; $('score').textContent = run.score.toLocaleString(); }
       if (c.combo !== run.combo) {
@@ -188,7 +196,7 @@
       const fmt = (a, b, unit) => nxt ? `${a}${unit} → ${b}${unit}` : `${a}${unit}`;
       if (id === 'strength') {
         const now = st.strength, after = now + B.strengthPerUpgrade;
-        const next = D.INSECT_ORDER.map(k => [k, D.INSECTS[k].weight]).filter(([, w]) => w > now).sort((x, y) => x[1] - y[1])[0];
+        const next = D.INSECT_ORDER.filter(k => !D.INSECTS[k].boss).map(k => [k, D.INSECTS[k].weight]).filter(([, w]) => w > now).sort((x, y) => x[1] - y[1])[0];
         const line = next ? `${t('nextCatch')}: ${this.insectName(next[0])}（${next[1]}）` : t('allCatch');
         return `${t('threadPower')} ${fmt(now.toFixed(1), after.toFixed(1), '')}\n${line}`;
       }
@@ -324,7 +332,7 @@
         const def = D.INSECTS[type];
         const n = s.caught[type] || 0;
         const card = document.createElement('button');
-        card.className = 'zcard' + (def.rare ? ' rare' : '');
+        card.className = 'zcard' + (def.boss ? ' boss' : def.rare ? ' rare' : '');
         const cv = document.createElement('canvas');
         const g = this.prepCanvas(cv, 72);
         if (!n) g.filter = 'brightness(0) opacity(0.45)';
@@ -349,9 +357,9 @@
           const m = document.createElement('div'); m.className = 'zmeta';
           m.textContent = `${t('weight')} ${def.weight}` + (n ? ` ・ ${t('score')} ${def.score}` : '') + ` ・ ${t('firstArea')} ${areaIdx >= 0 ? t('areaNames')[areaIdx] : '?'}`;
           const c = document.createElement('div');
-          const ok = def.weight <= strength;
-          c.className = 'zcatch ' + (ok ? 'ok' : 'ng');
-          c.textContent = (ok ? t('canCatch') : t('cantCatch')) + `（${t('threadPower')} ${strength.toFixed(1)}）`;
+          const ok = !def.boss && def.weight <= strength;
+          c.className = 'zcatch ' + (def.boss ? 'boss' : ok ? 'ok' : 'ng');
+          c.textContent = def.boss ? t('bossOnly') : (ok ? t('canCatch') : t('cantCatch')) + `（${t('threadPower')} ${strength.toFixed(1)}）`;
           d.append(h, p, m, c);
         });
         grid.append(card);
