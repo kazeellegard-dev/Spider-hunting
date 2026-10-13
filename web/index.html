@@ -24,9 +24,15 @@
 
   <div id="hud" hidden>
     <div class="hud-silk">
-      <div class="hud-label"><span data-t="silk"></span><span id="areaName"></span></div>
-      <div class="bar" id="silkBar"><i></i></div>
-      <div class="bar bonus" id="bonusBar"><i style="width:0%"></i></div>
+      <div class="hud-label"><span id="areaName"></span></div>
+      <div class="gauge">
+        <span class="gicon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="4" rx="2" fill="#c98a5b"/><rect x="5" y="18" width="14" height="4" rx="2" fill="#c98a5b"/><rect x="7" y="6" width="10" height="12" fill="#fbfaff"/><path d="M7 8.5h10M7 11h10M7 13.5h10M7 16h10" stroke="#b9b0d9" stroke-width="1"/><path d="M17 12c3 0 4 3 3 6" stroke="#fbfaff" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg></span>
+        <div class="bar" id="silkBar"><i></i><b data-t="silkGauge"></b></div>
+      </div>
+      <div class="gauge">
+        <span class="gicon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 12 1.5 7.5v9zM18 12l4.5-4.5v9z" fill="#ff6f9a"/><circle cx="12" cy="12" r="6.5" fill="#ff6f9a"/><path d="M8.5 10.5a4 4 0 0 1 5-3" stroke="#fff" stroke-width="1.8" fill="none" stroke-linecap="round"/></svg></span>
+        <div class="bar bonus" id="bonusBar"><i style="width:0%"></i><b data-t="bonusGauge"></b></div>
+      </div>
     </div>
     <div class="hud-right">
       <div class="score" id="score">0</div>
@@ -132,6 +138,7 @@
   <section class="screen dim" id="zukanScr" hidden>
     <div class="sheet">
       <h2 data-t="zukan"></h2>
+      <div class="coinbar" id="zukanCount"></div>
       <div class="zukan-grid" id="zukanGrid"></div>
       <div class="zdetail" id="zukanDetail" hidden></div>
       <button class="btn" data-close data-t="back"></button>

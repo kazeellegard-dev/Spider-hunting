@@ -179,21 +179,43 @@
     },
 
     // ---------- upgrade ----------
+    insectName(type) { return D.INSECTS[type].name[i18n.lang] || D.INSECTS[type].name.en; },
+
+    // "now -> next" text for each upgrade, so a purchase has a visible payoff
+    upgradeEffect(id, lv, max) {
+      const B = D.BALANCE, st = this.game.stats();
+      const nxt = lv < max;
+      const fmt = (a, b, unit) => nxt ? `${a}${unit} → ${b}${unit}` : `${a}${unit}`;
+      if (id === 'strength') {
+        const now = st.strength, after = now + B.strengthPerUpgrade;
+        const next = D.INSECT_ORDER.map(k => [k, D.INSECTS[k].weight]).filter(([, w]) => w > now).sort((x, y) => x[1] - y[1])[0];
+        const line = next ? `${t('nextCatch')}: ${this.insectName(next[0])}（${next[1]}）` : t('allCatch');
+        return `${t('threadPower')} ${fmt(now.toFixed(1), after.toFixed(1), '')}\n${line}`;
+      }
+      if (id === 'silk') return fmt(Math.round(st.maxSilk), Math.round(st.maxSilk + B.silkPerUpgrade), '');
+      if (id === 'sticky') return fmt(st.struggle.toFixed(1), (st.struggle + B.strugglePerUpgrade).toFixed(1), i18n.lang === 'ja' ? '秒' : 's');
+      if (id === 'speed') return fmt(Math.round(st.speed / B.baseSpeed * 100), Math.round((st.speed / B.baseSpeed + B.speedPerUpgrade) * 100), '%');
+      if (id === 'appetite') return fmt(Math.round(st.appetite * 100), Math.round((st.appetite + B.appetitePerUpgrade) * 100), '%');
+      if (id === 'lure') return `${t('rareTag')} ` + fmt('×' + st.lure.toFixed(1), '×' + (st.lure + B.lurePerUpgrade).toFixed(1), '');
+      return '';
+    },
+
     renderUpgrades() {
       const list = $('upgradeList');
       list.innerHTML = '';
       const s = save.data;
       for (const u of D.UPGRADES) {
-        const lv = s.upgrades[u.id];
+        const lv = s.upgrades[u.id] || 0;
         const cost = D.upgradeCost(u, lv);
         const el = document.createElement('div');
         el.className = 'item';
         const icon = document.createElement('canvas');
         this.drawUpgradeIcon(icon, u.id);
         const mid = document.createElement('div');
-        mid.innerHTML = `<div class="name"></div><div class="desc"></div><div class="pips"></div>`;
-        mid.querySelector('.name').textContent = t('upgradeNames')[u.id];
+        mid.innerHTML = `<div class="name"></div><div class="desc"></div><div class="effect"></div><div class="pips"></div>`;
+        mid.querySelector('.name').textContent = `${t('upgradeNames')[u.id]}  Lv${lv}`;
         mid.querySelector('.desc').textContent = t('upgradeDesc')[u.id];
+        mid.querySelector('.effect').textContent = this.upgradeEffect(u.id, lv, u.max);
         mid.querySelector('.pips').innerHTML = Array.from({ length: u.max }, (_, i) => `<i class="${i < lv ? 'on' : ''}"></i>`).join('');
         const btn = document.createElement('button');
         btn.className = 'btn small primary';
@@ -203,7 +225,7 @@
           if (s.coins < cost) btn.disabled = true;
           btn.addEventListener('click', () => {
             if (save.data.coins < cost) { this.toast(t('notEnough')); return; }
-            save.data.coins -= cost; save.data.upgrades[u.id]++;
+            save.data.coins -= cost; save.data.upgrades[u.id] = lv + 1;
             save.write(); audio.play('buy');
             this.renderUpgrades(); this.refreshTitle();
           });
@@ -230,6 +252,10 @@
         g.lineWidth = 3;
         for (let i = 0; i < 3; i++) { g.beginPath(); g.moveTo(-20 + i * 4, -10 + i * 10); g.lineTo(8 + i * 4, -10 + i * 10); g.stroke(); }
         g.beginPath(); g.moveTo(14, -16); g.lineTo(22, 0); g.lineTo(14, 16); g.stroke();
+      } else if (id === 'lure') {
+        g.fillStyle = '#ffe066'; R.star(g, -6, -4, 13);
+        g.fillStyle = '#8fd3ff'; R.star(g, 12, 10, 7);
+        g.fillStyle = '#ff8fb8'; R.star(g, 12, -14, 5);
       } else {
         g.fillStyle = '#ffc94a';
         g.beginPath(); g.arc(0, 2, 16, 0, Math.PI); g.fill();
@@ -291,34 +317,42 @@
       grid.innerHTML = '';
       $('zukanDetail').hidden = true;
       const s = save.data;
+      const found = D.INSECT_ORDER.filter(k => s.caught[k]).length;
+      $('zukanCount').textContent = `${t('zukanProgress')} ${found} / ${D.INSECT_ORDER.length}`;
+      const strength = this.game.stats().strength;
       for (const type of D.INSECT_ORDER) {
         const def = D.INSECTS[type];
         const n = s.caught[type] || 0;
         const card = document.createElement('button');
-        card.className = 'zcard';
+        card.className = 'zcard' + (def.rare ? ' rare' : '');
         const cv = document.createElement('canvas');
         const g = this.prepCanvas(cv, 72);
         if (!n) g.filter = 'brightness(0) opacity(0.45)';
-        g.translate(36, 38); g.scale(26 / (def.size + 8), 26 / (def.size + 8));
+        const k = 24 / (def.size + (def.kind === 'rhino' || def.kind === 'stag' ? 14 : 8));
+        g.translate(def.kind === 'rhino' || def.kind === 'stag' ? 30 : 36, 38); g.scale(k, k);
         R.drawInsect(g, { x: 0, y: 0, vx: 1, def, type, state: 'fly', seed: 1.3, id: 0 }, 0.3);
         const name = document.createElement('div'); name.className = 'name';
-        name.textContent = n ? t('insectNames')[type] : t('unknown');
+        name.textContent = n ? this.insectName(type) : t('unknown');
         const cnt = document.createElement('div'); cnt.className = 'cnt';
-        cnt.textContent = n ? t('caughtCount') + ' ' + n : '';
+        cnt.textContent = n ? t('caughtCount') + ' ' + n : `${t('weight')} ${def.weight}`;
         card.append(cv, name, cnt);
         card.addEventListener('click', () => {
           audio.play('button');
           const d = $('zukanDetail');
           d.hidden = false;
-          if (!n) { d.textContent = t('unknown'); return; }
-          const area = D.AREAS.findIndex(a => a.table[type]);
           d.innerHTML = '';
-          const h = document.createElement('div'); h.style.fontWeight = '900'; h.textContent = t('insectNames')[type];
-          const p = document.createElement('div'); p.textContent = t('insectNotes')[type];
-          const m = document.createElement('div');
-          m.textContent = `${t('weight')} ${def.weight} ・ ${t('score')} ${def.score}` + (area >= 0 ? ` ・ ${t('firstArea')} ${t('areaNames')[area]}` : '');
-          m.style.color = '#cfc6ee'; m.style.fontSize = '12px';
-          d.append(h, p, m);
+          const areaIdx = D.AREAS.findIndex(a => a.table[type]);
+          const h = document.createElement('div'); h.className = 'zname';
+          h.textContent = (n ? this.insectName(type) : t('unknown')) + (def.rare ? `  ★${t('rareTag')}` : '');
+          const p = document.createElement('div');
+          p.textContent = n ? def.note[i18n.lang] || def.note.en : '';
+          const m = document.createElement('div'); m.className = 'zmeta';
+          m.textContent = `${t('weight')} ${def.weight}` + (n ? ` ・ ${t('score')} ${def.score}` : '') + ` ・ ${t('firstArea')} ${areaIdx >= 0 ? t('areaNames')[areaIdx] : '?'}`;
+          const c = document.createElement('div');
+          const ok = def.weight <= strength;
+          c.className = 'zcatch ' + (ok ? 'ok' : 'ng');
+          c.textContent = (ok ? t('canCatch') : t('cantCatch')) + `（${t('threadPower')} ${strength.toFixed(1)}）`;
+          d.append(h, p, m, c);
         });
         grid.append(card);
       }

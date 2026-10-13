@@ -7,7 +7,7 @@
   function defaults() {
     return {
       level: 1, exp: 0, coins: 0,
-      upgrades: { strength: 0, silk: 0, sticky: 0, speed: 0, appetite: 0 },
+      upgrades: { strength: 0, silk: 0, sticky: 0, speed: 0, appetite: 0, lure: 0 },
       costumes: ['classic'], costume: 'classic',
       bestScore: 0, bestArea: 0, scores: [],
       caught: {},

@@ -62,6 +62,7 @@
         struggle: B.baseStruggle + u.sticky * B.strugglePerUpgrade,
         speed: B.baseSpeed * (1 + u.speed * B.speedPerUpgrade),
         appetite: 1 + u.appetite * B.appetitePerUpgrade,
+        lure: 1 + (u.lure || 0) * B.lurePerUpgrade,
       };
     }
 
@@ -281,6 +282,7 @@
         const drain = Math.min(B.drainMax, B.drainBase + run.time * B.drainRamp);
         run.silk -= drain * dt;
       }
+      if (run.silk < this.st.maxSilk * 0.2 && !run.lowHinted && !run.tutorial) { run.lowHinted = true; this.hooks.hint(t('lowSilk')); }
       if (run.silk <= 0) {
         run.silk = 0;
         run.dying = 1.3;
@@ -299,9 +301,9 @@
         if (run.tutorial && run.tutorial < 3) interval = 99;
         else if (run.tutorial === 3) interval = 2.2;
         this.spawnTimer = interval * rand(0.75, 1.25);
-        let type = pickWeighted(area.table);
+        let type = pickWeighted(this.spawnTable(area));
         if (run.tutorial === 3) type = Math.random() < 0.5 ? 'butterfly' : 'fly';
-        else if (Math.random() < D.GOLDEN_CHANCE) type = 'golden';
+        else if (Math.random() < D.GOLDEN_CHANCE * this.st.lure) type = 'golden';
         this.spawnInsect(type, run.tutorial === 3);
         // swarm: sometimes gnats come in a group
         if (type === 'gnat' && Math.random() < 0.4) { this.spawnInsect('gnat'); this.spawnInsect('gnat'); }
@@ -445,6 +447,14 @@
     }
 
     // ---------- insects ----------
+    // rare bugs get more likely with the lure upgrade
+    spawnTable(area) {
+      if (this.st.lure <= 1) return area.table;
+      const out = {};
+      for (const k in area.table) out[k] = area.table[k] * (D.INSECTS[k].rare ? this.st.lure : 1);
+      return out;
+    }
+
     spawnInsect(type, aimAtWeb) {
       const def = D.INSECTS[type];
       const fromLeft = Math.random() < 0.5;
@@ -595,6 +605,10 @@
       const pts = Math.round(def.score * mult);
       run.score += pts;
       run.catches++;
+      if (!run.caught[ins.type] && !root.SH.save.data.caught[ins.type]) {
+        this.floatText(ins.x, ins.y - 64, 'NEW! ' + def.name[root.SH.i18n.lang], '#8fd3ff', 16);
+        audio.play('area');
+      }
       run.caught[ins.type] = (run.caught[ins.type] || 0) + 1;
       run.silk = Math.min(this.st.maxSilk, run.silk + def.silk * this.st.appetite);
       if (run.bonusTimer <= 0) run.bonusGauge = Math.min(B.bonusNeed, run.bonusGauge + 1 + (run.combo >= 5 ? 0.5 : 0));

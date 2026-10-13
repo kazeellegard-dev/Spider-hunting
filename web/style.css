@@ -39,11 +39,15 @@ button:focus-visible { outline: 3px solid var(--sky); outline-offset: 2px; }
 }
 .hud-silk { display: grid; gap: 4px; min-width: 0; }
 .hud-label { font-size: 11px; font-weight: 800; letter-spacing: 0.08em; color: var(--silk); text-shadow: 0 1px 2px rgba(0,0,0,0.5); display: flex; gap: 8px; align-items: baseline; }
-.bar { height: 14px; border-radius: 8px; background: rgba(42,34,68,0.55); border: 2px solid rgba(255,255,255,0.85); overflow: hidden; position: relative; }
+.gauge { display: grid; grid-template-columns: 26px 1fr; gap: 6px; align-items: center; }
+.gicon { width: 26px; height: 26px; border-radius: 50%; background: rgba(42,34,68,0.75); border: 2px solid rgba(255,255,255,0.85); display: grid; place-items: center; }
+.gicon svg { width: 17px; height: 17px; }
+.bar > b { position: absolute; left: 8px; top: 50%; transform: translateY(-50%); font-size: 10px; font-weight: 900; line-height: 1; letter-spacing: 0.06em; color: #fff; text-shadow: 0 0 2px rgba(42,34,68,0.95), 0 1px 1px rgba(42,34,68,0.95); }
+.bar { height: 16px; border-radius: 8px; background: rgba(42,34,68,0.55); border: 2px solid rgba(255,255,255,0.85); overflow: hidden; position: relative; }
 .bar > i { position: absolute; inset: 0 auto 0 0; width: 100%; background: var(--leaf); border-radius: 6px; transition: width 0.12s linear, background 0.3s; }
 .bar.low > i { background: var(--danger); animation: blink 0.6s infinite alternate; }
 .bar.mid > i { background: var(--honey); }
-.bar.bonus { height: 8px; border-width: 1.5px; }
+.bar.bonus { height: 13px; border-width: 1.5px; }
 .bar.bonus > i { background: linear-gradient(90deg, var(--berry), var(--honey)); }
 .bar.bonus.full > i { animation: blink 0.3s infinite alternate; }
 @keyframes blink { to { opacity: 0.55; } }
@@ -187,3 +191,13 @@ dl.kv dd { margin: 0; font-weight: 900; text-align: right; font-variant-numeric:
 @media (prefers-reduced-motion: reduce) {
   .bubble, .badge, .bar.low > i { animation: none; }
 }
+
+/* upgrade effect line & bugdex extras */
+.item .effect { font-size: 12px; font-weight: 900; color: var(--honey); margin-top: 4px; white-space: pre-line; line-height: 1.5; }
+.zcard.rare { box-shadow: inset 0 0 0 2px rgba(255, 201, 74, 0.55); }
+.zdetail { position: sticky; bottom: 0; background: #3a3160; border: 2px solid rgba(255,255,255,0.25); display: grid; gap: 4px; }
+.zdetail .zname { font-weight: 900; font-size: 16px; }
+.zdetail .zmeta { color: #cfc6ee; font-size: 12px; }
+.zdetail .zcatch { font-weight: 900; font-size: 13px; }
+.zdetail .zcatch.ok { color: var(--leaf); }
+.zdetail .zcatch.ng { color: var(--berry); }
