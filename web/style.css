@@ -139,7 +139,7 @@ button:focus-visible { outline: 3px solid var(--sky); outline-offset: 2px; }
 .logo .tag { margin-top: 10px; font-size: 13px; font-weight: 800; padding: 5px 12px; border-radius: 99px; background: var(--panel); }
 .title-panel { width: 100%; max-width: 440px; display: grid; gap: 12px; }
 .statline {
-  display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; text-align: center;
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; text-align: center;
   background: var(--panel); border-radius: 18px; padding: 10px 8px;
 }
 .statline b { display: block; font-size: 18px; font-variant-numeric: tabular-nums; }
@@ -155,7 +155,7 @@ button:focus-visible { outline: 3px solid var(--sky); outline-offset: 2px; }
 .result-score { text-align: center; font-size: 52px; font-weight: 900; color: var(--honey); font-variant-numeric: tabular-nums; line-height: 1; }
 .badge { justify-self: center; background: var(--berry); color: #fff; font-weight: 900; padding: 4px 12px; border-radius: 99px; font-size: 14px; animation: bob 1s infinite; }
 dl.kv { margin: 0; display: grid; grid-template-columns: 1fr auto; gap: 8px 12px; font-size: 15px; }
-dl.kv dt { color: #d9d2f2; font-weight: 700; }
+dl.kv dt { color: #d9d2f2; font-weight: 700; white-space: nowrap; }
 dl.kv dd { margin: 0; font-weight: 900; text-align: right; font-variant-numeric: tabular-nums; }
 .lvup { text-align: center; font-weight: 900; color: var(--sky); font-size: 18px; }
 

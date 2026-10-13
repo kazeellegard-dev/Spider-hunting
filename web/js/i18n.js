@@ -30,7 +30,7 @@
       notEnough: 'コインがたりない',
       sound: 'こうかおん', music: 'BGM', on: 'ON', off: 'OFF', language: 'ことば', resetData: 'データをけす', resetConfirm: '本当にデータをけしますか？',
       vibration: 'しんどう',
-      unknown: '？？？', caughtCount: 'つかまえた数', firstArea: 'でるところ',
+      unknown: '？？？', caughtCount: 'つかまえた数', firstArea: 'でるじかん',
       ranking: 'ランキング',
       upgradeNames: { strength: '糸のつよさ', silk: '糸のりょう', sticky: 'ねばねば', speed: 'すばやさ', appetite: 'くいしんぼう', lure: 'むしよせ' },
       upgradeDesc: {
@@ -42,7 +42,8 @@
         lure: 'レアな虫（キラキラ光る虫）が出やすくなる',
       },
       costumeNames: { classic: 'いつものクモ', cherry: 'さくらんぼ', sky: 'そらいろキャップ', leaf: 'はっぱ', bee: 'ハチさん', night: 'よふかしメガネ', royal: 'おうさま', gold: 'きんぴか' },
-      areaNames: ['あさのにわ', 'ひるのもり', 'ゆうやけのはら', 'よるのもり', 'ほしぞらのおか'],
+      areaNames: ['あさ', 'ひる', 'ゆうがた', 'よる', 'ほしぞらのよる'],
+      dayFmt: '{n}にちめ', newDayRecord: 'さいこうきろく！', bestDay: 'さいこう', dayReached: 'いきのびた日',
       lowSilk: 'いとが少ない！ 虫を食べると少し回復するよ',
       lowHunger: 'おなかがすいてきた！ 虫を食べよう',
       silkGauge: 'いと', bonusGauge: 'ボーナス', hungerGauge: 'おなか', glowGauge: 'ひかる糸',
@@ -57,7 +58,7 @@
       weight: 'おもさ',
       demoHint: 'タップで糸をはる → かかった虫をタップ！',
       howto: 'あそびかた',
-      howtoBody: '・画面をタップ：クモが糸を張りながら移動\n・巣にかかった虫をタップ：つかまえて食べる\n・虫は少しするとにげてしまう\n・クモの顔の「おなか」は時間でへる。0になるとおしまい\n・糸巻きの「いと」は糸を張るとへる。0だと糸を張れない\n・虫を食べると おなかと いとが回復\n・キャンディの「ボーナス」ゲージが満タンでボーナスタイム\n・ボーナス中の「ひかりの糸巻き」をタップすると、そのあと糸が光ってどんな虫でもつかまえられる\n・ときどき「とっぷう」で巣がとばされる\n・キラキラ光る虫はレア。ずかんを集めよう',
+      howtoBody: '・画面をタップ：クモが糸を張りながら移動\n・巣にかかった虫をタップ：つかまえて食べる\n・虫は少しするとにげてしまう\n・クモの顔の「おなか」は時間でへる。0になるとおしまい\n・糸巻きの「いと」は糸を張るとへる。0だと糸を張れない\n・虫を食べると おなかと いとが回復\n・キャンディの「ボーナス」ゲージが満タンでボーナスタイム\n・ボーナス中の「ひかりの糸巻き」をタップすると、そのあと糸が光ってどんな虫でもつかまえられる\n・ときどき「とっぷう」で巣がとばされる\n・あさ→ひる→ゆうがた→よる と時間がすぎて、夜があけると次の日。何日いきのびられるかな？\n・キラキラ光る虫はレア。ずかんを集めよう',
     },
     en: {
       title1: 'Spider', title2: 'Hunting',
@@ -86,7 +87,7 @@
       notEnough: 'Not enough coins',
       sound: 'Sound', music: 'Music', on: 'ON', off: 'OFF', language: 'Language', resetData: 'Erase data', resetConfirm: 'Really erase all data?',
       vibration: 'Vibration',
-      unknown: '???', caughtCount: 'Caught', firstArea: 'Found in',
+      unknown: '???', caughtCount: 'Caught', firstArea: 'Appears',
       ranking: 'Ranking',
       upgradeNames: { strength: 'Silk strength', silk: 'Silk capacity', sticky: 'Stickiness', speed: 'Speed', appetite: 'Appetite', lure: 'Bug lure' },
       upgradeDesc: {
@@ -98,7 +99,8 @@
         lure: 'Rare (sparkling) bugs show up more often',
       },
       costumeNames: { classic: 'Classic', cherry: 'Cherry', sky: 'Sky cap', leaf: 'Leafy', bee: 'Bumble', night: 'Night owl', royal: 'Royal', gold: 'Golden' },
-      areaNames: ['Morning Garden', 'Midday Forest', 'Sunset Meadow', 'Night Forest', 'Starry Hill'],
+      areaNames: ['Morning', 'Daytime', 'Evening', 'Night', 'Starry night'],
+      dayFmt: 'Day {n}', newDayRecord: 'New record!', bestDay: 'Best day', dayReached: 'Survived',
       lowSilk: 'Low on silk! Eating bugs refills a little',
       lowHunger: 'Getting hungry! Eat some bugs',
       silkGauge: 'Silk', bonusGauge: 'Bonus', hungerGauge: 'Tummy', glowGauge: 'Glow silk',
@@ -113,7 +115,7 @@
       weight: 'Weight',
       demoHint: 'Tap to spin → tap stuck bugs!',
       howto: 'How to play',
-      howtoBody: '• Tap: the spider moves there, spinning silk\n• Tap a stuck bug: catch and eat it\n• Stuck bugs break free after a while\n• Spider face = tummy. It drains over time; at 0 the run ends\n• Spool = silk. Spinning uses it; at 0 you cannot spin\n• Eating bugs refills tummy and silk\n• Fill the candy (bonus) gauge for bonus time\n• Tap the glowing spool in bonus time: afterwards your silk glows and holds any bug\n• Gusts sometimes blow your web away\n• Sparkling bugs are rare. Fill your Bugdex',
+      howtoBody: '• Tap: the spider moves there, spinning silk\n• Tap a stuck bug: catch and eat it\n• Stuck bugs break free after a while\n• Spider face = tummy. It drains over time; at 0 the run ends\n• Spool = silk. Spinning uses it; at 0 you cannot spin\n• Eating bugs refills tummy and silk\n• Fill the candy (bonus) gauge for bonus time\n• Tap the glowing spool in bonus time: afterwards your silk glows and holds any bug\n• Gusts sometimes blow your web away\n• Morning, daytime, evening, night... then a new day. How many days can you last?\n• Sparkling bugs are rare. Fill your Bugdex',
     },
   };
 

@@ -110,18 +110,31 @@
   ];
 
   // Milestone areas, switched mid-run by score (F-05a).
+  // Times of day. The run cycles morning -> daytime -> evening -> night and
+  // then a new day starts (F-05a milestones became a day/night cycle in v1.4).
   const AREAS = [
-    { id: 'garden',  score: 0,    spawn: 1.35, sky: ['#bfe8ff', '#eaf8ff'], hill: '#9fd99a', hill2: '#7cc47a', ground: '#6fb36b', sun: '#fff3b0', night: false,
-      table: { gnat: 5, mosquito: 3, fly: 4, butterfly: 2.5, sulphur: 2, blue: 1.5, ladybug: 2, ladybug2: 1, bee: 1, chafer: 0.6 } },
-    { id: 'forest',  score: 800,  spawn: 1.2,  sky: ['#a6e3d0', '#e8fff4'], hill: '#5fae7a', hill2: '#3f8f5e', ground: '#3d7d50', sun: '#fffbe0', night: false,
-      table: { gnat: 2, fly: 3, greenfly: 2, horsefly: 1.5, bee: 2, carpenter: 1, dragonfly: 2, swallowtail: 1.5, cicada: 2, minmin: 1.5, beetle: 1.2, kokuwa: 1, kabuto: 0.4, ladybug: 1, emperor: 0.12 } },
-    { id: 'sunset',  score: 2500, spawn: 1.08, sky: ['#ff9e7a', '#ffe1b8'], hill: '#c97a6a', hill2: '#9c5b5b', ground: '#7a4a4f', sun: '#ffd2a1', night: false,
-      table: { redfly: 3, emperorfly: 1.5, oniyanma: 0.7, hornet: 1, moth: 2, beetle: 2, chafer: 2, stag: 1.2, kabuto: 1.2, swallowtail: 1, cicada: 1, horsefly: 1.5, jewel: 0.12 } },
-    { id: 'night',   score: 5000, spawn: 0.98, sky: ['#1d2a5a', '#3b4a86'], hill: '#24315e', hill2: '#18214a', ground: '#141b3d', sun: '#f6f1c7', night: true,
-      table: { moth: 3, silkmoth: 1.5, luna: 1, firefly: 3, firefly2: 2, mosquito: 1.5, tigermosq: 2, kabuto: 2, stag: 1.5, miyama: 1, kokuwa: 1.5, ookuwa: 0.3 } },
-    { id: 'stars',   score: 9000, spawn: 0.88, sky: ['#2a1a4a', '#6a4a9a'], hill: '#3a2a6a', hill2: '#281c50', ground: '#1c1438', sun: '#ffe9ff', night: true,
-      table: { oniyanma: 1.5, hornet: 1.5, miyama: 1.5, ookuwa: 0.6, kabuto: 1.5, caucasus: 0.3, hercules: 0.25, firefly: 2, luna: 1, swallowtail: 1, emperorfly: 1, redfly: 1, beetle: 1, fly: 1.5, gnat: 1.5, jewel: 0.15, emperor: 0.15 } },
+    { id: 'morning', spawn: 1.35, sky: ['#bfe8ff', '#eaf8ff'], hill: '#9fd99a', hill2: '#7cc47a', ground: '#6fb36b', sun: '#fff3b0', night: false,
+      table: { gnat: 4, mosquito: 2, fly: 4, butterfly: 3, sulphur: 2.5, blue: 2, ladybug: 2, ladybug2: 1, bee: 2, chafer: 0.8, dragonfly: 1, emperor: 0.12 } },
+    { id: 'day',     spawn: 1.2,  sky: ['#8fd3ff', '#e0f6ff'], hill: '#5fae7a', hill2: '#3f8f5e', ground: '#3d7d50', sun: '#fffbe0', night: false,
+      table: { fly: 3, greenfly: 2, horsefly: 1.5, bee: 2.5, carpenter: 1.2, hornet: 0.6, dragonfly: 2.5, emperorfly: 1.2, oniyanma: 0.5, swallowtail: 2, cicada: 2.5, minmin: 2, beetle: 1.2, sulphur: 1, jewel: 0.12 } },
+    { id: 'evening', spawn: 1.1,  sky: ['#ff9e7a', '#ffe1b8'], hill: '#c97a6a', hill2: '#9c5b5b', ground: '#7a4a4f', sun: '#ffd2a1', night: false,
+      table: { gnat: 2, redfly: 3.5, emperorfly: 1, mosquito: 2.5, tigermosq: 1.5, moth: 2.5, chafer: 1.5, beetle: 1.5, kokuwa: 1.2, cicada: 1, horsefly: 1, swallowtail: 0.6 } },
+    { id: 'night',   spawn: 1.0,  sky: ['#1d2a5a', '#3b4a86'], hill: '#24315e', hill2: '#18214a', ground: '#141b3d', sun: '#f6f1c7', night: true,
+      table: { moth: 3, silkmoth: 1.5, luna: 1, firefly: 3, firefly2: 2, mosquito: 1.5, tigermosq: 2, kabuto: 2, stag: 1.5, kokuwa: 1.5, miyama: 1, ookuwa: 0.3, caucasus: 0.15 } },
+    { id: 'stars',   spawn: 0.95, sky: ['#2a1a4a', '#6a4a9a'], hill: '#3a2a6a', hill2: '#281c50', ground: '#1c1438', sun: '#ffe9ff', night: true,
+      table: { moth: 2, silkmoth: 1, luna: 1.5, firefly: 3, firefly2: 3, tigermosq: 1.5, kabuto: 2, stag: 1.5, miyama: 1.5, ookuwa: 0.6, caucasus: 0.35, hercules: 0.25 } },
   ];
+  // Phases of one day: which AREAS entry and how long (s). Night on even days is the starry night.
+  const PHASES = [
+    { area: 0, len: 30 },
+    { area: 1, len: 30 },
+    { area: 2, len: 20 },
+    { area: 3, len: 30, starryEvery: 2 },
+  ];
+  function phaseArea(phase, day) {
+    const p = PHASES[phase];
+    return p.starryEvery && day % p.starryEvery === 0 ? 4 : p.area;
+  }
   const GOLDEN_CHANCE = 0.015;
 
   // Permanent upgrades bought with coins (F-08, F-11).
@@ -183,6 +196,6 @@
   function upgradeCost(u, lv) { return Math.round(u.base * Math.pow(lv + 1, u.exp) / 5) * 5; }
 
   root.SH = root.SH || {};
-  root.SH.data = { INSECTS, INSECT_ORDER, TREATS, AREAS, GOLDEN_CHANCE, UPGRADES, COSTUMES, BALANCE, levelExp, upgradeCost };
+  root.SH.data = { INSECTS, INSECT_ORDER, TREATS, AREAS, PHASES, phaseArea, GOLDEN_CHANCE, UPGRADES, COSTUMES, BALANCE, levelExp, upgradeCost };
   if (typeof module !== 'undefined' && module.exports) module.exports = root.SH.data;
 })(typeof globalThis !== 'undefined' ? globalThis : this);

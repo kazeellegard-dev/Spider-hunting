@@ -103,7 +103,9 @@
       this.mode = 'demo';
       this.st = this.stats();
       this.resetWorld();
-      this.areaIdx = Math.min(root.SH.save.data.bestArea || 0, D.AREAS.length - 1);
+      // the title screen follows the player's real clock
+      const h = new Date().getHours();
+      this.areaIdx = h >= 5 && h < 10 ? 0 : h >= 10 && h < 16 ? 1 : h >= 16 && h < 18 ? 2 : 3;
       const hub = this.buildStarterWeb(this.W / 2, this.H * 0.5, 9, Math.min(this.W * 0.42, 170), [0.25, 0.5, 0.75]);
       this.spider.node = hub; this.spider.x = hub.x; this.spider.y = hub.y; this.spider.home = hub;
       this.spawnTimer = 0.5;
@@ -121,7 +123,7 @@
       const run = this.run = {
         score: 0, silk: this.st.maxSilk, hunger: this.st.maxHunger, glow: 0, time: 0, combo: 0, lastEat: -99, maxCombo: 0, catches: 0,
         bonusGauge: 0, bonusTimer: 0, coins: 0, caught: {}, continued: false, over: false, dying: 0,
-        windTimer: rand(22, 34), wind: 0, windLeft: 0, maxArea: 0,
+        windTimer: rand(22, 34), wind: 0, windLeft: 0, maxArea: 0, day: 1, phase: 0, phaseT: 0,
         gustTimer: B.gustFirst, gustLeft: 0, gusts: 0,
         tutorial: save.tutorialDone ? 0 : 1, tutorialTimer: 0, heavyHinted: !!save.tutorialDone && save.plays > 3,
       };
@@ -134,7 +136,7 @@
       this.particles = []; this.texts = [];
       this.paused = false;
       audio.music('day');
-      this.hooks.banner(t('areaEnter') + ' 1', t('areaNames')[0]);
+      this.hooks.banner(this.dayText(1), t('areaNames')[0], 'area');
       if (run.tutorial) this.hooks.tutorial(t('tut1'));
     }
 
@@ -236,7 +238,7 @@
       if (this.paused) return;
       dt = Math.min(dt, 0.05);
       this.time += dt;
-      if (this.bgPrev) { this.bgFade -= dt / 1.5; if (this.bgFade <= 0) this.bgPrev = null; }
+      if (this.bgPrev) { this.bgFade -= dt / 3; if (this.bgFade <= 0) this.bgPrev = null; }
       this.shake = Math.max(0, this.shake - dt * 20);
 
       const run = this.mode === 'play' ? this.run : null;
@@ -312,7 +314,7 @@
       this.spawnTimer -= dt;
       if (!inBonus && this.spawnTimer <= 0) {
         const area = D.AREAS[this.areaIdx];
-        const ramp = 1 - Math.min(0.3, run.time / 300);
+        const ramp = 1 - Math.min(0.4, (run.day - 1) * 0.08 + Math.min(0.1, run.time / 900));
         let interval = area.spawn * ramp;
         if (run.tutorial && run.tutorial < 3) interval = 99;
         else if (run.tutorial === 3) interval = 2.2;
@@ -377,11 +379,11 @@
       }
       // wind
       if (run.gustLeft > 0) { /* gust owns the wind */ }
-      else if (this.areaIdx >= 1 && !inBonus) {
+      else if ((run.day > 1 || run.phase >= 1) && !inBonus) {
         if (run.windLeft > 0) {
           run.windLeft -= dt;
           const k = Math.sin(Math.PI * (1 - run.windLeft / 4.5));
-          run.wind = run.windDir * k * (1 + this.areaIdx * 0.15);
+          run.wind = run.windDir * k * (1 + Math.min(4, run.day - 1 + run.phase * 0.25) * 0.15);
           if (run.windLeft <= 0) { run.wind = 0; run.windTimer = rand(20, 35); }
         } else {
           run.windTimer -= dt;
@@ -392,9 +394,16 @@
           }
         }
       } else run.wind = 0;
-      // area milestones
-      const next = D.AREAS[this.areaIdx + 1];
-      if (next && run.score >= next.score) this.enterArea(this.areaIdx + 1);
+      // time of day: morning -> daytime -> evening -> night -> next morning
+      if (!run.tutorial || run.tutorial >= 4) {
+        run.phaseT += dt;
+        if (run.phaseT >= D.PHASES[run.phase].len) {
+          run.phaseT = 0;
+          run.phase = (run.phase + 1) % D.PHASES.length;
+          if (run.phase === 0) run.day++;
+          this.enterPhase();
+        }
+      }
       // tutorial step 4 times out
       if (run.tutorial === 4) {
         run.tutorialTimer -= dt;
@@ -418,14 +427,28 @@
       this.hooks.tutorial(null);
     }
 
-    enterArea(idx) {
+    dayText(n) { return t('dayFmt').replace('{n}', n); }
+
+    enterPhase() {
+      const run = this.run;
+      const idx = D.phaseArea(run.phase, run.day);
+      if (run.phase === 0) {
+        const record = run.day > (root.SH.save.data.bestDay || 0) && root.SH.save.data.bestDay > 0;
+        this.enterArea(idx, this.dayText(run.day), record ? t('newDayRecord') : t('areaNames')[idx]);
+        if (record && !run.recordShown) { run.recordShown = true; audio.play('levelup'); }
+      } else {
+        this.enterArea(idx, t('areaNames')[idx], this.dayText(run.day));
+      }
+    }
+
+    enterArea(idx, big, small) {
       this.areaIdx = idx;
       if (this.run) this.run.maxArea = Math.max(this.run.maxArea, idx);
       this.bgPrev = this.bg; this.bgFade = 1;
       this.bg = R.makeBackground(D.AREAS[idx], this.W, this.H, this.dpr);
       audio.play('area');
-      if (!this.run || this.run.bonusTimer <= 0) audio.music(this.musicMode());
-      this.hooks.banner(t('areaEnter') + ' ' + (idx + 1), t('areaNames')[idx], 'area');
+      if (!this.run || (this.run.bonusTimer <= 0 && this.run.glow <= 0)) audio.music(this.musicMode());
+      this.hooks.banner(big || t('areaNames')[idx], small || '', 'area');
       platform.haptic('medium');
     }
 
@@ -503,11 +526,15 @@
     }
 
     // ---------- insects ----------
-    // rare bugs get more likely with the lure upgrade
+    // heavy bugs ease in over the first days; the lure upgrade favors rare ones
     spawnTable(area) {
-      if (this.st.lure <= 1) return area.table;
+      const day = this.run ? this.run.day : 3;
+      const heavy = Math.min(1, 0.2 + (day - 1) * 0.4);
       const out = {};
-      for (const k in area.table) out[k] = area.table[k] * (D.INSECTS[k].rare ? this.st.lure : 1);
+      for (const k in area.table) {
+        const d = D.INSECTS[k];
+        out[k] = area.table[k] * (d.rare ? this.st.lure : 1) * (d.weight > 2.4 ? heavy : 1);
+      }
       return out;
     }
 
@@ -521,7 +548,8 @@
         const p = th.points[Math.floor(th.points.length / 2)];
         y = p.y;
       }
-      const areaBoost = 1 + this.areaIdx * 0.06 + (this.run ? Math.min(0.25, this.run.time / 400) : 0);
+      // later days bring faster bugs
+      const areaBoost = 1 + (this.run ? Math.min(0.5, (this.run.day - 1) * 0.08) + Math.min(0.15, this.run.time / 600) : 0);
       const speed = def.speed * rand(0.85, 1.15) * areaBoost;
       this.insects.push({
         id: insectId++, type, def, state: 'fly',
@@ -877,7 +905,9 @@
       const isBest = run.score > save.bestScore;
       if (isBest) save.bestScore = run.score;
       save.bestArea = Math.max(save.bestArea, run.maxArea);
-      save.scores.push({ score: run.score, area: run.maxArea, date: Date.now() });
+      const newDay = run.day > (save.bestDay || 0);
+      save.bestDay = Math.max(save.bestDay || 0, run.day);
+      save.scores.push({ score: run.score, day: run.day, phase: run.phase, date: Date.now() });
       save.scores.sort((a, b) => b.score - a.score);
       save.scores = save.scores.slice(0, 10);
       for (const k in run.caught) save.caught[k] = (save.caught[k] || 0) + run.caught[k];
@@ -885,7 +915,7 @@
       if (run.tutorial) save.tutorialDone = true;
       root.SH.save.write();
       platform.submitScore(run.score);
-      return { score: run.score, isBest, catches: run.catches, maxCombo: run.maxCombo, area: run.maxArea, exp: run.score, coins, levels, before, level: save.level };
+      return { score: run.score, isBest, catches: run.catches, maxCombo: run.maxCombo, day: run.day, phase: run.phase, newDay, exp: run.score, coins, levels, before, level: save.level };
     }
   }
 

@@ -54,6 +54,7 @@
       $('tLevel').textContent = s.level;
       $('tCoins').textContent = s.coins.toLocaleString();
       $('tBest').textContent = s.bestScore.toLocaleString();
+      $('tDay').textContent = s.bestDay ? this.game.dayText(s.bestDay) : '—';
       $('tLvBar').style.width = Math.min(100, s.exp / D.levelExp(s.level) * 100) + '%';
       document.querySelectorAll('.coinval').forEach(el => { el.textContent = s.coins.toLocaleString(); });
     },
@@ -106,10 +107,12 @@
       this.game.mode = 'result';
       $('hud').hidden = true; $('tutorial').hidden = true; $('hint').hidden = true;
       $('rScore').textContent = r.score.toLocaleString();
-      $('rBest').hidden = !r.isBest || r.score === 0;
+      const dayRecord = r.newDay && r.day > 1;
+      $('rBest').hidden = !(dayRecord || (r.isBest && r.score > 0));
+      $('rBest').textContent = dayRecord ? `${this.game.dayText(r.day)} ${t('newDayRecord')}` : t('newBest');
       $('rCatches').textContent = r.catches;
       $('rCombo').textContent = r.maxCombo;
-      $('rArea').textContent = t('areaNames')[r.area];
+      $('rArea').textContent = `${this.game.dayText(r.day)}・${t('areaNames')[D.phaseArea(r.phase, r.day)]}`;
       $('rExp').textContent = '+' + r.exp.toLocaleString();
       $('rCoins').textContent = '+' + r.coins.toLocaleString();
       $('rLevel').hidden = !r.levels;
@@ -155,7 +158,12 @@
         if (run.combo > (c.combo || 0)) { el.classList.add('pulse'); setTimeout(() => el.classList.remove('pulse'), 150); }
         c.combo = run.combo;
       }
-      if (c.area !== g.areaIdx) { c.area = g.areaIdx; $('areaName').textContent = t('areaNames')[g.areaIdx]; }
+      const dayKey = run.day * 10 + g.areaIdx;
+      if (c.area !== dayKey) {
+        c.area = dayKey;
+        const icon = D.AREAS[g.areaIdx].night ? '☾' : '☀';
+        $('areaName').textContent = `${icon} ${g.dayText(run.day)}・${t('areaNames')[g.areaIdx]}`;
+      }
       if (c.best === undefined) { c.best = save.data.bestScore; $('bestHud').textContent = t('best') + ' ' + save.data.bestScore.toLocaleString(); }
     },
 
@@ -349,13 +357,13 @@
           const d = $('zukanDetail');
           d.hidden = false;
           d.innerHTML = '';
-          const areaIdx = D.AREAS.findIndex(a => a.table[type]);
+          const times = D.AREAS.map((a, i) => a.table[type] ? t('areaNames')[i] : null).filter(Boolean);
           const h = document.createElement('div'); h.className = 'zname';
           h.textContent = (n ? this.insectName(type) : t('unknown')) + (def.rare ? `  ★${t('rareTag')}` : '');
           const p = document.createElement('div');
           p.textContent = n ? def.note[i18n.lang] || def.note.en : '';
           const m = document.createElement('div'); m.className = 'zmeta';
-          m.textContent = `${t('weight')} ${def.weight}` + (n ? ` ・ ${t('score')} ${def.score}` : '') + ` ・ ${t('firstArea')} ${areaIdx >= 0 ? t('areaNames')[areaIdx] : '?'}`;
+          m.textContent = `${t('weight')} ${def.weight}` + (n ? ` ・ ${t('score')} ${def.score}` : '') + ` ・ ${t('firstArea')} ${times.length ? times.join('・') : '?'}`;
           const c = document.createElement('div');
           const ok = !def.boss && def.weight <= strength;
           c.className = 'zcatch ' + (def.boss ? 'boss' : ok ? 'ok' : 'ng');
@@ -374,7 +382,7 @@
       for (const s of scores) {
         const li = document.createElement('li');
         const a = document.createElement('span'); a.textContent = s.score.toLocaleString();
-        const b = document.createElement('span'); b.textContent = t('areaNames')[s.area || 0]; b.style.color = '#cfc6ee'; b.style.fontSize = '12px';
+        const b = document.createElement('span'); b.textContent = s.day ? `${this.game.dayText(s.day)}・${t('areaNames')[D.phaseArea(s.phase || 0, s.day)]}` : ''; b.style.color = '#cfc6ee'; b.style.fontSize = '12px';
         li.append(a, b);
         list.append(li);
       }
