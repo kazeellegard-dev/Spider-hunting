@@ -48,11 +48,11 @@
                  name: { ja: 'オオミズアオ', en: 'Luna moth' }, note: { ja: 'あわいみどりのガ。夜にふわりと飛ぶ', en: 'Pale green, drifts by at night' } }),
     // --- bees ---
     bee:       I('bee', { score: 60, silk: 10, weight: 2.8, speed: 105, size: 12, struggle: 0.6, color: '#ffc531', color2: '#3a2a1a', sting: 14,
-                 name: { ja: 'ミツバチ', en: 'Honeybee' }, note: { ja: 'にがすとチクッとさされて、おなかがへる', en: 'Let it escape and it stings you' } }),
+                 name: { ja: 'ミツバチ', en: 'Honeybee' }, note: { ja: 'にがすとチクッとさされて、いとがへる', en: 'Let it escape and it stings, draining silk' } }),
     carpenter: I('bee', { score: 90, silk: 12, weight: 4.0, speed: 90, size: 15, struggle: 0.7, color: '#2a2230', color2: '#ffd84a', fuzzy: true, sting: 10,
                  name: { ja: 'クマバチ', en: 'Carpenter bee' }, note: { ja: 'まるくてもふもふ。ちょっと重い', en: 'Round and fuzzy. A bit heavy' } }),
     hornet:    I('bee', { boss: true, score: 150, silk: 14, weight: 5.5, speed: 130, size: 16, struggle: 0.5, color: '#ff9a1a', color2: '#2a1a10', sting: 25,
-                 name: { ja: 'スズメバチ', en: 'Giant hornet' }, note: { ja: 'つよくてこわい。ひかる糸でしかつかまえられない。にがすとおなかが大きくへる', en: 'Fierce. Only glowing silk can hold it. Escaping hurts a lot' } }),
+                 name: { ja: 'スズメバチ', en: 'Giant hornet' }, note: { ja: 'つよくてこわい。ひかる糸でしかつかまえられない。にがすといとが大きくへる', en: 'Fierce. Only glowing silk can hold it. Escaping hurts a lot' } }),
     // --- dragonflies ---
     dragonfly: I('dragonfly', { score: 70, silk: 14, weight: 3.6, speed: 165, size: 16, struggle: 0.8, pattern: 'dart', color: '#5aa8e0', color2: '#2a6aa0',
                  name: { ja: 'シオカラトンボ', en: 'Skimmer' }, note: { ja: 'あおいトンボ。とても速い', en: 'A blue dragonfly. Very fast' } }),
@@ -63,9 +63,9 @@
     oniyanma:  I('dragonfly', { boss: true, score: 180, silk: 20, weight: 6.5, speed: 200, size: 23, struggle: 0.6, pattern: 'dart', color: '#2a2a2a', color2: '#ffd84a', stripes: true,
                  name: { ja: 'オニヤンマ', en: 'Golden-ringed dragonfly' }, note: { ja: '日本でいちばん大きいトンボ。ひかる糸でしかつかまえられない', en: 'Japan\'s largest dragonfly. Only glowing silk can hold it' } }),
     // --- fireflies ---
-    firefly:   I('firefly', { silkBonus: 3, score: 50, silk: 26, weight: 1.0, speed: 55, size: 9, struggle: 1.3, pattern: 'flutter', color: '#e8f26a', glow: true,
+    firefly:   I('firefly', { score: 50, silk: 26, weight: 1.0, speed: 55, size: 9, struggle: 1.3, pattern: 'flutter', color: '#e8f26a', glow: true,
                  name: { ja: 'ゲンジボタル', en: 'Firefly' }, note: { ja: 'ひかる虫。食べるといとがたくさん回復', en: 'Glows. Restores lots of silk' } }),
-    firefly2:  I('firefly', { silkBonus: 3, score: 40, silk: 20, weight: 0.7, speed: 60, size: 7, struggle: 1.3, pattern: 'flutter', color: '#b8ff7a', glow: true,
+    firefly2:  I('firefly', { score: 40, silk: 20, weight: 0.7, speed: 60, size: 7, struggle: 1.3, pattern: 'flutter', color: '#b8ff7a', glow: true,
                  name: { ja: 'ヒメボタル', en: 'Little firefly' }, note: { ja: 'ちいさなホタル。いとがよく回復', en: 'A small firefly. Good silk' } }),
     // --- cicadas ---
     cicada:    I('cicada', { score: 60, silk: 14, weight: 3.2, speed: 95, size: 15, struggle: 0.8, pattern: 'straight', color: '#5a3a2a', color2: 'rgba(140,90,60,0.85)',
@@ -169,14 +169,13 @@
     strugglePerUpgrade: 0.35,
     baseSpeed: 520,          // px/s while spinning or rushing
     speedPerUpgrade: 0.08,
-    appetitePerUpgrade: 0.06,
+    appetitePerUpgrade: 0.1,
     lurePerUpgrade: 0.2,      // rare spawn weight multiplier step
     silkCostPerPx: 1 / 16,
-    baseHunger: 100,         // tummy gauge; the run ends at 0
-    drainBase: 1.0,          // tummy/s lost over time
-    drainRamp: 0.03,         // extra tummy/s per second played (keeps upgraded runs finite)
-    drainMax: 40,
-    silkPerFood: 0.4,        // silk refilled per meal = insect.silk * this (* silkBonus)
+    drainBase: 0.9,          // silk/s lost over time; the run ends at 0
+    drainRamp: 0.012,        // extra silk/s per second played
+    drainCurve: 0.00002,     // ...plus this * t^2, so long upgraded runs still come to an end
+    drainMax: 30,
     glowDuration: 15,        // seconds of glowing silk after bonus time
     gustFromDay: 3,          // endless: gusts start on this day...
     gustDelay: [15, 85],     // ...once per day, this many seconds after dawn

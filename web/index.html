@@ -28,10 +28,6 @@
     <div class="hud-silk">
       <div class="hud-label"><span id="areaName"></span></div>
       <div class="gauge">
-        <span class="gicon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 9 7 11M3 15l4-1M21 9l-4 2M21 15l-4-1" stroke="#fbfaff" stroke-width="1.8" stroke-linecap="round"/><circle cx="12" cy="12.5" r="7" fill="#5a4f78" stroke="#fbfaff" stroke-width="1.2"/><circle cx="9.5" cy="11.5" r="1.9" fill="#fff"/><circle cx="14.5" cy="11.5" r="1.9" fill="#fff"/><circle cx="9.8" cy="11.8" r="1" fill="#1c1830"/><circle cx="14.8" cy="11.8" r="1" fill="#1c1830"/><path d="M10.3 15.2q1.7 1.4 3.4 0" stroke="#fbfaff" stroke-width="1.1" fill="none" stroke-linecap="round"/></svg></span>
-        <div class="bar" id="hungerBar"><i></i><b data-t="hungerGauge"></b></div>
-      </div>
-      <div class="gauge">
         <span class="gicon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="4" rx="2" fill="#c98a5b"/><rect x="5" y="18" width="14" height="4" rx="2" fill="#c98a5b"/><rect x="7" y="6" width="10" height="12" fill="#fbfaff"/><path d="M7 8.5h10M7 11h10M7 13.5h10M7 16h10" stroke="#b9b0d9" stroke-width="1"/><path d="M17 12c3 0 4 3 3 6" stroke="#fbfaff" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg></span>
         <div class="bar silk" id="silkBar"><i></i><b data-t="silkGauge"></b></div>
       </div>
@@ -53,7 +49,7 @@
   <div class="bubble" id="hint" hidden></div>
   <div id="toast" hidden></div>
 
-  <!-- title -->
+  <!-- title: an arcade-style mode select. The drum turns between the two modes -->
   <section class="screen" id="title">
     <div class="logo">
       <div class="l1" data-t="title1"></div>
@@ -61,53 +57,60 @@
       <div class="tag" data-t="demoHint"></div>
     </div>
     <div class="title-panel">
-      <div class="statline">
-        <div><b id="tLevel">1</b><span data-t="level"></span></div>
-        <div><b id="tCoins">0</b><span data-t="coins"></span></div>
-        <div><b id="tBest">0</b><span data-t="best"></span></div>
-        <div><b id="tDay">—</b><span data-t="bestDay"></span></div>
-        <div class="lvbar"><i id="tLvBar" style="width:0%"></i></div>
+      <div class="modesel">
+        <button class="marrow prev" id="modePrev" aria-label="prev"><svg viewBox="0 0 20 20"><path d="M13 3 6 10l7 7"/></svg></button>
+        <div class="drum-wrap" id="drumWrap">
+          <div class="drum" id="drum">
+            <!-- normal mode (endless days, coin upgrades) -->
+            <div class="mface main" id="faceMain">
+              <div class="marquee"><span data-t="modeMain"></span></div>
+              <p class="mdesc" data-t="mainDesc"></p>
+              <div class="statline">
+                <div><b id="tLevel">1</b><span data-t="level"></span></div>
+                <div><b id="tCoins">0</b><span data-t="coins"></span></div>
+                <div><b id="tBest">0</b><span data-t="best"></span></div>
+                <div><b id="tDay">—</b><span data-t="bestDay"></span></div>
+                <div class="lvbar"><i id="tLvBar" style="width:0%"></i></div>
+              </div>
+              <button class="btn primary" id="playBtn" data-t="play"></button>
+              <div class="row">
+                <button class="btn" data-open="upgradeScr" data-t="upgrade"></button>
+                <button class="btn" data-open="rankScr" data-t="ranking"></button>
+              </div>
+            </div>
+            <!-- challenge mode (30 mission stages, picks after each clear) -->
+            <div class="mface challenge" id="faceChallenge">
+              <div class="marquee"><span data-t="modeChallenge"></span></div>
+              <p class="mdesc" data-t="challengeDesc"></p>
+              <div class="sghead"><b id="sgTitle"></b><span id="sgSub"></span></div>
+              <div class="stagedots" id="sgDots"></div>
+              <div class="goalbox">
+                <div class="glabel" data-t="goalsTitle"></div>
+                <ul class="goals" id="sgGoals"></ul>
+              </div>
+              <div class="chips" id="sgUps"></div>
+              <button class="btn primary" id="sgStart" data-t="start"></button>
+              <button class="link" id="sgRestart" data-t="restartNormal"></button>
+              <div class="confirm" id="sgConfirm" hidden>
+                <p class="lead" data-t="restartConfirm"></p>
+                <div class="row"><button class="btn small" id="sgNo" data-t="back"></button><button class="btn small primary" id="sgYes" data-t="restartNormal"></button></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <button class="marrow next" id="modeNext" aria-label="next"><svg viewBox="0 0 20 20"><path d="M7 3l7 7-7 7"/></svg></button>
       </div>
-      <div class="row mode-row">
-        <button class="btn primary" id="normalBtn"><span data-t="normal"></span><small id="normalSub"></small></button>
-        <button class="btn primary endless" id="playBtn"><span data-t="endless"></span><small id="endlessSub"></small></button>
-      </div>
+      <div class="mdots" id="modeDots"><i class="on"></i><i></i><span data-t="swipeHint"></span></div>
       <div class="menu-grid">
-        <button class="btn" data-open="upgradeScr" data-t="upgrade"></button>
         <button class="btn" data-open="wardrobeScr" data-t="wardrobe"></button>
         <button class="btn" data-open="zukanScr" data-t="zukan"></button>
         <button class="btn" data-open="settingsScr" data-t="settings"></button>
-      </div>
-      <div class="menu-foot">
-        <button class="link" data-open="howtoScr" data-t="howto"></button>
-        <button class="link" data-open="rankScr" data-t="ranking"></button>
+        <button class="btn" data-open="howtoScr" data-t="howto"></button>
       </div>
     </div>
   </section>
 
-  <!-- normal mode: stage info -->
-  <section class="screen dim" id="stageScr" hidden>
-    <div class="sheet">
-      <h2 id="sgTitle"></h2>
-      <p class="lead" id="sgSub"></p>
-      <div class="stagedots" id="sgDots"></div>
-      <div class="goalbox">
-        <div class="glabel" data-t="goalsTitle"></div>
-        <ul class="goals" id="sgGoals"></ul>
-      </div>
-      <div class="glabel" data-t="upgradesNow"></div>
-      <div class="chips" id="sgUps"></div>
-      <button class="btn primary" id="sgStart" data-t="start"></button>
-      <button class="btn" id="sgBack" data-t="back"></button>
-      <button class="link" id="sgRestart" data-t="restartNormal"></button>
-      <div class="confirm" id="sgConfirm" hidden>
-        <p class="lead" data-t="restartConfirm"></p>
-        <div class="row"><button class="btn small" id="sgNo" data-t="back"></button><button class="btn small primary" id="sgYes" data-t="restartNormal"></button></div>
-      </div>
-    </div>
-  </section>
-
-  <!-- normal mode: clear & pick an upgrade -->
+  <!-- challenge mode: clear & pick an upgrade -->
   <section class="screen dim" id="clearScr" hidden>
     <div class="sheet">
       <h2 data-t="clearTitle"></h2>
@@ -120,7 +123,7 @@
     </div>
   </section>
 
-  <!-- normal mode: failed -->
+  <!-- challenge mode: failed -->
   <section class="screen dim" id="failScr" hidden>
     <div class="sheet">
       <h2 data-t="failTitle"></h2>
@@ -181,6 +184,7 @@
   <section class="screen dim" id="upgradeScr" hidden>
     <div class="sheet">
       <h2 data-t="upgrade"></h2>
+      <p class="lead" data-t="upgradeFor"></p>
       <div class="coinbar"><span data-t="coins"></span><span class="coinval"></span></div>
       <div class="list" id="upgradeList"></div>
       <button class="btn" data-close data-t="back"></button>

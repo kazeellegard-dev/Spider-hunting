@@ -11,8 +11,8 @@
       costumes: ['classic'], costume: 'classic',
       bestScore: 0, bestArea: 0, bestDay: 0, scores: [],
       caught: {},
-      normal: { stage: 0, cleared: 0, allClear: false, upgrades: { strength: 0, silk: 0, sticky: 0, speed: 0, appetite: 0, lure: 0 } },
-      plays: 0, tutorialDone: false,
+      challenge: { stage: 0, cleared: 0, allClear: false, upgrades: { strength: 0, silk: 0, sticky: 0, speed: 0, appetite: 0, lure: 0 } },
+      plays: 0, tutorialDone: false, titleMode: 0,
       settings: { sound: true, music: true, vibration: true, lang: 'auto' },
     };
   }
@@ -30,7 +30,12 @@
     load() {
       try {
         const raw = root.localStorage && root.localStorage.getItem(KEY);
-        if (raw) this.data = merge(defaults(), JSON.parse(raw));
+        if (raw) {
+          const saved = JSON.parse(raw);
+          // v1.6 renamed the stage mode (normal -> challenge)
+          if (saved && saved.normal && !saved.challenge) { saved.challenge = saved.normal; delete saved.normal; }
+          this.data = merge(defaults(), saved);
+        }
       } catch (e) { this.data = defaults(); }
       return this.data;
     },

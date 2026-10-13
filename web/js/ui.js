@@ -19,31 +19,30 @@
       document.querySelectorAll('[data-open]').forEach(b => b.addEventListener('click', () => { audio.play('button'); this.open(b.dataset.open); }));
       document.querySelectorAll('[data-close]').forEach(b => b.addEventListener('click', () => { audio.play('button'); this.closeSheet(b.closest('.screen').id); }));
       $('playBtn').addEventListener('click', () => this.startGame());
-      $('normalBtn').addEventListener('click', () => { audio.unlock(); audio.play('button'); this.openStage(); });
       $('sgStart').addEventListener('click', () => this.startStage());
-      $('sgBack').addEventListener('click', () => { audio.play('button'); $('stageScr').hidden = true; this.refreshTitle(); });
       $('sgRestart').addEventListener('click', () => { $('sgConfirm').hidden = false; });
       $('sgNo').addEventListener('click', () => { $('sgConfirm').hidden = true; });
       $('sgYes').addEventListener('click', () => {
-        const d = save.defaults().normal;
-        save.data.normal = d; save.write();
-        $('sgConfirm').hidden = true; audio.play('button'); this.openStage();
+        const d = save.defaults().challenge;
+        save.data.challenge = d; save.write();
+        $('sgConfirm').hidden = true; audio.play('button'); this.renderChallenge();
       });
       $('fRetry').addEventListener('click', () => this.startStage());
-      $('fStages').addEventListener('click', () => { audio.play('button'); this.toTitle(); this.openStage(); });
-      $('clHome').addEventListener('click', () => { audio.play('button'); this.toTitle(); });
+      $('fStages').addEventListener('click', () => { audio.play('button'); this.toTitle(1); });
+      $('clHome').addEventListener('click', () => { audio.play('button'); this.toTitle(1); });
       $('retryBtn').addEventListener('click', () => this.startGame());
       $('homeBtn').addEventListener('click', () => { audio.play('button'); this.toTitle(); });
       $('pauseBtn').addEventListener('click', () => this.pause());
       $('resumeBtn').addEventListener('click', () => this.resume());
       $('quitBtn').addEventListener('click', () => {
         audio.play('button'); $('pauseScr').hidden = true; this.game.paused = false; this.game.run.over = true;
-        if (this.game.runMode === 'normal') { this.game.finishStage(false); this.toTitle(); this.openStage(); }
+        if (this.game.runMode === 'challenge') { this.game.finishStage(false); this.toTitle(1); }
         else this.showResult();
       });
       $('continueBtn').addEventListener('click', () => this.continueGame());
       $('giveUpBtn').addEventListener('click', () => { audio.play('button'); $('overScr').hidden = true; this.showResult(); });
       this.initSettings();
+      this.initModeSelect();
       this.refreshTitle();
     },
 
@@ -71,16 +70,97 @@
       $('tLevel').textContent = s.level;
       $('tCoins').textContent = s.coins.toLocaleString();
       $('tBest').textContent = s.bestScore.toLocaleString();
-      const n = s.normal;
-      $('normalSub').textContent = n.allClear ? t('allClear') : `${t('stage')} ${Math.min(n.stage, root.SH.STAGES.length - 1) + 1}`;
-      $('endlessSub').textContent = s.bestDay ? `${t('bestDay')} ${this.game.dayText(s.bestDay)}` : '';
       $('tDay').textContent = s.bestDay ? this.game.dayText(s.bestDay) : '—';
       $('tLvBar').style.width = Math.min(100, s.exp / D.levelExp(s.level) * 100) + '%';
       document.querySelectorAll('.coinval').forEach(el => { el.textContent = s.coins.toLocaleString(); });
+      this.renderChallenge();
+    },
+
+    // ---------- title mode select ----------
+    // The two modes sit back to back on a drum. Arrows, swipes and the arrow keys turn it
+    // half a turn; the angle keeps growing so it always spins the way you pushed.
+    modeIdx: 0,
+    drumAngle: 0,
+
+    initModeSelect() {
+      const wrap = $('drumWrap'), drum = $('drum');
+      this.modeIdx = save.data.titleMode === 1 ? 1 : 0;
+      this.drumAngle = this.modeIdx * 180;
+      this.applyMode(false);
+      $('modeNext').addEventListener('click', () => this.turnMode(1));
+      $('modePrev').addEventListener('click', () => this.turnMode(-1));
+      document.addEventListener('keydown', e => {
+        if ($('title').hidden || document.querySelector('.screen.dim:not([hidden])')) return;
+        if (e.key === 'ArrowRight') this.turnMode(1);
+        else if (e.key === 'ArrowLeft') this.turnMode(-1);
+      });
+      // drag: the drum follows the finger, then settles on the nearest face
+      let drag = null;
+      wrap.addEventListener('pointerdown', e => {
+        if (!e.isPrimary) return;
+        drag = { x: e.clientX, y: e.clientY, id: e.pointerId, moved: false, t: performance.now() };
+      });
+      wrap.addEventListener('pointermove', e => {
+        if (!drag || e.pointerId !== drag.id) return;
+        const dx = e.clientX - drag.x, dy = e.clientY - drag.y;
+        if (!drag.moved) {
+          if (Math.abs(dx) < 10 || Math.abs(dx) < Math.abs(dy)) { if (Math.abs(dy) > 12) drag = null; return; }
+          drag.moved = true;
+          drum.classList.add('dragging');
+          try { wrap.setPointerCapture(e.pointerId); } catch (err) { /* ignore */ }
+        }
+        const k = Math.max(-1, Math.min(1, dx / wrap.clientWidth));
+        drum.style.transform = `translateZ(-70px) rotateY(${this.drumAngle - k * 180}deg)`;
+      });
+      const end = e => {
+        if (!drag || e.pointerId !== drag.id) return;
+        const d = drag; drag = null;
+        if (!d.moved) return;
+        drum.classList.remove('dragging');
+        const dx = e.clientX - d.x, v = dx / Math.max(1, performance.now() - d.t);
+        // swallow the click that follows a drag so buttons on the face don't fire
+        const block = ev => { ev.stopPropagation(); ev.preventDefault(); };
+        wrap.addEventListener('click', block, { capture: true, once: true });
+        setTimeout(() => wrap.removeEventListener('click', block, { capture: true }), 50);
+        if (Math.abs(dx) > wrap.clientWidth * 0.22 || Math.abs(v) > 0.5) this.turnMode(dx < 0 ? 1 : -1);
+        else this.applyMode(true);
+      };
+      wrap.addEventListener('pointerup', end);
+      wrap.addEventListener('pointercancel', end);
+    },
+
+    turnMode(dir) {
+      audio.unlock();
+      audio.play('spin');
+      this.modeIdx = (this.modeIdx + 1) % 2;
+      this.drumAngle += dir * 180;
+      $('sgConfirm').hidden = true;
+      if (save.data.titleMode !== this.modeIdx) { save.data.titleMode = this.modeIdx; save.write(); }
+      this.applyMode(true);
+    },
+
+    applyMode(animate) {
+      const drum = $('drum');
+      if (!animate) drum.classList.add('dragging');
+      drum.style.transform = `translateZ(-70px) rotateY(${this.drumAngle}deg)`;
+      if (!animate) { void drum.offsetWidth; drum.classList.remove('dragging'); }
+      const ch = this.modeIdx === 1;
+      $('faceMain').inert = ch; $('faceChallenge').inert = !ch;
+      $('faceMain').setAttribute('aria-hidden', ch); $('faceChallenge').setAttribute('aria-hidden', !ch);
+      $('modeDots').classList.toggle('ch', ch);
+      $('modeDots').querySelectorAll('i').forEach((el, i) => el.classList.toggle('on', i === this.modeIdx));
+    },
+
+    setMode(idx) {
+      if (this.modeIdx === idx) return;
+      this.modeIdx = idx;
+      this.drumAngle = idx * 180;
+      if (save.data.titleMode !== idx) { save.data.titleMode = idx; save.write(); }
+      this.applyMode(false);
     },
 
     // ---------- flow ----------
-    // ---------- normal mode ----------
+    // ---------- challenge mode ----------
     goalText(goal) {
       const tpl = t('goal')[goal.type];
       const k = goal.type === 'kind' ? t('kindNames')[goal.key] : goal.type === 'type' ? this.insectName(goal.key) : goal.key;
@@ -99,8 +179,8 @@
       }
     },
 
-    openStage() {
-      const n = save.data.normal;
+    renderChallenge() {
+      const n = save.data.challenge;
       const STAGES = root.SH.STAGES;
       const idx = Math.min(n.stage, STAGES.length - 1);
       const st = STAGES[idx];
@@ -110,19 +190,16 @@
       this.fillGoals($('sgGoals'), st.goals.map(goal => ({ goal, cur: 0, target: goal.n, done: false })));
       const ups = D.UPGRADES.filter(u => n.upgrades[u.id]).map(u => `<span>${t('upgradeNames')[u.id]} Lv${n.upgrades[u.id]}</span>`);
       $('sgUps').innerHTML = ups.length ? ups.join('') : `<span>${t('none')}</span>`;
-      $('sgConfirm').hidden = true;
-      $('stageScr').hidden = false;
-      $('stageScr').scrollTop = 0;
     },
 
     startStage() {
       audio.unlock();
       audio.play('button');
-      ['title', 'stageScr', 'failScr', 'clearScr', 'resultScr', 'overScr', 'pauseScr'].forEach(id => { $(id).hidden = true; });
+      ['title', 'failScr', 'clearScr', 'resultScr', 'overScr', 'pauseScr'].forEach(id => { $(id).hidden = true; });
       $('hud').hidden = false; $('hint').hidden = true;
       $('missionBox').hidden = false; $('bestHud').hidden = true;
       this.hudCache = {};
-      this.game.startRun({ stage: Math.min(save.data.normal.stage, root.SH.STAGES.length - 1) });
+      this.game.startRun({ stage: Math.min(save.data.challenge.stage, root.SH.STAGES.length - 1) });
     },
 
     stageClear() {
@@ -148,7 +225,7 @@
     renderPicks() {
       const list = $('pickList');
       list.innerHTML = '';
-      const ups = save.data.normal.upgrades;
+      const ups = save.data.challenge.upgrades;
       for (const u of D.UPGRADES) {
         const lv = ups[u.id] || 0;
         const el = document.createElement('div');
@@ -164,10 +241,10 @@
         btn.textContent = lv >= u.max ? t('max') : t('pick');
         btn.disabled = lv >= u.max;
         btn.addEventListener('click', () => {
-          save.data.normal.upgrades[u.id] = lv + 1;
+          save.data.challenge.upgrades[u.id] = lv + 1;
           save.write(); audio.play('buy');
           $('clearScr').hidden = true;
-          this.toTitle(); this.openStage();
+          this.toTitle(1);
         });
         el.append(icon, mid, btn);
         list.append(el);
@@ -179,7 +256,7 @@
       const states = g.goalStates();
       const r = g.finishStage(false);
       $('hud').hidden = true; $('tutorial').hidden = true; $('hint').hidden = true;
-      $('fReason').textContent = reason === 'time' ? t('failTime') : t('failHunger');
+      $('fReason').textContent = reason === 'time' ? t('failTime') : t('failSilk');
       this.fillGoals($('fGoals'), states);
       $('fCoins').textContent = '+' + r.coins.toLocaleString();
       $('failScr').hidden = false;
@@ -193,11 +270,12 @@
       $('hud').hidden = false;
       $('hint').hidden = true;
       $('missionBox').hidden = true; $('bestHud').hidden = false;
-      ['stageScr', 'failScr', 'clearScr'].forEach(id => { $(id).hidden = true; });
+      ['failScr', 'clearScr'].forEach(id => { $(id).hidden = true; });
       this.hudCache = {};
       this.game.startRun();
     },
-    toTitle() {
+    toTitle(mode) {
+      if (mode != null) this.setMode(mode);
       ['resultScr', 'overScr', 'pauseScr', 'failScr', 'clearScr'].forEach(id => { $(id).hidden = true; });
       $('hud').hidden = true; $('tutorial').hidden = true; $('hint').hidden = true;
       $('title').hidden = false;
@@ -265,8 +343,7 @@
         bar.classList.toggle('low', pct < warn);
         bar.classList.toggle('mid', pct >= warn && pct < warn * 2.2);
       };
-      setBar('hungerBar', run.hunger / g.st.maxHunger, 22);
-      setBar('silkBar', run.silk / g.st.maxSilk, 15);
+      setBar('silkBar', run.silk / g.st.maxSilk, 22);
       // the bonus bar doubles as the glowing-silk timer after bonus time
       const glowing = run.glow > 0 && run.bonusTimer <= 0;
       const bonusFrac = run.bonusTimer > 0 ? run.bonusTimer / D.BALANCE.bonusDuration
@@ -279,7 +356,7 @@
         $('bonusBar').classList.toggle('glow', glowing);
         $('bonusLabel').textContent = glowing ? t('glowGauge') : t('bonusGauge');
       }
-      if (g.runMode === 'normal' && g.stage) {
+      if (g.runMode === 'challenge' && g.stage) {
         const states = g.goalStates();
         const key = states.map(x => x.cur + (x.done ? '!' : '')).join(',') + '|' + Math.ceil(run.timeLeft);
         if (c.mission !== key) {
@@ -301,7 +378,7 @@
       if (c.area !== dayKey) {
         c.area = dayKey;
         const icon = D.AREAS[g.areaIdx].night ? '☾' : '☀';
-        $('areaName').textContent = g.runMode === 'normal' ? `${icon} ${t('areaNames')[g.areaIdx]}` : `${icon} ${g.dayText(run.day)}・${t('areaNames')[g.areaIdx]}`;
+        $('areaName').textContent = g.runMode === 'challenge' ? `${icon} ${t('areaNames')[g.areaIdx]}` : `${icon} ${g.dayText(run.day)}・${t('areaNames')[g.areaIdx]}`;
       }
       if (c.best === undefined) { c.best = save.data.bestScore; $('bestHud').textContent = t('best') + ' ' + save.data.bestScore.toLocaleString(); }
     },

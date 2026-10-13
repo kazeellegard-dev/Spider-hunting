@@ -136,7 +136,7 @@ button:focus-visible { outline: 3px solid var(--sky); outline-offset: 2px; }
 
 /* title */
 #title { justify-content: space-between; }
-.logo { text-align: center; margin-top: 4vh; display: grid; gap: 0; justify-items: center; }
+.logo { text-align: center; margin-top: 2vh; display: grid; gap: 0; justify-items: center; }
 .logo .l1, .logo .l2 {
   font-weight: 900; line-height: 1.05; color: var(--silk);
   text-shadow: 0 4px 0 var(--ink), 0 0 20px rgba(42,34,68,0.45);
@@ -215,13 +215,7 @@ dl.kv dd { margin: 0; font-weight: 900; text-align: right; font-variant-numeric:
 .zdetail .zcatch.boss { color: var(--honey); }
 .zcard.boss { box-shadow: inset 0 0 0 2px rgba(255, 224, 102, 0.9), 0 0 10px rgba(255, 224, 102, 0.35); }
 
-/* mode buttons */
-.mode-row .btn { display: grid; gap: 2px; justify-items: center; padding: 14px 8px; }
-.mode-row .btn small { font-size: 11px; font-weight: 800; opacity: 0.75; }
-.btn.primary.endless { background: var(--sky); box-shadow: 0 5px 0 #4f9fd0; }
-.btn.primary.endless:active { box-shadow: 0 2px 0 #4f9fd0; }
-
-/* normal mode */
+/* challenge mode */
 .glabel { font-size: 12px; font-weight: 900; letter-spacing: 0.08em; color: #cfc6ee; }
 .goalbox { display: grid; gap: 6px; background: rgba(255,255,255,0.08); border-radius: 16px; padding: 12px 14px; }
 ul.goals { margin: 0; padding: 0; list-style: none; display: grid; gap: 6px; }
@@ -245,3 +239,70 @@ ul.goals li.done .p { color: var(--leaf); }
 .mission li { display: flex; justify-content: space-between; gap: 8px; font-size: 12px; font-weight: 800; text-shadow: 0 1px 2px rgba(0,0,0,0.5); }
 .mission li .p { font-variant-numeric: tabular-nums; }
 .mission li.done { color: var(--leaf); }
+
+/* title mode select: two faces on a turning drum, like picking a cabinet in an arcade */
+.modesel { position: relative; }
+.drum-wrap { perspective: 1100px; touch-action: pan-y; }
+.drum {
+  display: grid; transform-style: preserve-3d; -webkit-transform-style: preserve-3d;
+  transform: translateZ(-70px) rotateY(0deg);
+  transition: transform 0.75s cubic-bezier(0.3, 1.3, 0.5, 1);
+}
+.drum.dragging { transition: none; }
+.mface {
+  grid-area: 1 / 1; align-self: start;
+  -webkit-backface-visibility: hidden; backface-visibility: hidden;
+  display: grid; gap: 10px; padding: 0 16px 16px; border-radius: 24px;
+  background: var(--panel); border: 3px solid var(--honey);
+  box-shadow: 0 10px 30px rgba(10,6,24,0.45), inset 0 0 0 2px rgba(255,255,255,0.06);
+}
+.mface.main { transform: rotateY(0deg) translateZ(70px); }
+.mface.challenge { transform: rotateY(180deg) translateZ(70px); border-color: var(--berry); }
+.marquee {
+  margin: -3px -19px 0; padding: 9px 12px 8px; border-radius: 22px 22px 14px 14px; text-align: center;
+  background: linear-gradient(180deg, #ffe08a, var(--honey) 55%, var(--honey-deep));
+  color: var(--ink); font-size: 22px; font-weight: 900; letter-spacing: 0.06em;
+  box-shadow: 0 4px 0 rgba(0,0,0,0.18);
+}
+.mface.challenge .marquee { background: linear-gradient(180deg, #ffb3c8, var(--berry) 55%, #d9446f); color: #fff; text-shadow: 0 2px 0 rgba(42,34,68,0.35); }
+.mdesc { margin: 0; text-align: center; font-size: 13px; font-weight: 800; color: #d9d2f2; line-height: 1.5; }
+.mface .statline { background: rgba(255,255,255,0.07); }
+.mface.challenge .btn.primary { background: var(--berry); color: #fff; box-shadow: 0 5px 0 #d9446f; }
+.mface.challenge .btn.primary:active { box-shadow: 0 2px 0 #d9446f; }
+.sghead { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 2px 10px; }
+.sghead b { font-size: 18px; font-weight: 900; white-space: nowrap; }
+.sghead span { font-size: 12px; font-weight: 800; color: #cfc6ee; white-space: nowrap; }
+.mface .stagedots { grid-template-columns: repeat(15, 1fr); gap: 4px; }
+.mface .stagedots i { font-size: 8px; }
+.mface .goalbox { padding: 10px 12px; }
+.mface ul.goals li { font-size: 14px; }
+.mface .link { justify-self: center; }
+.marrow {
+  position: absolute; top: 50%; z-index: 2; width: 38px; height: 38px; margin-top: -19px; padding: 0;
+  border: 2px solid rgba(255,255,255,0.5); border-radius: 50%; cursor: pointer;
+  background: var(--ink); box-shadow: 0 3px 0 rgba(0,0,0,0.3); display: grid; place-items: center;
+}
+.marrow svg { width: 18px; height: 18px; fill: none; stroke: var(--silk); stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+.marrow.prev { left: -12px; }
+.marrow.next { right: -12px; animation: nudge 1.6s ease-in-out infinite; }
+.marrow:active { transform: translateY(2px); }
+@keyframes nudge { 50% { transform: translateX(3px); } }
+.mdots { display: flex; justify-content: center; align-items: center; gap: 6px; }
+.mdots i { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,0.3); transition: background 0.2s, width 0.2s; }
+.mdots i.on { width: 20px; border-radius: 4px; background: var(--honey); }
+.mdots.ch i.on { background: var(--berry); }
+.mdots span { margin-left: 6px; font-size: 11px; font-weight: 800; color: #e9e3ff; }
+.mface .chips span { font-size: 11px; padding: 3px 9px; }
+/* short phones (SE class): tighten the title so the whole cabinet fits */
+@media (max-height: 760px) {
+  .logo .l1 { font-size: clamp(28px, 8.5vw, 40px); }
+  .logo .l2 { font-size: clamp(32px, 10vw, 46px); }
+  .logo .tag { display: none; }
+  .title-panel { gap: 8px; }
+  .mface { gap: 8px; padding-bottom: 12px; }
+  .marquee { font-size: 19px; padding: 7px 12px 6px; }
+  .mdesc { font-size: 12px; }
+  .mface .btn.primary { padding: 12px 18px; font-size: 20px; }
+  .mface .goalbox { padding: 8px 12px; gap: 4px; }
+  .menu-grid .btn { padding: 10px 4px; }
+}

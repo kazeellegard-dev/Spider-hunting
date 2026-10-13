@@ -54,15 +54,14 @@
       this.bgPrev = null;
     }
 
-    // endless: coin upgrades + level bonus. normal: the stage run's own picks, no level bonus
+    // endless: coin upgrades + level bonus. challenge: the stage run's own picks, no level bonus
     stats(mode) {
       const s = root.SH.save.data;
-      const normal = (mode || this.runMode) === 'normal';
-      const u = normal ? s.normal.upgrades : s.upgrades;
-      const lv = normal ? 0 : s.level - 1;
+      const ch = (mode || this.runMode) === 'challenge';
+      const u = ch ? s.challenge.upgrades : s.upgrades;
+      const lv = ch ? 0 : s.level - 1;
       return {
         strength: B.baseStrength + (u.strength || 0) * B.strengthPerUpgrade + lv * B.strengthPerLevel,
-        maxHunger: B.baseHunger,
         maxSilk: B.baseMaxSilk + (u.silk || 0) * B.silkPerUpgrade + lv * B.silkPerLevel,
         struggle: B.baseStruggle + (u.sticky || 0) * B.strugglePerUpgrade,
         speed: B.baseSpeed * (1 + (u.speed || 0) * B.speedPerUpgrade),
@@ -121,18 +120,18 @@
       this.paused = false;
     }
 
-    // opts.stage: 0-based stage index for normal mode; omitted = endless
+    // opts.stage: 0-based stage index for challenge mode; omitted = endless
     startRun(opts) {
       opts = opts || {};
       const stage = opts.stage != null ? root.SH.STAGES[opts.stage] : null;
       this.mode = 'play';
-      this.runMode = stage ? 'normal' : 'endless';
+      this.runMode = stage ? 'challenge' : 'endless';
       this.stage = stage; this.stageIdx = stage ? opts.stage : -1;
       this.st = this.stats();
       this.resetWorld();
       const save = root.SH.save.data;
       const run = this.run = {
-        score: 0, silk: this.st.maxSilk, hunger: this.st.maxHunger, glow: 0, time: 0, combo: 0, lastEat: -99, maxCombo: 0, catches: 0,
+        score: 0, silk: this.st.maxSilk, glow: 0, time: 0, combo: 0, lastEat: -99, maxCombo: 0, catches: 0,
         bonusGauge: 0, bonusTimer: 0, coins: 0, caught: {}, continued: false, over: false, dying: 0,
         windTimer: rand(22, 34), wind: 0, windLeft: 0, maxArea: 0, day: 1, phase: 0, phaseT: 0,
         gustTimer: -1, gustLeft: 0, gusts: 0, mode: this.runMode,
@@ -157,7 +156,6 @@
     continueRun() {
       const run = this.run;
       run.continued = true; run.over = false; run.dying = 0;
-      run.hunger = this.st.maxHunger * 0.5;
       run.silk = Math.max(run.silk, this.st.maxSilk * 0.5);
       this.spider.sad = false;
       this.paused = false;
@@ -305,20 +303,17 @@
       }
       run.time += dt;
       const inBonus = run.bonusTimer > 0;
-      // the tummy drains over time and faster as the run goes on (the run's clock)
+      // silk drains over time and faster as the run goes on (the run's clock)
       const tutorialFree = run.tutorial && run.tutorial < 4;
       if (!tutorialFree) {
         const st = this.stage;
-        const drain = st ? st.drain + run.time * st.ramp : Math.min(B.drainMax, B.drainBase + run.time * B.drainRamp);
-        run.hunger -= drain * dt * (inBonus ? 0.5 : 1);
+        const drain = st ? st.drain + run.time * st.ramp : Math.min(B.drainMax, B.drainBase + run.time * B.drainRamp + run.time * run.time * B.drainCurve);
+        run.silk -= drain * dt * (inBonus ? 0.5 : 1);
       }
-      if (!run.tutorial) {
-        if (run.hunger < this.st.maxHunger * 0.25 && !run.lowHinted) { run.lowHinted = true; this.hooks.hint(t('lowHunger')); }
-        if (run.silk < this.st.maxSilk * 0.15 && !run.lowSilkHinted) { run.lowSilkHinted = true; this.hooks.hint(t('lowSilk')); }
-      }
-      if (run.hunger <= 0 && run.mode === 'normal') { run.hunger = 0; this.failStage('hunger'); return; }
-      if (run.hunger <= 0) {
-        run.hunger = 0;
+      if (run.silk < this.st.maxSilk * 0.2 && !run.lowHinted && !run.tutorial) { run.lowHinted = true; this.hooks.hint(t('lowSilk')); }
+      if (run.silk <= 0 && run.mode === 'challenge') { run.silk = 0; this.failStage('silk'); return; }
+      if (run.silk <= 0) {
+        run.silk = 0;
         run.dying = 1.3;
         sp.sad = true;
         audio.play('gameover');
@@ -416,7 +411,7 @@
           }
         }
       } else run.wind = 0;
-      if (run.mode === 'normal') { if (this.updateStage(dt)) return; }
+      if (run.mode === 'challenge') { if (this.updateStage(dt)) return; }
       // time of day: morning -> daytime -> evening -> night -> next morning
       else if (!run.tutorial || run.tutorial >= 4) {
         run.phaseT += dt;
@@ -446,7 +441,7 @@
       return B.bonusNeed + (this.run.bonuses || 0) * B.bonusNeedStep;
     }
 
-    // ---------- normal mode ----------
+    // ---------- challenge mode ----------
     updateStage(dt) {
       const run = this.run, st = this.stage;
       if (run.tutorial && run.tutorial < 4) return false;
@@ -510,7 +505,7 @@
       setTimeout(() => this.hooks.stageFail(reason), 900);
     }
 
-    // rewards for a finished normal stage; on clear, unlock the next stage
+    // rewards for a finished challenge stage; on clear, unlock the next stage
     finishStage(cleared) {
       const run = this.run, save = root.SH.save.data;
       const coins = Math.floor(run.score * B.coinsPerScore) + run.coins + (cleared ? 20 + this.stageIdx * 5 : 0);
@@ -522,9 +517,9 @@
       save.plays++;
       if (run.tutorial) save.tutorialDone = true;
       if (cleared) {
-        save.normal.cleared = Math.max(save.normal.cleared || 0, this.stageIdx + 1);
-        save.normal.stage = Math.min(this.stageIdx + 1, root.SH.STAGES.length - 1);
-        if (this.stageIdx + 1 >= root.SH.STAGES.length) save.normal.allClear = true;
+        save.challenge.cleared = Math.max(save.challenge.cleared || 0, this.stageIdx + 1);
+        save.challenge.stage = Math.min(this.stageIdx + 1, root.SH.STAGES.length - 1);
+        if (this.stageIdx + 1 >= root.SH.STAGES.length) save.challenge.allClear = true;
       }
       root.SH.save.write();
       return { score: run.score, coins, levels, level: save.level, stage: this.stageIdx };
@@ -542,7 +537,7 @@
     enterPhase() {
       const run = this.run;
       const idx = D.phaseArea(run.phase, run.day);
-      if (run.phase === 0 && run.day >= B.gustFromDay && run.mode !== 'normal') run.gustTimer = rand(B.gustDelay[0], B.gustDelay[1]);
+      if (run.phase === 0 && run.day >= B.gustFromDay && run.mode !== 'challenge') run.gustTimer = rand(B.gustDelay[0], B.gustDelay[1]);
       if (run.phase === 0) {
         const record = run.day > (root.SH.save.data.bestDay || 0) && root.SH.save.data.bestDay > 0;
         this.enterArea(idx, this.dayText(run.day), record ? t('newDayRecord') : t('areaNames')[idx]);
@@ -782,7 +777,7 @@
       this.floatText(ins.x, ins.y - 20, t('escaped'), '#ffffff', 13);
       run.combo = 0;
       if (ins.def.sting) {
-        run.hunger = Math.max(0.5, run.hunger - ins.def.sting);
+        run.silk = Math.max(0.5, run.silk - ins.def.sting);
         this.spider.hurt = 0.5;
         audio.play('sting');
         platform.haptic('heavy');
@@ -812,8 +807,7 @@
       run.kinds[def.kind] = (run.kinds[def.kind] || 0) + 1;
       run.weights.push(def.weight);
       if (def.boss) run.bosses++;
-      run.hunger = Math.min(this.st.maxHunger, run.hunger + def.silk * this.st.appetite);
-      run.silk = Math.min(this.st.maxSilk, run.silk + def.silk * B.silkPerFood * (def.silkBonus || 1));
+      run.silk = Math.min(this.st.maxSilk, run.silk + def.silk * this.st.appetite);
       if (run.bonusTimer <= 0) run.bonusGauge = Math.min(this.bonusNeed(), run.bonusGauge + 1 + (run.combo >= 5 ? 0.5 : 0));
       if (def.coins) { run.coins += def.coins; audio.play('coin'); this.floatText(ins.x, ins.y - 44, '+' + def.coins + ' ' + t('coins'), '#ffd23f', 15); }
       audio.play('pop', run.combo);
