@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>クモの巣ハンティング</title>
+<meta name="theme-color" content="#2a2244">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="クモの巣">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@700;800;900&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<!-- BODY:START -->
+<div id="stage">
+  <canvas id="game" aria-label="game"></canvas>
+
+  <div id="hud" hidden>
+    <div class="hud-silk">
+      <div class="hud-label"><span data-t="silk"></span><span id="areaName"></span></div>
+      <div class="bar" id="silkBar"><i></i></div>
+      <div class="bar bonus" id="bonusBar"><i style="width:0%"></i></div>
+    </div>
+    <div class="hud-right">
+      <div class="score" id="score">0</div>
+      <button class="icon-btn" id="pauseBtn" aria-label="pause"><svg viewBox="0 0 20 20"><rect x="4" y="3" width="4" height="14" rx="1.5"/><rect x="12" y="3" width="4" height="14" rx="1.5"/></svg></button>
+    </div>
+    <div class="hud-sub"><span id="combo"></span><span id="bestHud"></span></div>
+  </div>
+
+  <div id="banner"><div class="big"></div><div class="small"></div></div>
+  <div class="bubble" id="tutorial" hidden></div>
+  <div class="bubble" id="hint" hidden></div>
+  <div id="toast" hidden></div>
+
+  <!-- title -->
+  <section class="screen" id="title">
+    <div class="logo">
+      <div class="l1" data-t="title1"></div>
+      <div class="l2" data-t="title2"></div>
+      <div class="tag" data-t="demoHint"></div>
+    </div>
+    <div class="title-panel">
+      <div class="statline">
+        <div><b id="tLevel">1</b><span data-t="level"></span></div>
+        <div><b id="tCoins">0</b><span data-t="coins"></span></div>
+        <div><b id="tBest">0</b><span data-t="best"></span></div>
+        <div class="lvbar"><i id="tLvBar" style="width:0%"></i></div>
+      </div>
+      <button class="btn primary" id="playBtn" data-t="play"></button>
+      <div class="menu-grid">
+        <button class="btn" data-open="upgradeScr" data-t="upgrade"></button>
+        <button class="btn" data-open="wardrobeScr" data-t="wardrobe"></button>
+        <button class="btn" data-open="zukanScr" data-t="zukan"></button>
+        <button class="btn" data-open="settingsScr" data-t="settings"></button>
+      </div>
+      <div class="menu-foot">
+        <button class="link" data-open="howtoScr" data-t="howto"></button>
+        <button class="link" data-open="rankScr" data-t="ranking"></button>
+      </div>
+    </div>
+  </section>
+
+  <!-- pause -->
+  <section class="screen dim" id="pauseScr" hidden>
+    <div class="sheet">
+      <h2 data-t="paused"></h2>
+      <button class="btn primary" id="resumeBtn" data-t="resume"></button>
+      <button class="btn" id="quitBtn" data-t="quit"></button>
+    </div>
+  </section>
+
+  <!-- game over / continue -->
+  <section class="screen dim" id="overScr" hidden>
+    <div class="sheet">
+      <h2 data-t="gameover"></h2>
+      <p class="lead" data-t="continueAsk"></p>
+      <button class="btn primary" id="continueBtn" data-t="continueBtn"></button>
+      <button class="btn ghost" id="giveUpBtn" data-t="giveUp"></button>
+    </div>
+  </section>
+
+  <!-- result -->
+  <section class="screen dim" id="resultScr" hidden>
+    <div class="sheet">
+      <h2 data-t="result"></h2>
+      <div class="result-score" id="rScore">0</div>
+      <div class="badge" id="rBest" data-t="newBest" hidden></div>
+      <dl class="kv">
+        <dt data-t="catches"></dt><dd id="rCatches"></dd>
+        <dt data-t="maxCombo"></dt><dd id="rCombo"></dd>
+        <dt data-t="areaReached"></dt><dd id="rArea"></dd>
+        <dt data-t="expGained"></dt><dd id="rExp"></dd>
+        <dt data-t="coinsGained"></dt><dd id="rCoins"></dd>
+      </dl>
+      <div class="lvup" id="rLevel" hidden></div>
+      <div class="row">
+        <button class="btn" id="homeBtn" data-t="home"></button>
+        <button class="btn primary" id="retryBtn" data-t="retry"></button>
+      </div>
+    </div>
+  </section>
+
+  <!-- upgrade -->
+  <section class="screen dim" id="upgradeScr" hidden>
+    <div class="sheet">
+      <h2 data-t="upgrade"></h2>
+      <div class="coinbar"><span data-t="coins"></span><span class="coinval"></span></div>
+      <div class="list" id="upgradeList"></div>
+      <button class="btn" data-close data-t="back"></button>
+    </div>
+  </section>
+
+  <!-- wardrobe -->
+  <section class="screen dim" id="wardrobeScr" hidden>
+    <div class="sheet">
+      <h2 data-t="wardrobe"></h2>
+      <div class="coinbar"><span data-t="coins"></span><span class="coinval"></span></div>
+      <div class="list" id="wardrobeList"></div>
+      <button class="btn" data-close data-t="back"></button>
+    </div>
+  </section>
+
+  <!-- zukan -->
+  <section class="screen dim" id="zukanScr" hidden>
+    <div class="sheet">
+      <h2 data-t="zukan"></h2>
+      <div class="zukan-grid" id="zukanGrid"></div>
+      <div class="zdetail" id="zukanDetail" hidden></div>
+      <button class="btn" data-close data-t="back"></button>
+    </div>
+  </section>
+
+  <!-- ranking -->
+  <section class="screen dim" id="rankScr" hidden>
+    <div class="sheet">
+      <h2 data-t="ranking"></h2>
+      <ol class="ranking" id="rankList"></ol>
+      <button class="btn" data-close data-t="back"></button>
+    </div>
+  </section>
+
+  <!-- how to -->
+  <section class="screen dim" id="howtoScr" hidden>
+    <div class="sheet">
+      <h2 data-t="howto"></h2>
+      <p class="howto" data-t="howtoBody"></p>
+      <button class="btn" data-close data-t="close"></button>
+    </div>
+  </section>
+
+  <!-- settings -->
+  <section class="screen dim" id="settingsScr" hidden>
+    <div class="sheet">
+      <h2 data-t="settings"></h2>
+      <div class="setting"><span data-t="sound"></span><button class="btn small" id="setSound"></button></div>
+      <div class="setting"><span data-t="music"></span><button class="btn small" id="setMusic"></button></div>
+      <div class="setting"><span data-t="vibration"></span><button class="btn small" id="setVib"></button></div>
+      <div class="setting"><span data-t="language"></span><button class="btn small" id="setLang"></button></div>
+      <div class="setting"><span data-t="resetData"></span><button class="btn small" id="resetBtn">!</button></div>
+      <div class="sheet" id="resetConfirm" hidden style="padding:12px;gap:10px">
+        <p class="lead" data-t="resetConfirm"></p>
+        <div class="row"><button class="btn small" id="resetNo" data-t="back"></button><button class="btn small primary" id="resetYes" data-t="resetData"></button></div>
+      </div>
+      <button class="btn" data-close data-t="back"></button>
+    </div>
+  </section>
+</div>
+<!-- BODY:END -->
+<script src="js/physics.js"></script>
+<script src="js/data.js"></script>
+<script src="js/i18n.js"></script>
+<script src="js/save.js"></script>
+<script src="js/platform.js"></script>
+<script src="js/audio.js"></script>
+<script src="js/render.js"></script>
+<script src="js/game.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
