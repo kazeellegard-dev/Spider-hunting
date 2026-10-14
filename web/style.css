@@ -111,6 +111,8 @@ button:focus-visible { outline: 3px solid var(--sky); outline-offset: 2px; }
 .screen.dim { background: rgba(26, 20, 44, 0.62); z-index: 5; }
 /* auto margins centre short sheets but, unlike justify-content, never clip the top of tall ones */
 .screen.dim > .sheet { margin-block: auto; flex-shrink: 0; }
+/* sheets opened on top of another sheet (shop, Bugdex...) must not let the one below show through */
+#mainScr ~ .screen.dim > .sheet { background: #2f2750; }
 .sheet {
   width: 100%; max-width: 440px; background: var(--panel); border: 2px solid rgba(255,255,255,0.18);
   border-radius: 24px; padding: 20px 18px; display: grid; gap: 14px;
@@ -235,15 +237,29 @@ ul.goals li.done .p { color: var(--leaf); }
 .stagedots i.now { background: var(--honey); color: var(--ink); box-shadow: 0 0 0 2px #fff; }
 .confirm { display: grid; gap: 10px; background: rgba(255,90,90,0.15); border-radius: 14px; padding: 12px; }
 
-/* in-game mission panel */
-.mission { grid-column: 1 / -1; display: grid; gap: 3px; background: rgba(42,34,68,0.86); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); border-radius: 12px; padding: 6px 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.25); transition: opacity 0.25s; }
-.mission.peek { opacity: 0.28; }
-.mission .mtime { font-size: 12px; font-weight: 900; color: var(--honey); font-variant-numeric: tabular-nums; }
+/* in-game mission: one slim line (time + a chip per goal), like a puzzle game's mission bar.
+   The full mission text is on the start and pause screens. */
+.mission {
+  grid-column: 1 / -1; justify-self: start; max-width: 100%; display: flex; align-items: center; gap: 5px;
+  background: rgba(42,34,68,0.72); border: 1.5px solid rgba(255,255,255,0.55); border-radius: 99px; padding: 2px 4px 2px 8px;
+  font-size: 12px; font-weight: 900; line-height: 1; white-space: nowrap; transition: background 0.3s, border-color 0.3s;
+}
+.mission .mtime { color: var(--honey); font-variant-numeric: tabular-nums; min-width: 2.6em; }
 .mission .mtime.low { color: var(--danger); }
-.mission ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 2px; }
-.mission li { display: flex; justify-content: space-between; gap: 8px; font-size: 12px; font-weight: 800; text-shadow: 0 1px 2px rgba(0,0,0,0.5); }
-.mission li .p { font-variant-numeric: tabular-nums; }
-.mission li.done { color: var(--leaf); }
+.mission .mgoals { display: flex; gap: 4px; min-width: 0; }
+.mchip { display: inline-flex; align-items: center; gap: 3px; min-width: 0; padding: 2px 7px 2px 3px; border-radius: 99px; background: rgba(255,255,255,0.12); transition: background 0.3s, transform 0.2s; }
+.mchip .gi { width: 18px; height: 18px; flex: none; font-size: 13px; line-height: 18px; text-align: center; }
+.mchip b { overflow: hidden; text-overflow: ellipsis; max-width: 7.5em; }
+.mchip i { font-style: normal; color: var(--honey); font-variant-numeric: tabular-nums; flex: none; }
+.mchip.done { background: var(--leaf); }
+.mchip.done i { color: #fff; }
+.mchip.done b::before { content: '✓'; margin-right: 2px; }
+.mchip.pop { transform: scale(1.18); }
+.mission .mclear { display: none; color: #fff; padding: 0 4px; }
+.mission.clear { background: linear-gradient(90deg, #3fae5f, var(--leaf)); border-color: #fff; }
+.mission.clear .mclear { display: inline; }
+.mission.clear .mgoals .mchip { background: rgba(255,255,255,0.2); }
+.mission.almost { border-color: var(--leaf); }
 
 /* title mode select: two mode cards on a turning drum, like picking a cabinet in an arcade.
    The cards stay small so the demo spider behind them stays in view. */
@@ -328,3 +344,69 @@ ul.goals li.done .p { color: var(--leaf); }
   .sheet.mode .goalbox { padding: 8px 12px; gap: 4px; }
 }
 #clUpList { justify-self: center; margin-top: -6px; }
+
+/* ---------- v1.9 replay layer ---------- */
+.ptitle { margin-top: 6px; font-size: 12px; font-weight: 900; padding: 3px 12px; border-radius: 99px; background: linear-gradient(90deg, #ffe08a, var(--honey)); color: var(--ink); }
+.ptitle::before { content: '👑 '; }
+.menu-grid.three { grid-template-columns: repeat(3, 1fr); }
+.menu-grid.three .btn { font-size: 13px; padding: 11px 2px; white-space: nowrap; letter-spacing: -0.02em; }
+.statline b { white-space: nowrap; font-size: clamp(14px, 4.4vw, 18px); }
+/* difficulty stars */
+.starsel { display: grid; grid-template-columns: 34px 1fr 34px; align-items: center; gap: 6px; background: rgba(255,255,255,0.07); border-radius: 16px; padding: 6px; }
+.starsel.hot { background: rgba(255,111,154,0.18); box-shadow: inset 0 0 0 2px rgba(255,111,154,0.5); }
+.sarrow { width: 34px; height: 34px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.5); background: var(--ink); display: grid; place-items: center; padding: 0; cursor: pointer; }
+.sarrow svg { width: 16px; height: 16px; fill: none; stroke: var(--silk); stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+.sarrow[disabled] { opacity: 0.3; cursor: default; }
+.smid { text-align: center; display: grid; gap: 2px; }
+.sname { font-size: 17px; font-weight: 900; color: var(--honey); letter-spacing: 0.08em; }
+.srule { font-size: 11px; font-weight: 800; color: #d9d2f2; white-space: pre-line; line-height: 1.45; }
+/* today's tasks */
+.goalbox.odai { padding: 8px 12px; gap: 4px; }
+.goalbox.odai ul.goals li { font-size: 13px; }
+.goalbox.odai .drops { color: #9fdcff; letter-spacing: 0; }
+.onote { font-size: 10px; font-weight: 800; color: #b9b0d9; }
+/* tabs */
+.tabs { display: flex; flex-wrap: wrap; gap: 5px; justify-content: center; }
+.tabs button { border: 0; border-radius: 99px; padding: 6px 11px; font-size: 13px; font-weight: 900; background: rgba(255,255,255,0.1); cursor: pointer; }
+.tabs button.on { background: var(--honey); color: var(--ink); }
+.wdpreview { width: 100%; max-width: 300px; aspect-ratio: 300 / 140; justify-self: center; border-radius: 16px; box-shadow: 0 0 0 2px rgba(255,255,255,0.2); }
+.dropicon { margin-left: 10px; }
+.dropval { color: #9fdcff; }
+.btn.small.drop { background: #9fdcff; box-shadow: 0 3px 0 #5aa8d8; }
+.item.notile { grid-template-columns: 1fr auto; }
+.item.ach { grid-template-columns: 1fr; }
+.item.ach.complete { background: rgba(79,191,115,0.18); }
+.abar { height: 6px; border-radius: 4px; background: rgba(255,255,255,0.15); overflow: hidden; margin-top: 6px; }
+.abar i { display: block; height: 100%; background: var(--honey); }
+.item.ach.complete .abar i { background: var(--leaf); }
+.setbugs { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
+.setbugs canvas { width: 34px; height: 34px; border-radius: 8px; background: rgba(255,255,255,0.08); }
+.setbugs canvas.r1 { box-shadow: inset 0 0 0 2px #c98a5b; }
+.setbugs canvas.r2 { box-shadow: inset 0 0 0 2px #cfd8ee; }
+.setbugs canvas.r3 { box-shadow: inset 0 0 0 2px #ffd23f; background: rgba(255,210,63,0.18); }
+/* bugdex medals */
+.medals { display: flex; gap: 3px; justify-content: center; }
+.medals i { font-style: normal; width: 15px; height: 15px; border-radius: 50%; background: rgba(255,255,255,0.14); font-size: 9px; font-weight: 900; line-height: 15px; color: rgba(255,255,255,0.45); }
+.medals i.r1 { background: #c98a5b; } .medals i.r2 { background: #cfd8ee; } .medals i.r3 { background: #ffd23f; box-shadow: 0 0 6px #ffd23f; }
+.medals i.sz.g { background: #ffd23f; color: var(--ink); }
+.zcard.shiny { box-shadow: inset 0 0 0 2px rgba(255,159,224,0.6); }
+.zdetail .zrank { font-weight: 900; font-size: 13px; color: var(--honey); }
+.zdetail .zsize { font-size: 12px; font-weight: 800; color: #e9e3ff; }
+/* charm pick */
+.charms { display: grid; gap: 10px; }
+.charmcard { display: grid; grid-template-columns: 52px 1fr; grid-template-rows: auto auto; column-gap: 12px; align-items: center; text-align: left; padding: 12px 14px; border: 0; border-radius: 18px; background: var(--silk); color: var(--ink); box-shadow: 0 5px 0 #b9b0d9; cursor: pointer; font: inherit; }
+.charmcard:active { transform: translateY(3px); box-shadow: 0 2px 0 #b9b0d9; }
+.charmcard .cicon { grid-row: 1 / 3; font-size: 36px; text-align: center; line-height: 1; }
+.charmcard .cname { font-size: 17px; font-weight: 900; }
+.charmcard .cdesc { font-size: 12px; font-weight: 800; color: var(--ink-soft); line-height: 1.45; }
+#charmHave { justify-content: center; }
+#charmHave .lbl { background: none; color: #cfc6ee; }
+/* pause info & rewards */
+.pinfo { display: grid; gap: 8px; }
+.pinfo:empty { display: none; }
+.pinfo .pline { font-size: 13px; font-weight: 800; white-space: pre-line; line-height: 1.5; }
+.pinfo ul.goals li { font-size: 13px; }
+ul.rewards { margin: 0; padding: 10px 12px; list-style: none; display: grid; gap: 5px; background: rgba(255,224,102,0.12); border-radius: 14px; font-size: 13px; font-weight: 800; line-height: 1.4; }
+ul.rewards li.title { color: var(--honey); }
+.dnote { font-size: 11px; font-weight: 800; color: #ffd6e6; line-height: 1.45; margin-top: 2px; white-space: pre-line; }
+.dnote.center { text-align: center; background: rgba(255,111,154,0.14); border-radius: 12px; padding: 8px 10px; font-size: 12px; }

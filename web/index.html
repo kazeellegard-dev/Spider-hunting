@@ -41,7 +41,7 @@
       <button class="icon-btn" id="pauseBtn" aria-label="pause"><svg viewBox="0 0 20 20"><rect x="4" y="3" width="4" height="14" rx="1.5"/><rect x="12" y="3" width="4" height="14" rx="1.5"/></svg></button>
     </div>
     <div class="hud-sub"><span id="combo"></span><span id="bestHud"></span></div>
-    <div class="mission" id="missionBox" hidden><div class="mtime" id="mTime"></div><ul id="mGoals"></ul></div>
+    <div class="mission" id="missionBox" hidden><span class="mtime" id="mTime"></span><span class="mgoals" id="mGoals"></span><span class="mclear" data-t="missionClear"></span></div>
   </div>
 
   <div id="banner"><div class="big"></div><div class="small"></div></div>
@@ -57,6 +57,7 @@
       <div class="l1" data-t="title1"></div>
       <div class="l2" data-t="title2"></div>
       <div class="tag" data-t="demoHint"></div>
+      <div class="ptitle" id="tTitle" hidden></div>
     </div>
     <div class="title-panel">
       <div class="modesel">
@@ -94,11 +95,23 @@
         <div><b id="tDay">—</b><span data-t="bestDay"></span></div>
         <div class="lvbar"><i id="tLvBar" style="width:0%"></i></div>
       </div>
+      <div class="starsel" id="starSel">
+        <button class="sarrow" id="starPrev" aria-label="easier"><svg viewBox="0 0 20 20"><path d="M13 3 6 10l7 7"/></svg></button>
+        <div class="smid"><div class="sname" id="starName"></div><div class="srule" id="starRule"></div></div>
+        <button class="sarrow" id="starNext" aria-label="harder"><svg viewBox="0 0 20 20"><path d="M7 3l7 7-7 7"/></svg></button>
+      </div>
       <button class="btn primary" id="playBtn" data-t="play"></button>
-      <div class="menu-grid">
+      <div class="goalbox odai">
+        <div class="glabel ghead"><span data-t="odaiTitle"></span><span class="drops" id="odaiDrops"></span></div>
+        <ul class="goals" id="odaiList"></ul>
+        <div class="onote" data-t="odaiNote"></div>
+      </div>
+      <div class="menu-grid three">
         <button class="btn" data-open="upgradeScr" data-t="upgrade"></button>
         <button class="btn" data-open="wardrobeScr" data-t="wardrobe"></button>
         <button class="btn" data-open="zukanScr" data-t="zukan"></button>
+        <button class="btn" data-open="achScr" data-t="achievements"></button>
+        <button class="btn" data-open="exchangeScr" data-t="exchange"></button>
         <button class="btn" data-open="rankScr" data-t="ranking"></button>
       </div>
       <div class="row">
@@ -120,7 +133,7 @@
       </div>
       <div class="sgdress">
         <canvas id="sgDressCv"></canvas>
-        <div><div class="glabel" data-t="stageDress"></div><div class="dname" id="sgDress"></div></div>
+        <div><div class="glabel" data-t="stageDress"></div><div class="dname" id="sgDress"></div><div class="dnote" id="sgDressNote"></div></div>
       </div>
       <div class="glabel ghead"><span data-t="upgradesNow"></span><button class="link" data-open="chUpScr" data-t="upgradeListBtn"></button></div>
       <div class="chips" id="sgUps"></div>
@@ -144,6 +157,8 @@
       <p class="lead" id="clSub"></p>
       <dl class="kv"><dt data-t="score"></dt><dd id="clScore"></dd><dt data-t="stageCoins"></dt><dd id="clCoins"></dd></dl>
       <div class="lvup" id="clLevel" hidden></div>
+      <ul class="rewards" id="clRewards" hidden></ul>
+      <div class="dnote center" id="clDressNote" hidden></div>
       <p class="lead" id="clPickLead" data-t="pickUpgrade"></p>
       <button class="link" id="clUpList" data-open="chUpScr" data-t="upgradeListBtn"></button>
       <div class="list" id="pickList"></div>
@@ -182,6 +197,7 @@
   <section class="screen dim" id="pauseScr" hidden>
     <div class="sheet">
       <h2 data-t="paused"></h2>
+      <div class="pinfo" id="pauseInfo"></div>
       <button class="btn primary" id="resumeBtn" data-t="resume"></button>
       <button class="btn" id="quitBtn" data-t="quit"></button>
     </div>
@@ -207,10 +223,12 @@
         <dt data-t="catches"></dt><dd id="rCatches"></dd>
         <dt data-t="maxCombo"></dt><dd id="rCombo"></dd>
         <dt data-t="dayReached"></dt><dd id="rArea"></dd>
+        <dt data-t="difficulty"></dt><dd id="rStar"></dd>
         <dt data-t="expGained"></dt><dd id="rExp"></dd>
         <dt data-t="coinsGained"></dt><dd id="rCoins"></dd>
       </dl>
       <div class="lvup" id="rLevel" hidden></div>
+      <ul class="rewards" id="rRewards" hidden></ul>
       <div class="row">
         <button class="btn" id="homeBtn" data-t="home"></button>
         <button class="btn primary" id="retryBtn" data-t="retry"></button>
@@ -229,13 +247,46 @@
     </div>
   </section>
 
-  <!-- wardrobe -->
+  <!-- wardrobe: spider parts, silk, knots, seasons, titles -->
   <section class="screen dim" id="wardrobeScr" hidden>
     <div class="sheet">
       <h2 data-t="wardrobe"></h2>
-      <div class="coinbar"><span data-t="coins"></span><span class="coinval"></span></div>
+      <canvas class="wdpreview" id="wdPreview"></canvas>
+      <div class="coinbar"><span data-t="coins"></span><span class="coinval"></span><span class="dropicon">💧</span><span class="dropval"></span></div>
+      <div class="tabs" id="wdTabs"></div>
       <div class="list" id="wardrobeList"></div>
       <button class="btn" data-close data-t="back"></button>
+    </div>
+  </section>
+
+  <!-- dew-drop exchange -->
+  <section class="screen dim" id="exchangeScr" hidden>
+    <div class="sheet">
+      <h2 data-t="exchange"></h2>
+      <p class="lead" data-t="exchangeLead"></p>
+      <div class="coinbar"><span class="dropicon">💧</span><span data-t="drops"></span><span class="dropval"></span></div>
+      <div class="list" id="exchangeList"></div>
+      <button class="btn" data-close data-t="back"></button>
+    </div>
+  </section>
+
+  <!-- achievements -->
+  <section class="screen dim" id="achScr" hidden>
+    <div class="sheet">
+      <h2 data-t="achievements"></h2>
+      <div class="coinbar" id="achCount"></div>
+      <div class="list" id="achList"></div>
+      <button class="btn" data-close data-t="back"></button>
+    </div>
+  </section>
+
+  <!-- dawn charm pick (normal mode) -->
+  <section class="screen dim" id="charmScr" hidden>
+    <div class="sheet">
+      <h2 id="charmTitle"></h2>
+      <p class="lead" data-t="charmLead"></p>
+      <div class="charms" id="charmList"></div>
+      <div class="chips" id="charmHave"></div>
     </div>
   </section>
 
@@ -244,6 +295,8 @@
     <div class="sheet">
       <h2 data-t="zukan"></h2>
       <div class="coinbar" id="zukanCount"></div>
+      <div class="tabs" id="zkTabs"><button class="on" data-zk="dex" data-t="zkDex"></button><button data-zk="shiny" data-t="zkShiny"></button><button data-zk="sets" data-t="zkSets"></button></div>
+      <div class="list" id="zukanSets" hidden></div>
       <div class="zukan-grid" id="zukanGrid"></div>
       <div class="zdetail" id="zukanDetail" hidden></div>
       <button class="btn" data-close data-t="back"></button>
@@ -290,6 +343,7 @@
 <script src="js/physics.js"></script>
 <script src="js/data.js"></script>
 <script src="js/stages.js"></script>
+<script src="js/meta.js"></script>
 <script src="js/i18n.js"></script>
 <script src="js/save.js"></script>
 <script src="js/platform.js"></script>

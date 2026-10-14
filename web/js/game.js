@@ -8,6 +8,7 @@
   const platform = root.SH.platform;
   const t = k => root.SH.i18n.t(k);
   const B = D.BALANCE;
+  const M = root.SH.meta;
 
   const STEP = 1 / 60;
   const GRAVITY = 0.2;
@@ -50,8 +51,19 @@
         for (const th of this.web.threads) for (const p of th.points) { p.x *= sx; p.y *= sy; p.px *= sx; p.py *= sy; }
         this.spider.x *= sx; this.spider.y *= sy;
       }
-      this.bg = R.makeBackground(D.AREAS[this.areaIdx], W, H, dpr);
+      this.bg = this.makeBg(this.areaIdx);
       this.bgPrev = null;
+    }
+
+    makeBg(idx) { return R.makeBackground(D.AREAS[idx], this.W, this.H, this.dpr, root.SH.save.data.look.bg); }
+
+    // base stats with this run's charms / weather / stars applied (normal mode only)
+    refreshStats() {
+      const st = this.stats();
+      const m = this.mods = M.mods(this.mode === 'play' && this.runMode === 'endless' ? this.run : null);
+      st.strength += m.strength; st.struggle *= m.struggle; st.speed *= m.speed; st.lure *= m.lure;
+      this.st = st;
+      return st;
     }
 
     // endless: coin upgrades + level bonus. challenge: the stage run's own picks, no level bonus
@@ -73,8 +85,12 @@
     // challenge stages lend a random outfit for the stage; otherwise the player's own
     costume() {
       const s = root.SH.save.data;
-      const id = this.mode === 'play' && this.runMode === 'challenge' ? s.challenge.costume : s.costume;
-      return D.COSTUMES.find(c => c.id === id) || D.COSTUMES[0];
+      const lend = this.mode === 'play' && this.runMode === 'challenge' && s.challenge.look;
+      if (this._lookKey !== (lend ? 'c' : 'p') + JSON.stringify(lend || s.look)) {
+        this._lookKey = (lend ? 'c' : 'p') + JSON.stringify(lend || s.look);
+        this._look = M.spiderLook(lend || s.look);
+      }
+      return this._look;
     }
 
     resetWorld() {
@@ -113,7 +129,8 @@
       this.mode = 'demo';
       this.runMode = 'endless';
       this.stage = null; this.stageIdx = -1;
-      this.st = this.stats();
+      this.run = null;
+      this.refreshStats();
       this.resetWorld();
       // the title screen follows the player's real clock
       const h = new Date().getHours();
@@ -121,7 +138,7 @@
       const hub = this.buildStarterWeb(this.W / 2, this.H * 0.5, 9, Math.min(this.W * 0.42, 170), [0.25, 0.5, 0.75]);
       this.spider.node = hub; this.spider.x = hub.x; this.spider.y = hub.y; this.spider.home = hub;
       this.spawnTimer = 0.5;
-      this.bg = R.makeBackground(D.AREAS[this.areaIdx], this.W, this.H, this.dpr);
+      this.bg = this.makeBg(this.areaIdx);
       this.bgPrev = null;
       this.particles = []; this.texts = [];
       this.paused = false;
@@ -134,9 +151,11 @@
       this.mode = 'play';
       this.runMode = stage ? 'challenge' : 'endless';
       this.stage = stage; this.stageIdx = stage ? opts.stage : -1;
-      this.st = this.stats();
+      this.run = null;
+      this.refreshStats();
       this.resetWorld();
       const save = root.SH.save.data;
+      const endless = !stage;
       const run = this.run = {
         score: 0, silk: this.st.maxSilk, glow: 0, time: 0, combo: 0, lastEat: -99, maxCombo: 0, catches: 0,
         bonusGauge: 0, bonusTimer: 0, coins: 0, caught: {}, continued: false, over: false, dying: 0,
@@ -144,20 +163,52 @@
         gustTimer: -1, gustLeft: 0, gusts: 0, mode: this.runMode,
         kinds: {}, treats: 0, bosses: 0, weights: [], timeLeft: stage ? stage.time : 0, gustDone: false,
         tutorial: save.tutorialDone ? 0 : 1, tutorialTimer: 0, heavyHinted: !!save.tutorialDone && save.plays > 3,
+        // replay layer (normal mode)
+        star: endless ? clamp(save.stars.sel || 0, 0, M.starsOpen(save)) : 0, charms: {}, charmPicks: 0,
+        weather: 'clear', weathersSeen: ['clear'], ties: 0, gustsSurvived: 0, bonuses: 0,
+        shinyCaught: 0, shinies: {}, big: {}, small: {}, glowMax: B.glowDuration, odaiShown: {},
       };
+      if (endless) M.ensureOdai(save);
+      this.refreshStats();
+      run.silk = this.st.maxSilk;
+      run.windTimer *= this.mods.breezeEvery;
       const hub = this.buildStarterWeb(this.W / 2, this.H * 0.42, 6, Math.min(this.W * 0.2, 80), [0.55]);
       this.spider.node = hub; this.spider.x = hub.x; this.spider.y = hub.y;
       this.spawnTimer = run.tutorial ? 3 : 1.2;
       this.specials = []; this.specialTimer = 0;
       this.areaIdx = stage ? stage.area : 0;
-      this.bg = R.makeBackground(D.AREAS[this.areaIdx], this.W, this.H, this.dpr);
+      this.bg = this.makeBg(this.areaIdx);
       this.bgPrev = null;
       this.particles = []; this.texts = [];
       this.paused = false;
       audio.music(this.musicMode());
       if (stage) this.hooks.banner(t('stage') + ' ' + (opts.stage + 1), t('areaNames')[this.areaIdx], 'area');
-      else this.hooks.banner(this.dayText(1), t('areaNames')[0], 'area');
+      else this.hooks.banner(this.dayText(1), run.star ? '★' + run.star + '  ' + t('areaNames')[0] : t('areaNames')[0], 'area');
       if (run.tutorial) this.hooks.tutorial(t('tut1'));
+      else if (endless) this.offerCharms();
+    }
+
+    // ---------- dawn charms ----------
+    offerCharms() {
+      const run = this.run;
+      const choices = M.charmChoices(run);
+      if (!choices.length || !this.hooks.charmPick) return;
+      run.charmOffer = choices;
+      this.hooks.charmPick(choices);
+    }
+
+    applyCharm(id) {
+      const run = this.run;
+      if (!run || !run.charmOffer || !run.charmOffer.includes(id)) return;
+      run.charmOffer = null;
+      run.charms[id] = (run.charms[id] || 0) + 1;
+      run.charmPicks++;
+      this.refreshStats();
+      if (id === 'refill') run.silk = this.st.maxSilk;
+      audio.play('buy');
+      this.burst(this.spider.x, this.spider.y, '#ffe066');
+      const c = M.CHARMS.find(x => x.id === id);
+      this.floatText(this.spider.x, this.spider.y - 36, c.icon + ' ' + (c.name[root.SH.i18n.lang] || c.name.en), '#fff3b0', 16);
     }
 
     continueRun() {
@@ -219,7 +270,7 @@
       }
       const len = Math.hypot(tx - sp.x, ty - sp.y);
       if (len < 14) return;
-      const cost = len * B.silkCostPerPx;
+      const cost = len * B.silkCostPerPx * this.mods.cost;
       if (cost >= this.run.silk) {
         audio.play('deny');
         this.floatText(sp.x, sp.y - 30, t('noSilk'), '#ff5a5a', 15);
@@ -305,7 +356,7 @@
       if (run.dying) {
         run.dying -= dt;
         sp.y += dt * 40;
-        if (run.dying <= 0) { run.dying = 0; run.over = true; this.hooks.gameOver(!run.continued); }
+        if (run.dying <= 0) { run.dying = 0; run.over = true; this.hooks.gameOver(!run.continued && !this.mods.noContinue); }
         return;
       }
       run.time += dt;
@@ -314,7 +365,7 @@
       const tutorialFree = run.tutorial && run.tutorial < 4;
       if (!tutorialFree) {
         const st = this.stage;
-        const drain = st ? st.drain + run.time * st.ramp : Math.min(B.drainMax, B.drainBase + run.time * B.drainRamp + run.time * run.time * B.drainCurve);
+        const drain = st ? st.drain + run.time * st.ramp : this.mods.drain * Math.min(B.drainMax, B.drainBase + run.time * B.drainRamp + run.time * run.time * B.drainCurve);
         run.silk -= drain * dt * (inBonus ? 0.5 : 1);
       }
       if (run.silk < this.st.maxSilk * 0.2 && !run.lowHinted && !run.tutorial) { run.lowHinted = true; this.hooks.hint(t('lowSilk')); }
@@ -334,7 +385,7 @@
         const area = D.AREAS[this.areaIdx];
         const ramp = this.stage ? this.stage.spawn * (1 - Math.min(0.15, run.time / 800))
           : 1 - Math.min(0.4, (run.day - 1) * 0.08 + Math.min(0.1, run.time / 900));
-        let interval = area.spawn * ramp;
+        let interval = area.spawn * ramp * this.mods.spawn;
         if (run.tutorial && run.tutorial < 3) interval = 99;
         else if (run.tutorial === 3) interval = 2.2;
         this.spawnTimer = interval * rand(0.75, 1.25);
@@ -351,7 +402,7 @@
         if (type === 'gnat' && Math.random() < 0.4) { this.spawnInsect('gnat'); this.spawnInsect('gnat'); }
       }
       // combo timeout
-      if (run.combo > 0 && run.time - run.lastEat > B.comboWindow) run.combo = 0;
+      if (run.combo > 0 && run.time - run.lastEat > B.comboWindow + this.mods.comboExtra) run.combo = 0;
       // bonus
       if (inBonus) {
         run.bonusTimer -= dt;
@@ -359,7 +410,7 @@
         if (this.treatTimer <= 0) { this.treatTimer = rand(0.22, 0.38); this.spawnTreat(); }
         if (this.specialTimer > 0) { this.specialTimer -= dt; if (this.specialTimer <= 0) this.spawnSpecial(); }
         if (run.bonusTimer <= 0) {
-          run.bonusTimer = 0; run.bonusGauge = 0; run.bonuses = (run.bonuses || 0) + 1; this.spawnTimer = 0.6;
+          run.bonusTimer = 0; run.bonusGauge = 0; run.bonuses++; this.spawnTimer = 0.6;
           for (const it of this.specials) it.dead = true;
           if (run.glow > 0) {
             audio.play('bonus');
@@ -408,7 +459,7 @@
           run.windLeft -= dt;
           const k = Math.sin(Math.PI * (1 - run.windLeft / 4.5));
           run.wind = run.windDir * k * (1 + Math.min(4, run.day - 1 + run.phase * 0.25) * 0.15);
-          if (run.windLeft <= 0) { run.wind = 0; run.windTimer = rand(B.windEvery[0], B.windEvery[1]); }
+          if (run.windLeft <= 0) { run.wind = 0; run.windTimer = rand(B.windEvery[0], B.windEvery[1]) * this.mods.breezeEvery; }
         } else {
           run.windTimer -= dt;
           if (run.windTimer <= 0) {
@@ -441,11 +492,15 @@
       }
       if (sp.hurt > 0) sp.hurt -= dt;
       if (sp.happy > 0) sp.happy -= dt;
+      if (run.mode !== 'challenge') {
+        run.odaiT = (run.odaiT || 0) + dt;
+        if (run.odaiT >= 0.5) { run.odaiT = 0; this.checkOdai(); }
+      }
     }
 
     bonusNeed() {
       if (this.stage) return this.stage.bonusNeed + (this.run.bonuses || 0) * 4;
-      return B.bonusNeed + (this.run.bonuses || 0) * B.bonusNeedStep;
+      return Math.round((B.bonusNeed + (this.run.bonuses || 0) * B.bonusNeedStep) * this.mods.bonusNeed);
     }
 
     // ---------- challenge mode ----------
@@ -527,8 +582,9 @@
         save.challenge.stage = Math.min(this.stageIdx + 1, root.SH.STAGES.length - 1);
         if (this.stageIdx + 1 >= root.SH.STAGES.length) save.challenge.allClear = true;
       }
+      const rewards = M.applyStage(save, run);
       root.SH.save.write();
-      return { score: run.score, coins, levels, level: save.level, stage: this.stageIdx };
+      return { score: run.score, coins, levels, level: save.level, stage: this.stageIdx, rewards };
     }
 
     endTutorial() {
@@ -542,12 +598,33 @@
 
     enterPhase() {
       const run = this.run;
+      const save = root.SH.save.data;
       const idx = D.phaseArea(run.phase, run.day);
-      if (run.phase === 0 && run.day >= B.gustFromDay && run.mode !== 'challenge') run.gustTimer = rand(B.gustDelay[0], B.gustDelay[1]);
+      if (run.phase === 0 && run.mode !== 'challenge') {
+        // a new day: new weather, maybe a cleared star, then a charm to pick
+        run.weather = M.pickWeather();
+        if (!run.weathersSeen.includes(run.weather)) run.weathersSeen.push(run.weather);
+        this.refreshStats();
+        if (run.day >= this.mods.gustFromDay) run.gustTimer = rand(B.gustDelay[0], B.gustDelay[1]);
+      }
       if (run.phase === 0) {
-        const record = run.day > (root.SH.save.data.bestDay || 0) && root.SH.save.data.bestDay > 0;
-        this.enterArea(idx, this.dayText(run.day), record ? t('newDayRecord') : t('areaNames')[idx]);
+        const record = run.day > (save.bestDay || 0) && save.bestDay > 0;
+        const w = M.WEATHERS.find(x => x.id === run.weather);
+        const sub = record ? t('newDayRecord') : run.weather !== 'clear' ? w.icon + ' ' + (w.name[root.SH.i18n.lang] || w.name.en) : t('areaNames')[idx];
+        this.enterArea(idx, this.dayText(run.day), sub);
         if (record && !run.recordShown) { run.recordShown = true; audio.play('levelup'); }
+        if (run.weather !== 'clear') setTimeout(() => this.hooks.hint(w.icon + ' ' + (w.name[root.SH.i18n.lang] || w.name.en) + '：' + (w.desc[root.SH.i18n.lang] || w.desc.en)), 600);
+        let starDone = false;
+        if (run.mode !== 'challenge' && run.day >= M.STAR_CLEAR_DAY && run.star > save.stars.cleared) {
+          // reaching day 7 clears this star and opens the next one
+          save.stars.cleared = run.star;
+          root.SH.save.write();
+          const open = M.starsOpen(save);
+          starDone = true;
+          audio.play('levelup');
+          this.hooks.banner(run.star ? t('starClear').replace('{n}', run.star) : t('starClear0'), open > run.star ? t('starOpen').replace('{n}', open) : '', 'bonus');
+        }
+        if (run.mode !== 'challenge') setTimeout(() => { if (this.run === run && !run.over && !run.dying) this.offerCharms(); }, starDone ? 2600 : 1600);
       } else {
         this.enterArea(idx, t('areaNames')[idx], this.dayText(run.day));
       }
@@ -557,7 +634,7 @@
       this.areaIdx = idx;
       if (this.run) this.run.maxArea = Math.max(this.run.maxArea, idx);
       this.bgPrev = this.bg; this.bgFade = 1;
-      this.bg = R.makeBackground(D.AREAS[idx], this.W, this.H, this.dpr);
+      this.bg = this.makeBg(idx);
       audio.play('area');
       if (!this.run || (this.run.bonusTimer <= 0 && this.run.glow <= 0)) audio.music(this.musicMode());
       this.hooks.banner(big || t('areaNames')[idx], small || '', 'area');
@@ -619,6 +696,7 @@
       if (to !== from && Math.hypot(to.x - from.x, to.y - from.y) > 6) {
         const { knots } = this.web.spinTied(from, to, this.st.strength);
         if (knots.length && this.mode === 'play') {
+          this.run.ties += knots.length;
           for (const k of knots) this.puff(k.x, k.y, 'rgba(255,240,170,0.95)', 7);
           this.floatText((from.x + to.x) / 2, (from.y + to.y) / 2 - 18, knots.length > 1 ? t('tieN').replace('{n}', knots.length) : t('tie'), '#fff3b0', 15);
           audio.play('stick', 0.6);
@@ -646,15 +724,21 @@
     // heavy bugs ease in over the first days; the lure upgrade favors rare ones
     spawnTable(area) {
       const day = this.run ? this.run.day : 3;
-      const heavy = this.stage ? this.stage.heavy : Math.min(1, 0.2 + (day - 1) * 0.4);
+      const m = this.mods;
+      const heavy = this.stage ? this.stage.heavy : m.heavyFull ? 1 : Math.min(1, 0.2 + (day - 1) * 0.4);
       const out = {};
+      let any = false;
       for (const k in area.table) {
         const d = D.INSECTS[k];
+        // a swarm day only brings the small ones
+        if (m.smallOnly && d.weight > 1.5) continue;
         // bugs a stage mission asks for show up twice as often and are never thinned out
         const wanted = this.stage && this.stage.goals.some(gl => (gl.type === 'type' && gl.key === k) || (gl.type === 'kind' && gl.key === d.kind));
-        out[k] = area.table[k] * (d.rare ? this.st.lure : 1) * (wanted ? 2 : d.weight > 2.4 ? heavy : 1);
+        const wing = m.flutter && (d.kind === 'butterfly' || d.kind === 'moth') ? 1 + m.flutter : 1;
+        out[k] = area.table[k] * (d.rare ? this.st.lure : 1) * wing * (wanted ? 2 : d.weight > 2.4 ? heavy : 1);
+        any = true;
       }
-      return out;
+      return any ? out : area.table;
     }
 
     spawnInsect(type, aimAtWeb) {
@@ -669,9 +753,13 @@
       }
       // later days bring faster bugs
       const areaBoost = 1 + (this.run ? Math.min(0.5, (this.run.day - 1) * 0.08) + Math.min(0.15, this.run.time / 600) : 0);
-      const speed = def.speed * rand(0.85, 1.15) * areaBoost;
+      const speed = def.speed * rand(0.85, 1.15) * areaBoost * (this.run ? this.mods.bugSpeed : 1);
+      // normal-mode bugs vary in size (Bugdex records) and are now and then a colour variant
+      const endless = this.mode === 'play' && this.runMode === 'endless';
+      const sizeF = this.mode === 'play' ? M.rollSize() : 1;
+      const shiny = endless && !(this.run && this.run.tutorial) && Math.random() < M.SHINY_CHANCE * this.mods.lure;
       this.insects.push({
-        id: insectId++, type, def, state: 'fly',
+        id: insectId++, type, def, state: 'fly', sizeF, shiny,
         x: fromLeft ? -30 : W + 30, y, baseY: y,
         vx: fromLeft ? speed : -speed, vy: 0, speed,
         drift: rand(-14, 14), seed: Math.random() * 10, age: 0,
@@ -686,7 +774,7 @@
         ins.age += dt;
         if (ins.state === 'fly' || ins.state === 'escape') this.flyInsect(ins, dt, run);
         if (ins.state === 'fly' && ins.pass <= 0 && ins.x > -10 && ins.x < this.W + 10) {
-          const hit = this.web.threadNear(ins.x, ins.y, ins.def.size * 0.55 + 2);
+          const hit = this.web.threadNear(ins.x, ins.y, ins.def.size * (ins.sizeF || 1) * 0.55 + 2);
           if (hit) this.hitThread(ins, hit, strength);
         }
         if (ins.state === 'caught') this.struggleInsect(ins, dt, run);
@@ -734,7 +822,7 @@
       const th = hit.thread;
       const glow = this.mode === 'play' && this.run.glow > 0;
       // threads tied in at crossings hold heavier bugs
-      const held = strength + Math.min(th.ties || 0, B.tieMax) * B.tieBonus;
+      const held = strength + Math.min(th.ties || 0, B.tieMax) * B.tieBonus * (this.mode === 'play' ? this.mods.tieMul : 1);
       const tooHeavy = this.mode === 'play' && !glow && (def.boss || def.weight > held);
       if (tooHeavy) {
         this.web.sever(th, hit.segmentIndex);
@@ -775,7 +863,7 @@
       if (!frozen) {
         ins.struggle -= dt;
         // a breeze (not a gust) works the bug loose: windStruggle of its meter over the 4.5 s
-        if (run && run.windLeft > 0 && run.gustLeft <= 0) ins.struggle -= dt * ins.struggleMax * B.windStruggle / 4.5;
+        if (run && run.windLeft > 0 && run.gustLeft <= 0 && !this.mods.calm) ins.struggle -= dt * ins.struggleMax * B.windStruggle / 4.5;
       }
       if (ins.struggle <= 0) this.release(ins, true);
     }
@@ -821,9 +909,12 @@
       run.lastEat = run.time;
       run.maxCombo = Math.max(run.maxCombo, run.combo);
       const mult = Math.min(3, 1 + (run.combo - 1) * 0.1);
-      const pts = Math.round(def.score * mult);
+      const m = this.mods;
+      const wing = m.flutter && (def.kind === 'butterfly' || def.kind === 'moth') ? 1 + 0.3 * m.flutter : 1;
+      const pts = Math.round(def.score * mult * m.score * wing * (ins.shiny ? 3 : 1));
       run.score += pts;
       run.catches++;
+      if (run.mode !== 'challenge') this.recordCatch(ins);
       // the Bugdex belongs to Normal mode; challenge runs don't fill it
       if (run.mode !== 'challenge' && !run.caught[ins.type] && !root.SH.save.data.caught[ins.type]) {
         this.floatText(ins.x, ins.y - 64, 'NEW! ' + def.name[root.SH.i18n.lang], '#8fd3ff', 16);
@@ -833,8 +924,8 @@
       run.kinds[def.kind] = (run.kinds[def.kind] || 0) + 1;
       run.weights.push(def.weight);
       if (def.boss) run.bosses++;
-      run.silk = Math.min(this.st.maxSilk, run.silk + def.silk * this.st.appetite);
-      if (run.bonusTimer <= 0) run.bonusGauge = Math.min(this.bonusNeed(), run.bonusGauge + 1 + (run.combo >= 5 ? 0.5 : 0));
+      run.silk = Math.min(this.st.maxSilk, run.silk + def.silk * this.st.appetite * (def.weight >= 3 ? m.feast : 1));
+      if (run.bonusTimer <= 0) run.bonusGauge = Math.min(this.bonusNeed(), run.bonusGauge + (1 + (run.combo >= 5 ? 0.5 : 0)) * m.bonusGain);
       if (def.coins) { run.coins += def.coins; audio.play('coin'); this.floatText(ins.x, ins.y - 44, '+' + def.coins + ' ' + t('coins'), '#ffd23f', 15); }
       audio.play('pop', run.combo);
       platform.haptic('light');
@@ -842,6 +933,45 @@
       if (run.combo >= 2) this.floatText(ins.x, ins.y - 40, run.combo + ' ' + t('combo') + '!', '#ff8fb8', 14);
       this.spider.happy = 0.6;
       if (run.tutorial === 3) { run.tutorial = 4; run.tutorialTimer = 4.5; this.hooks.tutorial(t('tut4')); }
+    }
+
+    // Bugdex: size records (biggest / smallest, each with its own gold line) and colour variants
+    recordCatch(ins) {
+      const run = this.run, dex = root.SH.save.data.dex, type = ins.type;
+      const mm = M.sizeMM(type, ins.sizeF || 1), gold = M.sizeGold(type);
+      if (ins.shiny) {
+        run.shinyCaught++; run.shinies[type] = (run.shinies[type] || 0) + 1;
+        run.coins += 10;
+        audio.play('levelup');
+        this.floatText(ins.x, ins.y - 86, t('shinyGet'), '#ff9fe0', 18);
+      }
+      const bigBefore = Math.max(dex.big[type] || 0, run.big[type] || 0);
+      const smallBefore = Math.min(dex.small[type] || Infinity, run.small[type] || Infinity);
+      let note = null;
+      if (mm > bigBefore) {
+        run.big[type] = mm;
+        if (bigBefore) note = (mm >= gold.big && bigBefore < gold.big ? '🥇 ' : '') + t('sizeBig') + ' ' + mm + 'mm';
+      }
+      if (mm < smallBefore) {
+        run.small[type] = mm;
+        if (smallBefore !== Infinity) note = (mm <= gold.small && smallBefore > gold.small ? '🥇 ' : '') + t('sizeSmall') + ' ' + mm + 'mm';
+      }
+      if (note) this.floatText(ins.x, ins.y - 64, note, note[0] === '🥇' ? '#ffd23f' : '#c8f0ff', note[0] === '🥇' ? 16 : 13);
+      if (note && note[0] === '🥇') audio.play('coin');
+    }
+
+    // today's tasks: cheer once when one is done during the run (the drops are paid on the result screen)
+    checkOdai() {
+      const run = this.run, od = root.SH.save.data.odai;
+      if (!od || !od.tasks) return;
+      od.tasks.forEach((task, i) => {
+        if (task.done || run.odaiShown[i]) return;
+        if (M.odaiProgress(task, run) >= task.n) {
+          run.odaiShown[i] = true;
+          this.hooks.hint(t('odaiDone'));
+          audio.play('bonus');
+        }
+      });
     }
 
     // ---------- bonus treats ----------
@@ -866,7 +996,7 @@
           hit.thread.impact(hit.segmentIndex, 0, 2);
           const run = this.run;
           const mult = Math.min(3, 1 + Math.max(0, run.combo - 1) * 0.1);
-          const pts = Math.round(tr.def.score * mult);
+          const pts = Math.round(tr.def.score * mult * this.mods.score);
           run.score += pts; run.coins += tr.def.coins; run.treats++;
           audio.play('treat');
           this.burst(tr.x, tr.y, tr.def.color);
@@ -896,7 +1026,7 @@
     grabSpecial(it) {
       it.dead = true;
       const run = this.run;
-      run.glow = B.glowDuration;
+      run.glow = run.glowMax = B.glowDuration * this.mods.glow;
       audio.play('levelup');
       platform.haptic('medium');
       this.burst(it.x, it.y, '#ffe066');
@@ -907,8 +1037,8 @@
 
     gustBlast() {
       const run = this.run;
-      run.gusts++;
-      const p = B.gustPower;
+      run.gusts++; run.gustsSurvived++;
+      const p = B.gustPower * this.mods.gust;
       const dir = run.windDir || 1;
       for (const th of this.web.threads.slice()) {
         if (th.broken || Math.random() > p) continue;
@@ -967,15 +1097,18 @@
       }
       if (this.shake > 0) g.translate(rand(-1, 1) * this.shake, rand(-1, 1) * this.shake);
       if (area.night) this.drawAmbientFireflies(g);
+      const look = root.SH.save.data.look;
+      if (look.bg !== 'none') R.drawSeason(g, look.bg, this.W, this.H, this.time, area.night);
+      if (run && this.mods.rain) this.drawRain(g);
       if (run && run.wind) this.drawWind(g, run.wind);
 
-      R.drawThreads(g, this.web.threads, area.night, run && run.glow > 0 && run.bonusTimer <= 0 ? run.glow : 0, this.time);
+      R.drawThreads(g, this.web.threads, area.night, run && run.glow > 0 && run.bonusTimer <= 0 ? run.glow : 0, this.time, M.part('thread', look.thread));
       const sp = this.spider;
       if (sp.action === 'spin' && sp.from) {
         g.strokeStyle = 'rgba(255,255,255,0.95)'; g.lineWidth = 1.5;
         g.beginPath(); g.moveTo(sp.from.x, sp.from.y); g.lineTo(sp.x, sp.y); g.stroke();
       }
-      R.drawNodes(g, this.web.nodes, this.time);
+      R.drawNodes(g, this.web.nodes, this.time, look.knot);
       for (const tr of this.treats) R.drawTreat(g, tr, this.time);
       for (const it of this.specials) R.drawSpool(g, it, this.time);
       for (const ins of this.insects) R.drawInsect(g, ins, this.time);
@@ -1017,6 +1150,17 @@
       }
     }
 
+    drawRain(g) {
+      g.strokeStyle = 'rgba(200,225,255,0.45)'; g.lineWidth = 1.2; g.lineCap = 'round';
+      g.beginPath();
+      for (let i = 0; i < 40; i++) {
+        const x = ((i * 137.5 + this.time * 60) % (this.W + 40)) - 20;
+        const y = ((i * 89.3 + this.time * 520) % (this.H + 40)) - 20;
+        g.moveTo(x, y); g.lineTo(x - 4, y + 14);
+      }
+      g.stroke();
+    }
+
     drawWind(g, wind) {
       g.strokeStyle = `rgba(255,255,255,${Math.min(0.5, Math.abs(wind) * 0.4)})`; g.lineWidth = 2; g.lineCap = 'round';
       for (let i = 0; i < 9; i++) {
@@ -1032,25 +1176,31 @@
       const run = this.run;
       const save = root.SH.save.data;
       const before = { level: save.level, exp: save.exp };
-      const coins = Math.floor(run.score * B.coinsPerScore) + run.coins;
+      const coins = Math.floor((Math.floor(run.score * B.coinsPerScore) + run.coins) * this.mods.coins);
       save.coins += coins;
       save.exp += run.score;
       let levels = 0;
       while (save.exp >= D.levelExp(save.level)) { save.exp -= D.levelExp(save.level); save.level++; levels++; }
+      const dropsBefore = save.drops;
       const isBest = run.score > save.bestScore;
       if (isBest) save.bestScore = run.score;
       save.bestArea = Math.max(save.bestArea, run.maxArea);
       const newDay = run.day > (save.bestDay || 0);
       save.bestDay = Math.max(save.bestDay || 0, run.day);
-      save.scores.push({ score: run.score, day: run.day, phase: run.phase, date: Date.now() });
+      save.scores.push({ score: run.score, day: run.day, phase: run.phase, star: run.star, date: Date.now() });
       save.scores.sort((a, b) => b.score - a.score);
       save.scores = save.scores.slice(0, 10);
       for (const k in run.caught) save.caught[k] = (save.caught[k] || 0) + run.caught[k];
       save.plays++;
       if (run.tutorial) save.tutorialDone = true;
+      const coinsBefore = save.coins;
+      const rewards = M.applyRun(save, run);
       root.SH.save.write();
       platform.submitScore(run.score);
-      return { score: run.score, isBest, catches: run.catches, maxCombo: run.maxCombo, day: run.day, phase: run.phase, newDay, exp: run.score, coins, levels, before, level: save.level };
+      return {
+        score: run.score, isBest, catches: run.catches, maxCombo: run.maxCombo, day: run.day, phase: run.phase, newDay, exp: run.score, coins, levels, before, level: save.level,
+        rewards, rewardCoins: save.coins - coinsBefore, drops: save.drops - dropsBefore, star: run.star,
+      };
     }
   }
 

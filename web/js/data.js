@@ -147,16 +147,7 @@
     { id: 'lure',     max: 10, base: 80, exp: 1.6 }, // rare bug chance
   ];
 
-  const COSTUMES = [
-    { id: 'classic', price: 0,    body: '#3a3350', belly: '#5a4f78', acc: null },
-    { id: 'cherry',  price: 150,  body: '#d94a6a', belly: '#f27e98', acc: 'ribbon' },
-    { id: 'sky',     price: 250,  body: '#3f8fd9', belly: '#7cc0ff', acc: 'cap' },
-    { id: 'leaf',    price: 400,  body: '#3f9a5a', belly: '#78c98f', acc: 'leaf' },
-    { id: 'bee',     price: 600,  body: '#f2b632', belly: '#ffd96b', acc: 'stripes' },
-    { id: 'night',   price: 900,  body: '#2b2f6b', belly: '#5258b5', acc: 'glasses' },
-    { id: 'royal',   price: 1500, body: '#7a3fb5', belly: '#b07de0', acc: 'crown' },
-    { id: 'gold',    price: 3000, body: '#d6a21a', belly: '#ffd95e', acc: 'crown', shiny: true },
-  ];
+  // Outfits moved to meta.js (PARTS) in v1.9: body, hat and face are picked separately.
 
   const BALANCE = {
     baseStrength: 2.2,
@@ -199,6 +190,6 @@
   function upgradeCost(u, lv) { return Math.round(u.base * Math.pow(lv + 1, u.exp) / 5) * 5; }
 
   root.SH = root.SH || {};
-  root.SH.data = { INSECTS, INSECT_ORDER, TREATS, AREAS, PHASES, phaseArea, GOLDEN_CHANCE, UPGRADES, COSTUMES, BALANCE, levelExp, upgradeCost };
+  root.SH.data = { INSECTS, INSECT_ORDER, TREATS, AREAS, PHASES, phaseArea, GOLDEN_CHANCE, UPGRADES, BALANCE, levelExp, upgradeCost };
   if (typeof module !== 'undefined' && module.exports) module.exports = root.SH.data;
 })(typeof globalThis !== 'undefined' ? globalThis : this);

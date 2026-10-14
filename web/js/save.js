@@ -5,16 +5,17 @@
   const KEY = 'spiderHunting.save.v1';
 
   function defaults() {
-    return {
+    const meta = root.SH.meta ? root.SH.meta.defaults() : {};
+    return Object.assign(meta, {
       level: 1, exp: 0, coins: 0,
       upgrades: { strength: 0, silk: 0, sticky: 0, speed: 0, appetite: 0, lure: 0 },
       costumes: ['classic'], costume: 'classic',
       bestScore: 0, bestArea: 0, bestDay: 0, scores: [],
       caught: {},
-      challenge: { stage: 0, cleared: 0, allClear: false, costume: '', costumeStage: -1, upgrades: { strength: 0, silk: 0, sticky: 0, speed: 0, appetite: 0, lure: 0 } },
+      challenge: { stage: 0, cleared: 0, allClear: false, look: null, costumeStage: -1, upgrades: { strength: 0, silk: 0, sticky: 0, speed: 0, appetite: 0, lure: 0 } },
       plays: 0, tutorialDone: false, titleMode: 0,
       settings: { sound: true, music: true, vibration: true, lang: 'auto' },
-    };
+    });
   }
 
   function merge(base, saved) {
@@ -34,7 +35,10 @@
           const saved = JSON.parse(raw);
           // v1.6 renamed the stage mode (normal -> challenge)
           if (saved && saved.normal && !saved.challenge) { saved.challenge = saved.normal; delete saved.normal; }
+          const old = saved && !saved.metaVer;
           this.data = merge(defaults(), saved);
+          // v1.9 replay layer: convert old outfits etc.
+          if (old && root.SH.meta) { this.data.metaVer = 0; root.SH.meta.migrate(this.data); }
         }
       } catch (e) { this.data = defaults(); }
       return this.data;

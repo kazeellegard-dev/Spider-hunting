@@ -22,6 +22,7 @@
       gameOver: canContinue => ui.gameOver(canContinue),
       stageClear: () => ui.stageClear(),
       stageFail: reason => ui.stageFail(reason),
+      charmPick: choices => ui.charmPick(choices),
     });
     SH.game = game;
 
