@@ -109,3 +109,11 @@ test('random challenge looks only use real parts', () => {
     for (const sl of ['body', 'hat', 'face']) assert.ok(M.PARTS[sl].some(p => p.id === l[sl]));
   }
 });
+
+test('colour variant odds: 1/2048, x4 per boost (lucky charm, full moon)', () => {
+  assert.strictEqual(M.mods(null).shiny, 1 / 2048);
+  assert.strictEqual(M.mods({ charms: { lucky: 1 } }).shiny, 1 / 512);
+  assert.strictEqual(M.mods({ charms: { lucky: 2 } }).shiny, 1 / 512);
+  assert.strictEqual(M.mods({ weather: 'moon' }).shiny, 1 / 512);
+  assert.strictEqual(M.mods({ charms: { lucky: 1 }, weather: 'moon' }).shiny, 1 / 128);
+});

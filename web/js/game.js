@@ -757,7 +757,7 @@
       // normal-mode bugs vary in size (Bugdex records) and are now and then a colour variant
       const endless = this.mode === 'play' && this.runMode === 'endless';
       const sizeF = this.mode === 'play' ? M.rollSize() : 1;
-      const shiny = endless && !(this.run && this.run.tutorial) && Math.random() < M.SHINY_CHANCE * this.mods.lure;
+      const shiny = endless && !(this.run && this.run.tutorial) && Math.random() < this.mods.shiny;
       this.insects.push({
         id: insectId++, type, def, state: 'fly', sizeF, shiny,
         x: fromLeft ? -30 : W + 30, y, baseY: y,

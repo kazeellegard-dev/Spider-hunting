@@ -7,6 +7,9 @@
   const D = root.SH.data;
   const L = (ja, en) => ({ ja, en });
 
+  // colour variant per normal-mode spawn: 1/2048; lucky charm or full moon 1/512; both 1/128
+  const SHINY_CHANCE = 1 / 2048, SHINY_BOOST = 4;
+
   // ---------- A1. dawn charms: pick 1 of 3 at every new day, lasts for the run ----------
   // max: how many times it can stack in one run (0 = no limit)
   const CHARMS = [
@@ -68,6 +71,8 @@
       gust: Math.pow(0.5, n('guard')), speed: 1 + n('swift') * 0.12,
       spawn: 1, breezeEvery: 1, bonusNeed: 1, gustFromDay: D.BALANCE.gustFromDay, heavyFull: false,
       bugSpeed: 1, noContinue: false, smallOnly: false, score: 1 + star * 0.1, rain: false,
+      // colour variants: each active boost (lucky charm, full moon) makes them 4x likelier
+      shiny: SHINY_CHANCE * (n('lucky') > 0 ? SHINY_BOOST : 1) * (w === 'moon' ? SHINY_BOOST : 1),
     };
     m.coins *= 1 + star * 0.2;
     if (w === 'rain') { m.cost *= 0.7; m.spawn *= 1.3; m.rain = true; }
@@ -133,7 +138,6 @@
 
   function rankLines(type) { const d = D.INSECTS[type]; return d.boss || d.rare ? [3, 15, 50] : [10, 50, 200]; }
   function dexRank(type, n) { const r = rankLines(type); return n >= r[2] ? 3 : n >= r[1] ? 2 : n >= r[0] ? 1 : 0; }
-  const SHINY_CHANCE = 1 / 800;  // per normal-mode spawn; full moon and the lucky charm raise it
 
   // ---------- C4. family sets: every bug of a family at gold rank ----------
   const FAMILIES = [];
@@ -490,7 +494,7 @@
   root.SH = root.SH || {};
   root.SH.meta = {
     CHARMS, WEATHERS, STARS, MAX_STAR, STAR_CLEAR_DAY, mods, charmChoices, pickWeather,
-    MM, sizeGold, rollSize, sizeMM, rankLines, dexRank, SHINY_CHANCE, FAMILIES, familyBugs, SET_REWARD,
+    MM, sizeGold, rollSize, sizeMM, rankLines, dexRank, SHINY_CHANCE, SHINY_BOOST, FAMILIES, familyBugs, SET_REWARD,
     PARTS, SLOTS, DEFAULT_LOOK, part, spiderLook, randomLook,
     TITLES, ACHIEVEMENTS, ODAI, ODAI_DROPS, ODAI_ALL_BONUS, makeOdai, today, ensureOdai, odaiProgress, odaiRunValue,
     defaults, migrate, starsOpen, statValue, checkRewards, applyRun, applyStage, buyPart,
