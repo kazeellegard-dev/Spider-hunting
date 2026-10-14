@@ -126,10 +126,11 @@
   ];
   // Phases of one day: which AREAS entry and how long (s). Night on even days is the starry night.
   const PHASES = [
-    { area: 0, len: 30 },
-    { area: 1, len: 30 },
-    { area: 2, len: 20 },
-    { area: 3, len: 30, starryEvery: 2 },
+    // a whole day is 60 s (was 110 s): 16 + 16 + 12 + 16
+    { area: 0, len: 16 },
+    { area: 1, len: 16 },
+    { area: 2, len: 12 },
+    { area: 3, len: 16, starryEvery: 2 },
   ];
   function phaseArea(phase, day) {
     const p = PHASES[phase];
@@ -168,8 +169,10 @@
     drainCurve: 0.00002,     // ...plus this * t^2, so long upgraded runs still come to an end
     drainMax: 30,
     glowDuration: 15,        // seconds of glowing silk after bonus time
-    gustFromDay: 3,          // endless: gusts start on this day...
-    gustDelay: [15, 85],     // ...once per day, this many seconds after dawn
+    gustFromDay: 5,          // endless: gusts start on this day (about 4 min in)...
+    gustEveryDays: 2,        // ...and come on every other day...
+    gustDelay: [8, 45],      // ...this many seconds after that dawn
+    rampDay: 110,            // endless difficulty ramps by play time: one "ramp day" is this many seconds
     gustPower: 0.33,         // share of threads a gust tears or blows away
     windEvery: [40, 60],     // seconds between breezes (they tear nothing)...
     windStruggle: 1 / 3,     // ...but shake stuck bugs: this share of their struggle meter is used up per breeze
