@@ -368,6 +368,15 @@
       g.fillStyle = `hsl(${h},85%,65%)`;
       g.beginPath(); g.moveTo(x, y - r * 1.2); g.lineTo(x + r, y - r * 0.3); g.lineTo(x + r * 0.6, y + r); g.lineTo(x - r * 0.6, y + r); g.lineTo(x - r, y - r * 0.3); g.closePath(); g.fill();
       g.fillStyle = 'rgba(255,255,255,0.8)'; g.beginPath(); g.moveTo(x - r * 0.4, y - r * 0.5); g.lineTo(x, y - r * 0.9); g.lineTo(x + r * 0.2, y - r * 0.3); g.closePath(); g.fill();
+    } else if (knot === 'medal') {
+      // level-30 reward: a little gold medal on a red ribbon
+      g.fillStyle = '#e8414f';
+      g.beginPath(); g.moveTo(x - r * 0.9, y - r * 1.9); g.lineTo(x - r * 0.1, y - r * 1.9); g.lineTo(x + r * 0.2, y - r * 0.6); g.lineTo(x - r * 0.5, y - r * 0.6); g.closePath(); g.fill();
+      g.fillStyle = '#3f8fd9';
+      g.beginPath(); g.moveTo(x + r * 0.9, y - r * 1.9); g.lineTo(x + r * 0.1, y - r * 1.9); g.lineTo(x - r * 0.2, y - r * 0.6); g.lineTo(x + r * 0.5, y - r * 0.6); g.closePath(); g.fill();
+      g.fillStyle = tie ? '#e0a81a' : '#c9971a'; g.beginPath(); g.arc(x, y, r * 1.05, 0, TAU); g.fill();
+      g.fillStyle = '#ffd84a'; g.beginPath(); g.arc(x, y, r * 0.8, 0, TAU); g.fill();
+      g.fillStyle = `rgba(255,255,255,${0.6 + 0.4 * Math.sin(t * 3)})`; star(g, x, y, r * 0.5);
     } else { g.beginPath(); g.arc(x, y, r / 1.45, 0, TAU); g.fill(); }
   }
   function heartAt(g, x, y, r, a) { g.save(); g.translate(x, y); g.rotate(a); heart(g, 0, 0, r); g.restore(); }
@@ -398,6 +407,13 @@
       }
     }
     g.translate(0, bob);
+    // level-100 body: a slow red-gold aura around the spider
+    if (look.pattern === 'legend') {
+      const a = 0.22 + 0.1 * Math.sin(time * 3);
+      const gr = g.createRadialGradient(0, 0, 12, 0, 0, 24);
+      gr.addColorStop(0, `rgba(255,120,60,${a})`); gr.addColorStop(1, 'rgba(255,200,60,0)');
+      g.fillStyle = gr; g.beginPath(); g.arc(0, 0, 24, 0, TAU); g.fill();
+    }
     // abdomen + head as one cute round body
     if (rainbow) {
       const gr = g.createLinearGradient(-16, -15, 16, 15);
@@ -409,7 +425,7 @@
       g.fillStyle = grad;
     }
     g.beginPath(); g.ellipse(0, 0, 16, 15, 0, 0, TAU); g.fill();
-    if (look.pattern === 'stripes' || look.pattern === 'spots' || look.pattern === 'crystal' || look.pattern === 'ladybug' || look.pattern === 'galaxy') {
+    if (look.pattern === 'stripes' || look.pattern === 'spots' || look.pattern === 'crystal' || look.pattern === 'ladybug' || look.pattern === 'galaxy' || look.pattern === 'legend') {
       g.save(); g.beginPath(); g.ellipse(0, 0, 16, 15, 0, 0, TAU); g.clip();
       if (look.pattern === 'stripes') { g.fillStyle = 'rgba(40,30,20,0.85)'; g.fillRect(-16, -11, 32, 4); g.fillRect(-16, 9, 32, 4); }
       else if (look.pattern === 'spots') {
@@ -426,6 +442,20 @@
           g.beginPath(); g.arc(Math.cos(i * 2.4) * (5 + i), Math.sin(i * 2.4) * (4 + i * 0.9), 0.6 + (i % 3) * 0.4, 0, TAU); g.fill();
         }
         g.fillStyle = 'rgba(150,120,255,0.25)'; g.beginPath(); g.ellipse(0, 2, 13, 4, -0.4, 0, TAU); g.fill();
+      } else if (look.pattern === 'legend') {
+        // gold flames licking up from below, with drifting embers
+        g.fillStyle = 'rgba(255,190,50,0.85)';
+        g.beginPath(); g.moveTo(-17, 16);
+        for (let i = 0; i <= 8; i++) {
+          const fx = -16 + i * 4, tip = i % 2 ? 2 : 8;
+          g.lineTo(fx, tip + Math.sin(time * 7 + i * 1.9) * 1.6);
+        }
+        g.lineTo(17, 16); g.closePath(); g.fill();
+        g.fillStyle = 'rgba(255,240,170,0.9)';
+        for (let i = 0; i < 4; i++) {
+          const k = (time * 0.5 + i * 0.25) % 1;
+          g.beginPath(); g.arc(-9 + i * 6, 10 - k * 22, 0.9 * (1 - k) + 0.3, 0, TAU); g.fill();
+        }
       } else {
         g.strokeStyle = 'rgba(255,255,255,0.55)'; g.lineWidth = 1;
         g.beginPath(); g.moveTo(-16, -4); g.lineTo(-6, -15); g.lineTo(4, -6); g.lineTo(16, -10); g.moveTo(-14, 8); g.lineTo(-4, 2); g.lineTo(6, 13); g.moveTo(4, -6); g.lineTo(-4, 2); g.stroke();
@@ -526,6 +556,21 @@
       g.fillRect(-1, -4, 2, 2);
       g.fillStyle = 'rgba(255,255,255,0.6)'; g.beginPath(); g.ellipse(-8, -4, 2, 1, -0.4, 0, TAU); g.fill();
       g.beginPath(); g.ellipse(4, -4, 2, 1, -0.4, 0, TAU); g.fill();
+    } else if (face === 'hero') {
+      // level-75 reward: a hero's mask, eyes left uncovered, tails fluttering behind
+      g.save();
+      g.beginPath(); g.rect(-30, -20, 60, 40);
+      g.ellipse(-6, -2, 5.4, 6.4, 0, 0, TAU); g.ellipse(6, -2, 5.4, 6.4, 0, 0, TAU);
+      g.clip('evenodd');
+      g.fillStyle = '#e8414f';
+      g.beginPath(); g.ellipse(-6.5, -2.5, 8.6, 7.4, -0.12, 0, TAU); g.fill();
+      g.beginPath(); g.ellipse(6.5, -2.5, 8.6, 7.4, 0.12, 0, TAU); g.fill();
+      g.fillRect(-3, -6, 6, 4);
+      g.restore();
+      const sw = Math.sin(time * 6) * 1.6;
+      g.fillStyle = '#c92f3d';
+      g.beginPath(); g.moveTo(13.5, -4); g.quadraticCurveTo(19, -6 + sw, 23, -3 + sw); g.lineTo(21, 0 + sw); g.quadraticCurveTo(18, -1, 13.5, -1); g.fill();
+      g.beginPath(); g.moveTo(13.5, -2); g.quadraticCurveTo(18, 1 - sw, 21, 4 - sw); g.lineTo(18.5, 5.5 - sw); g.quadraticCurveTo(16, 2, 13.5, 0); g.fill();
     } else if (face === 'mustache') {
       g.fillStyle = '#2a1a10';
       g.beginPath(); g.moveTo(0, 3.5);
@@ -623,6 +668,19 @@
       g.fillStyle = '#ffffff'; g.beginPath(); g.arc(0, -19, 2.6, 0, TAU); g.fill();
       g.strokeStyle = '#ffffff'; g.lineWidth = 1; g.beginPath(); g.moveTo(-3, -14.5); g.lineTo(3, -16.5); g.moveTo(3, -14.5); g.lineTo(-3, -16.5); g.stroke();
       g.strokeStyle = '#ffd23f'; g.lineWidth = 1.2; g.beginPath(); g.moveTo(-14, -12); g.quadraticCurveTo(0, -16.5, 14, -12); g.stroke();
+    } else if (hat === 'scholar') {
+      // level-50 reward: a graduation cap with a swinging gold tassel
+      g.fillStyle = '#2a2244';
+      g.beginPath(); g.ellipse(0, -13, 9, 3.6, 0, 0, TAU); g.fill();
+      g.fillRect(-8, -18, 16, 5);
+      g.fillStyle = '#1c1830';
+      g.beginPath(); g.moveTo(-15, -19); g.lineTo(0, -24); g.lineTo(15, -19); g.lineTo(0, -14.5); g.closePath(); g.fill();
+      g.strokeStyle = 'rgba(255,255,255,0.25)'; g.lineWidth = 0.8; g.stroke();
+      const sw = Math.sin(time * 3) * 1.5;
+      g.strokeStyle = '#ffd23f'; g.lineWidth = 1.2;
+      g.beginPath(); g.moveTo(0, -19.5); g.lineTo(13.5, -18.5); g.quadraticCurveTo(15 + sw * 0.5, -15, 15 + sw, -12); g.stroke();
+      g.fillStyle = '#ffd23f'; g.beginPath(); g.arc(0, -19.5, 1.4, 0, TAU); g.fill();
+      g.beginPath(); g.moveTo(15 + sw, -13); g.lineTo(17 + sw, -8); g.lineTo(13 + sw, -8); g.closePath(); g.fill();
     } else if (hat === 'halo') {
       const a = 0.75 + 0.25 * Math.sin(time * 3);
       g.strokeStyle = `rgba(255,236,140,${a})`; g.lineWidth = 3;
