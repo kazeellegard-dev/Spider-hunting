@@ -122,7 +122,7 @@
         <canvas id="sgDressCv"></canvas>
         <div><div class="glabel" data-t="stageDress"></div><div class="dname" id="sgDress"></div></div>
       </div>
-      <div class="glabel" data-t="upgradesNow"></div>
+      <div class="glabel ghead"><span data-t="upgradesNow"></span><button class="link" data-open="chUpScr" data-t="upgradeListBtn"></button></div>
       <div class="chips" id="sgUps"></div>
       <button class="btn primary" id="sgStart" data-t="start"></button>
       <div class="row">
@@ -145,8 +145,19 @@
       <dl class="kv"><dt data-t="score"></dt><dd id="clScore"></dd><dt data-t="stageCoins"></dt><dd id="clCoins"></dd></dl>
       <div class="lvup" id="clLevel" hidden></div>
       <p class="lead" id="clPickLead" data-t="pickUpgrade"></p>
+      <button class="link" id="clUpList" data-open="chUpScr" data-t="upgradeListBtn"></button>
       <div class="list" id="pickList"></div>
       <button class="btn primary" id="clHome" data-t="home" hidden></button>
+    </div>
+  </section>
+
+  <!-- challenge mode: read-only list of this run's upgrades -->
+  <section class="screen dim" id="chUpScr" hidden>
+    <div class="sheet">
+      <h2 data-t="chUpTitle"></h2>
+      <p class="lead" data-t="chUpLead"></p>
+      <div class="list" id="chUpList"></div>
+      <button class="btn primary" data-close data-t="back"></button>
     </div>
   </section>
 

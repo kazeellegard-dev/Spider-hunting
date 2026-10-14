@@ -57,6 +57,7 @@
       if (id === 'howtoScr') $('howtoBody').textContent = t(howto === 'challenge' ? 'howtoChallenge' : 'howtoBody');
       if (id === 'mainScr' || id === 'challengeScr') { $('sgConfirm').hidden = true; this.refreshTitle(); }
       if (id === 'upgradeScr') this.renderUpgrades();
+      if (id === 'chUpScr') this.renderChallengeUpgrades();
       if (id === 'wardrobeScr') this.renderWardrobe();
       if (id === 'zukanScr') this.renderZukan();
       if (id === 'rankScr') this.renderRanking();
@@ -387,6 +388,11 @@
           $('mTime').classList.toggle('low', tl <= 10);
           this.fillGoals($('mGoals'), states);
         }
+        // let the player see the spider when it climbs up behind the panel
+        const box = $('missionBox').getBoundingClientRect(), st = $('stage').getBoundingClientRect();
+        const k = st.width / g.W, sx = st.left + g.spider.x * k, sy = st.top + g.spider.y * k, pad = 28;
+        const under = sx > box.left - pad && sx < box.right + pad && sy > box.top - pad && sy < box.bottom + pad;
+        if (c.peek !== under) { c.peek = under; $('missionBox').classList.toggle('peek', under); }
       }
       if (c.score !== run.score) { c.score = run.score; $('score').textContent = run.score.toLocaleString(); }
       if (c.combo !== run.combo) {
@@ -487,6 +493,28 @@
         list.append(el);
       }
       this.refreshTitle();
+    },
+
+    // same rows as the normal upgrade list, but read-only and showing the challenge picks
+    renderChallengeUpgrades() {
+      const list = $('chUpList');
+      list.innerHTML = '';
+      const ups = save.data.challenge.upgrades;
+      for (const u of D.UPGRADES) {
+        const lv = ups[u.id] || 0;
+        const el = document.createElement('div');
+        el.className = 'item';
+        const icon = document.createElement('canvas');
+        this.drawUpgradeIcon(icon, u.id);
+        const mid = document.createElement('div');
+        mid.innerHTML = `<div class="name"></div><div class="desc"></div><div class="effect"></div><div class="pips"></div>`;
+        mid.querySelector('.name').textContent = `${t('upgradeNames')[u.id]}  Lv${lv}`;
+        mid.querySelector('.desc').textContent = t('upgradeDesc')[u.id];
+        mid.querySelector('.effect').textContent = this.upgradeEffect(u.id, lv, u.max);
+        mid.querySelector('.pips').innerHTML = Array.from({ length: u.max }, (_, i) => `<i class="${i < lv ? 'on' : ''}"></i>`).join('');
+        el.append(icon, mid);
+        list.append(el);
+      }
     },
 
     drawUpgradeIcon(cv, id) {

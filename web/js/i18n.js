@@ -55,7 +55,7 @@
       allCatch: 'ふつうの虫はぜんぶつかまえられる！',
       rareTag: 'レア',
       modeMain: 'ノーマルモード', modeChallenge: 'チャレンジモード', mainDesc: 'きょうかして、何日いきのびられるか', challengeDesc: '強化0からスタート。クリアごとに強化をえらぼう', swipeHint: 'スワイプ か ◀ ▶ で モードきりかえ', upgradeFor: 'ノーマルモードの強化です。チャレンジモードには つかわれません', stage: 'ステージ', start: 'スタート',
-      timeLimit: 'せいげんじかん', sec: 'びょう', timeLeft: 'のこり', goalsTitle: 'ミッション', upgradesNow: 'いまの強化', none: 'まだなし',
+      timeLimit: 'せいげんじかん', sec: 'びょう', timeLeft: 'のこり', goalsTitle: 'ミッション', upgradesNow: 'いまの強化', upgradeListBtn: '強化いちらんを見る', chUpTitle: 'チャレンジの強化', chUpLead: 'このチャレンジでえらんだ強化です。ステージをクリアするたびに1つえらべます', none: 'まだなし',
       goal: {
         catch: '虫を {n}ひき つかまえる', kind: '{k}を {n}ひき つかまえる', type: '{k}を {n}ひき つかまえる',
         score: 'スコア {n} をとる', combo: '{n}コンボ をだす', treats: 'ボーナスで おかしを {n}こ あつめる',
@@ -125,7 +125,7 @@
       allCatch: 'You can catch every regular bug!',
       rareTag: 'Rare',
       modeMain: 'Normal mode', modeChallenge: 'Challenge mode', mainDesc: 'Upgrade and see how many days you last', challengeDesc: 'No upgrades at first. Pick one after each clear', swipeHint: 'Swipe or ◀ ▶ to switch modes', upgradeFor: 'For Normal mode. Challenge mode does not use these', stage: 'Stage', start: 'Start',
-      timeLimit: 'Time limit', sec: 's', timeLeft: 'Left', goalsTitle: 'Mission', upgradesNow: 'Upgrades', none: 'none yet',
+      timeLimit: 'Time limit', sec: 's', timeLeft: 'Left', goalsTitle: 'Mission', upgradesNow: 'Upgrades', upgradeListBtn: 'See all upgrades', chUpTitle: 'Challenge upgrades', chUpLead: 'Upgrades picked in this challenge. You get one pick per stage clear', none: 'none yet',
       goal: {
         catch: 'Catch {n} bugs', kind: 'Catch {n} {k}', type: 'Catch {n} {k}',
         score: 'Score {n}', combo: 'Make a {n} combo', treats: 'Collect {n} treats in bonus time',
