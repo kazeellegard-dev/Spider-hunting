@@ -148,7 +148,7 @@
   // ---------- D1-D3. looks: spider parts, web silk, knots, seasons ----------
   // price: coins; drops: dew-drop price (exchange). Items with only `drops` are exchange-only.
   // Coin prices come in three clear tiers: within reach 100-1000, a bit of effort 2000-5000,
-  // long-haul 10000+. Silk, knots and scenery lean cheap; only the special ones are pricey.
+  // long-haul 20000-50000. Silk, knots and scenery lean cheap; only the special ones are pricey.
   const P = (id, o) => Object.assign({ id, price: 0 }, o);
   const PARTS = {
     body: [
@@ -163,8 +163,8 @@
       P('snow',    { price: 3000, body: '#cfd8ee', belly: '#ffffff', name: L('ゆきだま', 'Snowball') }),
       P('tentou',  { price: 4000, body: '#d8322f', belly: '#ff6a5a', pattern: 'ladybug', name: L('テントウムシ', 'Ladybird') }),
       P('royal',   { price: 5000, drops: 20, body: '#7a3fb5', belly: '#b07de0', name: L('おうさま', 'Royal') }),
-      P('gold',    { price: 12000, drops: 35, body: '#d6a21a', belly: '#ffd95e', shiny: true, name: L('きんぴか', 'Golden') }),
-      P('galaxy',  { price: 25000, drops: 45, body: '#1c1640', belly: '#4a3a9a', pattern: 'galaxy', shiny: true, name: L('ぎんが', 'Galaxy') }),
+      P('gold',    { price: 25000, drops: 35, body: '#d6a21a', belly: '#ffd95e', shiny: true, name: L('きんぴか', 'Golden') }),
+      P('galaxy',  { price: 50000, drops: 45, body: '#1c1640', belly: '#4a3a9a', pattern: 'galaxy', shiny: true, name: L('ぎんが', 'Galaxy') }),
       P('rainbow', { drops: 40, body: '#ff6f9a', belly: '#ffe066', pattern: 'rainbow', shiny: true, name: L('にじいろ', 'Rainbow') }),
       P('crystal', { drops: 60, body: '#7ad0ff', belly: '#e8fbff', pattern: 'crystal', shiny: true, name: L('すいしょう', 'Crystal') }),
     ],
@@ -187,7 +187,7 @@
       P('tophat',   { price: 4500, name: L('シルクハット', 'Top hat') }),
       P('witch',    { price: 5000, name: L('まじょのぼうし', 'Witch hat') }),
       P('pirate',   { price: 5000, name: L('かいぞくぼうし', 'Pirate hat') }),
-      P('crown',    { price: 15000, drops: 20, name: L('おうかん', 'Crown') }),
+      P('crown',    { price: 30000, drops: 20, name: L('おうかん', 'Crown') }),
       P('halo',     { drops: 35, name: L('てんしのわ', 'Halo') }),
       P('dewcrown', { drops: 50, name: L('しずくのかんむり', 'Dew crown') }),
     ],
@@ -204,7 +204,7 @@
       P('goggles',  { price: 3500, name: L('ゴーグル', 'Goggles') }),
       P('hearteyes', { price: 4000, name: L('ハートおめめ', 'Heart eyes') }),
       P('monocle',  { price: 5000, name: L('かためがね', 'Monocle') }),
-      P('starglasses', { price: 12000, drops: 30, name: L('ほしがたメガネ', 'Star glasses') }),
+      P('starglasses', { price: 20000, drops: 30, name: L('ほしがたメガネ', 'Star glasses') }),
       P('stareyes', { drops: 25, name: L('キラキラおめめ', 'Sparkly eyes') }),
     ],
     thread: [
@@ -220,10 +220,10 @@
       P('silver',   { price: 2000, color: '#dfe6f2', sheen: true, name: L('ぎんいろ', 'Silver') }),
       P('candy',    { price: 3000, color: '#ffffff', stripe: '#ff6f9a', name: L('キャンディ', 'Candy stripe') }),
       P('nightglow', { price: 4000, color: '#bfe6ff', glow: true, name: L('よるに ひかる', 'Night glow') }),
-      P('gold',     { price: 10000, drops: 25, color: '#ffd84a', sheen: true, name: L('きんいろ', 'Gold') }),
-      P('sparkle',  { price: 12000, drops: 30, color: '#fff6d0', sparkle: true, name: L('ほしくず', 'Stardust') }),
-      P('fire',     { price: 15000, drops: 35, fire: true, name: L('ほのお', 'Flame') }),
-      P('rainbow',  { price: 20000, drops: 35, rainbow: true, name: L('にじいろ', 'Rainbow') }),
+      P('gold',     { price: 20000, drops: 25, color: '#ffd84a', sheen: true, name: L('きんいろ', 'Gold') }),
+      P('sparkle',  { price: 25000, drops: 30, color: '#fff6d0', sparkle: true, name: L('ほしくず', 'Stardust') }),
+      P('fire',     { price: 30000, drops: 35, fire: true, name: L('ほのお', 'Flame') }),
+      P('rainbow',  { price: 40000, drops: 35, rainbow: true, name: L('にじいろ', 'Rainbow') }),
       P('aurora',   { drops: 50, aurora: true, glow: true, name: L('オーロラ', 'Aurora') }),
     ],
     knot: [
@@ -239,7 +239,7 @@
       P('candy',     { price: 800, name: L('あめだま', 'Candy') }),
       P('drop',      { price: 2500, name: L('しずく', 'Dew drop') }),
       P('pearl',     { price: 3000, name: L('しんじゅ', 'Pearl') }),
-      P('gem',       { price: 12000, drops: 30, name: L('ほうせき', 'Jewel') }),
+      P('gem',       { price: 25000, drops: 30, name: L('ほうせき', 'Jewel') }),
       P('diamond',   { drops: 25, name: L('ダイヤ', 'Diamond') }),
     ],
     bg: [
@@ -253,7 +253,7 @@
       P('forest',    { price: 2500, name: L('もりのおく', 'Deep forest') }),
       P('seaside',   { price: 3000, name: L('うみべ', 'Seaside') }),
       P('candyland', { price: 4000, name: L('おかしのくに', 'Candyland') }),
-      P('space',     { price: 15000, drops: 40, name: L('うちゅう', 'Outer space') }),
+      P('space',     { price: 35000, drops: 40, name: L('うちゅう', 'Outer space') }),
     ],
   };
   const SLOTS = Object.keys(PARTS);
