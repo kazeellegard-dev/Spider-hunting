@@ -23,6 +23,7 @@
       $('faceChallenge').addEventListener('click', () => { audio.unlock(); audio.play('button'); this.open('challengeScr'); });
       document.querySelectorAll('[data-close]').forEach(b => b.addEventListener('click', () => { audio.play('button'); this.closeSheet(b.closest('.screen').id); }));
       $('playBtn').addEventListener('click', () => this.startGame());
+      $('tapGate').addEventListener('click', () => this.gateTap());
       $('sgStart').addEventListener('click', () => this.startStage());
       $('sgRestart').addEventListener('click', () => { $('sgConfirm').hidden = false; });
       $('sgNo').addEventListener('click', () => { $('sgConfirm').hidden = true; });
@@ -335,17 +336,39 @@
       audio.unlock();
       audio.play('button');
       ['title', 'challengeScr', 'failScr', 'clearScr', 'resultScr', 'overScr', 'pauseScr', 'charmScr', 'chUpScr'].forEach(id => { $(id).hidden = true; });
-      $('hud').hidden = false; $('hint').hidden = true;
+      $('hint').hidden = true;
       $('missionBox').hidden = false; $('bestHud').hidden = true;
+      this.showHud(true);
       this.hudCache = {};
       this.game.startRun({ stage: Math.min(save.data.challenge.stage, root.SH.STAGES.length - 1) });
     },
 
+    // the field freezes on the cleared web; a tap (not taken for the first moment, so a
+    // tap meant for the web doesn't skip it) opens the details
     stageClear() {
+      const g = this.game;
+      if (g.mode !== 'play' || !g.run) return;
+      g.paused = true;
+      $('tutorial').hidden = true; $('hint').hidden = true;
+      const gate = $('tapGate');
+      gate.classList.remove('ready');
+      gate.hidden = false;
+      clearTimeout(this.gateTimer);
+      this.gateTimer = setTimeout(() => gate.classList.add('ready'), 700);
+    },
+    gateTap() {
+      const gate = $('tapGate');
+      if (gate.hidden || !gate.classList.contains('ready')) return;
+      gate.hidden = true;
+      audio.play('button');
+      this.showClear();
+    },
+
+    showClear() {
       const g = this.game;
       const idx = g.stageIdx;
       const r = g.finishStage(true);
-      $('hud').hidden = true; $('tutorial').hidden = true; $('hint').hidden = true;
+      this.showHud(false); $('tutorial').hidden = true; $('hint').hidden = true;
       $('clSub').textContent = `${t('stage')} ${idx + 1}`;
       $('clScore').textContent = r.score.toLocaleString();
       $('clCoins').textContent = '+' + r.coins.toLocaleString();
@@ -363,6 +386,7 @@
       else this.renderPicks();
       $('clearScr').hidden = false;
       $('clearScr').scrollTop = 0;
+      this.lockTaps($('clearScr'));
       this.refreshTitle();
     },
 
@@ -385,6 +409,7 @@
         btn.textContent = lv >= u.max ? t('max') : t('pick');
         btn.disabled = lv >= u.max;
         btn.addEventListener('click', () => {
+          if (btn.closest('.sheet').classList.contains('locked')) return;
           save.data.challenge.upgrades[u.id] = lv + 1;
           save.write(); audio.play('buy');
           $('clearScr').hidden = true;
@@ -399,7 +424,7 @@
       const g = this.game;
       const states = g.goalStates();
       const r = g.finishStage(false);
-      $('hud').hidden = true; $('tutorial').hidden = true; $('hint').hidden = true;
+      this.showHud(false); $('tutorial').hidden = true; $('hint').hidden = true;
       $('fReason').textContent = reason === 'time' ? t('failTime') : t('failSilk');
       this.fillGoals($('fGoals'), states);
       $('fCoins').textContent = '+' + r.coins.toLocaleString();
@@ -412,10 +437,10 @@
       audio.play('button');
       ['title', 'resultScr', 'overScr', 'pauseScr', 'charmScr'].forEach(id => { $(id).hidden = true; });
       this.pendingCharm = null;
-      $('hud').hidden = false;
       $('hint').hidden = true;
       $('missionBox').hidden = true; $('bestHud').hidden = false;
       ['mainScr', 'challengeScr', 'failScr', 'clearScr'].forEach(id => { $(id).hidden = true; });
+      this.showHud(true);
       this.hudCache = {};
       this.game.startRun();
     },
@@ -424,7 +449,8 @@
       if (mode != null) this.setMode(mode);
       ['mainScr', 'challengeScr', 'resultScr', 'overScr', 'pauseScr', 'failScr', 'clearScr', 'charmScr'].forEach(id => { $(id).hidden = true; });
       this.pendingCharm = null;
-      $('hud').hidden = true; $('tutorial').hidden = true; $('hint').hidden = true;
+      $('tapGate').hidden = true;
+      this.showHud(false); $('tutorial').hidden = true; $('hint').hidden = true;
       $('title').hidden = false;
       this.game.startDemo();
       audio.music('title');
@@ -506,7 +532,7 @@
         b.querySelector('.cname').textContent = nm(c.name) + (have ? `  （${t('charmLv').replace('{n}', have)}）` : '');
         b.querySelector('.cdesc').textContent = nm(c.desc);
         b.addEventListener('click', () => {
-          if ($('charmScr').hidden) return;
+          if ($('charmScr').hidden || b.closest('.sheet').classList.contains('locked')) return;
           $('charmScr').hidden = true;
           g.paused = false;
           g.applyCharm(id);
@@ -521,6 +547,7 @@
       }
       $('charmScr').hidden = false;
       $('charmScr').scrollTop = 0;
+      this.lockTaps($('charmScr'), 1000);
       audio.play('bonus');
     },
     gameOver(canContinue) {
@@ -538,7 +565,7 @@
     showResult() {
       const r = this.game.finishRun();
       this.game.mode = 'result';
-      $('hud').hidden = true; $('tutorial').hidden = true; $('hint').hidden = true;
+      this.showHud(false); $('tutorial').hidden = true; $('hint').hidden = true;
       $('rScore').textContent = r.score.toLocaleString();
       const dayRecord = r.newDay && r.day > 1;
       $('rBest').hidden = !(dayRecord || (r.isBest && r.score > 0));
@@ -560,6 +587,20 @@
     },
 
     // ---------- HUD ----------
+    // the HUD is a band above the field; the field is re-measured right away so a run
+    // starts on the final size (not squashed by a later resize)
+    showHud(on) {
+      if ($('hud').hidden === !on) return;
+      $('hud').hidden = !on;
+      if (root.SH.relayout) root.SH.relayout();
+    },
+    // buttons on a sheet that pops up during play ignore taps for a moment
+    lockTaps(scr, ms = 700) {
+      const sheet = scr.querySelector('.sheet');
+      sheet.classList.add('locked');
+      clearTimeout(sheet.unlockTimer);
+      sheet.unlockTimer = setTimeout(() => sheet.classList.remove('locked'), ms);
+    },
     updateHud() {
       const g = this.game;
       if (g.mode !== 'play' || !g.run) return;

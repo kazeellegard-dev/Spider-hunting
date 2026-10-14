@@ -28,11 +28,16 @@
 
     // Logical play field: at least 390 wide (phone portrait), wider on iPad/desktop.
     // Measured from the stage, which ends above the banner ad area.
+    // While playing, the HUD band sits above the stage; the field keeps the scale it would
+    // have at full height and just ends lower, so bugs and the web look the same size.
     const stage = document.getElementById('stage');
+    const hud = document.getElementById('hud');
     function resize() {
+      const band = hud.hidden ? 0 : hud.offsetHeight;
+      stage.style.top = band + 'px';
       const rect = stage.getBoundingClientRect();
       const vw = Math.max(1, rect.width), vh = Math.max(1, rect.height);
-      let W = Math.max(390, 760 * vw / vh);
+      let W = Math.max(390, 760 * vw / (vh + band));
       W = Math.min(W, 1000);
       const H = W * vh / vw;
       const dpr = Math.min(root.devicePixelRatio || 1, 2.5);
@@ -41,8 +46,9 @@
       game.resize(W, H, dpr * vw / W);
     }
     root.addEventListener('resize', resize);
-    if (root.ResizeObserver) new ResizeObserver(resize).observe(stage);
+    if (root.ResizeObserver) { const ro = new ResizeObserver(resize); ro.observe(stage); ro.observe(hud); }
     resize();
+    SH.relayout = resize;
 
     ui.init(game);
     game.startDemo();
