@@ -118,9 +118,9 @@ test('colour variant odds: 1/2048, x4 per boost (lucky charm, full moon)', () =>
   assert.strictEqual(M.mods({ charms: { lucky: 1 }, weather: 'moon' }).shiny, 1 / 128);
 });
 
-test('coin prices sit in three clear tiers (≤1000, 2000-5000, ≥10000)', () => {
+test('coin prices sit in three clear tiers (≤1000, 2000-5000, 20000-50000)', () => {
   for (const sl of M.SLOTS) for (const p of M.PARTS[sl]) {
     if (!p.price) continue;
-    assert.ok(p.price <= 1000 || (p.price >= 2000 && p.price <= 5000) || p.price >= 10000, sl + ':' + p.id + ' ' + p.price);
+    assert.ok(p.price <= 1000 || (p.price >= 2000 && p.price <= 5000) || (p.price >= 20000 && p.price <= 50000), sl + ':' + p.id + ' ' + p.price);
   }
 });

@@ -183,7 +183,7 @@
     snapThread: 13,
     tapInsectRadius: 34,
     maxThreads: 70,
-    coinsPerScore: 0.1,
+    coinsPerScore: 1 / 30,   // v1.9.2: was 0.1; coins also come from rare bugs, treats and achievements
   };
 
   function levelExp(level) { return Math.round(120 * Math.pow(level, 1.45)); } // exp to go from level -> level+1
