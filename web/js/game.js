@@ -333,7 +333,7 @@
       if (!inBonus && this.spawnTimer <= 0) {
         const area = D.AREAS[this.areaIdx];
         const ramp = this.stage ? this.stage.spawn * (1 - Math.min(0.15, run.time / 800))
-          : 1 - Math.min(0.4, (run.day - 1) * 0.08 + Math.min(0.1, run.time / 900));
+          : 1 - Math.min(0.4, (this.rampDay() - 1) * 0.08 + Math.min(0.1, run.time / 900));
         let interval = area.spawn * ramp;
         if (run.tutorial && run.tutorial < 3) interval = 99;
         else if (run.tutorial === 3) interval = 2.2;
@@ -407,7 +407,7 @@
         if (run.windLeft > 0) {
           run.windLeft -= dt;
           const k = Math.sin(Math.PI * (1 - run.windLeft / 4.5));
-          run.wind = run.windDir * k * (1 + Math.min(4, run.day - 1 + run.phase * 0.25) * 0.15);
+          run.wind = run.windDir * k * (1 + Math.min(4, this.rampDay() - 1) * 0.15);
           if (run.windLeft <= 0) { run.wind = 0; run.windTimer = rand(B.windEvery[0], B.windEvery[1]); }
         } else {
           run.windTimer -= dt;
@@ -543,7 +543,7 @@
     enterPhase() {
       const run = this.run;
       const idx = D.phaseArea(run.phase, run.day);
-      if (run.phase === 0 && run.day >= B.gustFromDay && run.mode !== 'challenge') run.gustTimer = rand(B.gustDelay[0], B.gustDelay[1]);
+      if (run.phase === 0 && run.day >= B.gustFromDay && (run.day - B.gustFromDay) % B.gustEveryDays === 0 && run.mode !== 'challenge') run.gustTimer = rand(B.gustDelay[0], B.gustDelay[1]);
       if (run.phase === 0) {
         const record = run.day > (root.SH.save.data.bestDay || 0) && root.SH.save.data.bestDay > 0;
         this.enterArea(idx, this.dayText(run.day), record ? t('newDayRecord') : t('areaNames')[idx]);
@@ -642,10 +642,14 @@
       audio.play('wrap');
     }
 
+    // Endless difficulty follows play time, not the day counter, so the length of a day
+    // only changes how fast the days tick by. Day 1 = the first B.rampDay seconds.
+    rampDay() { return this.run ? 1 + Math.floor(this.run.time / B.rampDay) : 3; }
+
     // ---------- insects ----------
     // heavy bugs ease in over the first days; the lure upgrade favors rare ones
     spawnTable(area) {
-      const day = this.run ? this.run.day : 3;
+      const day = this.run ? this.rampDay() : 3;
       const heavy = this.stage ? this.stage.heavy : Math.min(1, 0.2 + (day - 1) * 0.4);
       const out = {};
       for (const k in area.table) {
@@ -668,7 +672,7 @@
         y = p.y;
       }
       // later days bring faster bugs
-      const areaBoost = 1 + (this.run ? Math.min(0.5, (this.run.day - 1) * 0.08) + Math.min(0.15, this.run.time / 600) : 0);
+      const areaBoost = 1 + (this.run ? Math.min(0.5, (this.rampDay() - 1) * 0.08) + Math.min(0.15, this.run.time / 600) : 0);
       const speed = def.speed * rand(0.85, 1.15) * areaBoost;
       this.insects.push({
         id: insectId++, type, def, state: 'fly',
