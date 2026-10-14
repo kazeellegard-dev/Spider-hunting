@@ -93,8 +93,8 @@ test('old single outfits become parts', () => {
 test('parts are bought with coins, or with drops when they have a drop price', () => {
   const s = fresh();
   s.coins = 1000; s.drops = 30;
-  assert.ok(M.buyPart(s, 'hat', 'tophat', 'coins'));
-  assert.strictEqual(s.coins, 100);
+  assert.ok(M.buyPart(s, 'hat', 'beret', 'coins'));
+  assert.strictEqual(s.coins, 400);
   assert.ok(!M.buyPart(s, 'body', 'rainbow', 'coins'));
   assert.ok(!M.buyPart(s, 'body', 'rainbow', 'drops'));
   assert.ok(M.buyPart(s, 'body', 'royal', 'drops'));
@@ -116,4 +116,11 @@ test('colour variant odds: 1/2048, x4 per boost (lucky charm, full moon)', () =>
   assert.strictEqual(M.mods({ charms: { lucky: 2 } }).shiny, 1 / 512);
   assert.strictEqual(M.mods({ weather: 'moon' }).shiny, 1 / 512);
   assert.strictEqual(M.mods({ charms: { lucky: 1 }, weather: 'moon' }).shiny, 1 / 128);
+});
+
+test('coin prices sit in three clear tiers (≤1000, 2000-5000, ≥10000)', () => {
+  for (const sl of M.SLOTS) for (const p of M.PARTS[sl]) {
+    if (!p.price) continue;
+    assert.ok(p.price <= 1000 || (p.price >= 2000 && p.price <= 5000) || p.price >= 10000, sl + ':' + p.id + ' ' + p.price);
+  }
 });
