@@ -18,7 +18,7 @@ test('mods are neutral without a run and stack with charms, weather and stars', 
   assert.ok(Math.abs(m.coins - 1.2 * 3) < 1e-9);
   assert.strictEqual(m.noContinue, true);
   assert.strictEqual(m.heavyFull, true);
-  assert.strictEqual(m.gustFromDay, 2);
+  assert.strictEqual(m.gustFromDay, 3);
 });
 
 test('charm choices are 3 different ones and skip charms at their max', () => {

@@ -623,7 +623,7 @@
           const open = M.starsOpen(save);
           starDone = true;
           audio.play('levelup');
-          this.hooks.banner(run.star ? t('starClear').replace('{n}', run.star) : t('starClear0'), open > run.star ? t('starOpen').replace('{n}', open) : '', 'bonus');
+          this.hooks.banner(run.star ? t('starClear').replace('{n}', run.star) : t('starClear0').replace('{d}', M.STAR_CLEAR_DAY), open > run.star ? t('starOpen').replace('{n}', open) : '', 'bonus');
         }
         if (run.mode !== 'challenge') setTimeout(() => { if (this.run === run && !run.over && !run.dying) this.offerCharms(); }, starDone ? 2600 : 1600);
       } else {

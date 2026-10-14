@@ -41,12 +41,12 @@
   ];
 
   // ---------- B1. difficulty stars (normal mode). Each star adds one rule ----------
-  const STAR_CLEAR_DAY = 7;     // reach this day at your highest star to unlock the next
+  const STAR_CLEAR_DAY = 10;    // test (60 s days): reach this day at your highest star to unlock the next
   const STARS = [
     null,
     { rule: L('かぜが よく ふく', 'More breezes') },
     { rule: L('いとが へりやすい', 'Silk drains faster') },
-    { rule: L('とっぷうが 2日目から', 'Gusts from day 2') },
+    { rule: L('とっぷうが 3日目から', 'Gusts from day 3') },
     { rule: L('重い虫が はじめから来る', 'Heavy bugs from the start') },
     { rule: L('虫が にげやすい', 'Bugs escape sooner') },
     { rule: L('とっぷうが つよい', 'Stronger gusts') },
@@ -81,7 +81,7 @@
     if (w === 'breezy') { m.breezeEvery *= 0.5; m.bonusGain *= 1.3; }
     if (star >= 1) m.breezeEvery *= 0.6;
     if (star >= 2) m.drain *= 1.15;
-    if (star >= 3) m.gustFromDay = 2;
+    if (star >= 3) m.gustFromDay = 3;
     if (star >= 4) m.heavyFull = true;
     if (star >= 5) m.struggle *= 0.85;
     if (star >= 6) m.gust *= 1.35;
@@ -381,8 +381,8 @@
     const cur = OLD_COSTUMES[s.costume];
     if (cur) s.look = Object.assign({}, DEFAULT_LOOK, cur);
     if (s.challenge && typeof s.challenge.costume === 'string') { s.challenge.look = null; s.challenge.costumeStage = -1; }
-    // players who already reached day 7 start with ★1 open
-    if ((s.bestDay || 0) >= STAR_CLEAR_DAY) s.stars.cleared = Math.max(s.stars.cleared, 0);
+    // players who already reached day 7 (120 s days) start with ★1 open
+    if ((s.bestDay || 0) >= 7) s.stars.cleared = Math.max(s.stars.cleared, 0);
     return s;
   }
 

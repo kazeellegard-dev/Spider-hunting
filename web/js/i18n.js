@@ -77,7 +77,7 @@
       exchangeLead: '「きょうのおだい」で もらえる しずくで こうかんできるよ。ここでしか もらえない きせかえも あるよ',
       difficulty: 'むずかしさ', starZero: 'ふつう', starBonus: 'コイン ×{c}・スコア ×{s}', starMore: 'ほか {n}こ',
       starHint: '{d}にちめ まで いけば ★{n} が ひらくよ', starAll: 'ぜんぶの ★を クリアした！', starLast: '{d}にちめ まで いけば ★{n} クリア',
-      starClear: '★{n} クリア！', starClear0: '7にちめ たっせい！', starOpen: '★{n} が あそべるように なったよ',
+      starClear: '★{n} クリア！', starClear0: '{d}にちめ たっせい！', starOpen: '★{n} が あそべるように なったよ',
       charmTitle: '{n}にちめの おまもり', charmLead: 'ひとつ えらんでね。このプレイの あいだ ずっと きくよ', charmLv: 'いま {n}こ', charmHave: 'もっている おまもり',
       shinyGet: '✨いろちがい！✨', sizeBig: 'おおきい！', sizeSmall: 'ちいさい！',
       slotNames: { body: 'からだ', hat: 'ぼうし', face: 'かお', thread: 'いと', knot: 'むすびめ', bg: 'はいけい', title: 'しょうごう' },
@@ -92,7 +92,7 @@
       dressMissing: 'まだ もっていない パーツ：{p}（きせかえで ゲットできるよ）', dressOwned: 'ぜんぶ もっている くみあわせ！', dressAgain: 'このきせかえの パーツは、きせかえで ゲットできるよ',
       pauseCharms: 'おまもり', pauseWeather: 'きょうの てんき', none2: 'なし',
       howto: 'あそびかた',
-      howtoBody: '・画面をタップ：クモが糸を張りながら移動\n・巣にかかった虫をタップ：つかまえて食べる\n・虫は少しするとにげてしまう。にげるときは糸が切れる\n・「かぜ」がふくと、巣にかかった虫がにげやすくなる\n・糸がほかの糸とクロスすると、そこが自動でむすばれる。むすばれた糸は じょうぶになって、重い虫もつかまえやすい\n・糸巻きの「いと」は糸を張るとへり、時間でもへっていく。0になるとおしまい\n・虫を食べると いとが回復\n・キャンディの「ボーナス」ゲージが満タンでボーナスタイム\n・ボーナス中の「ひかりの糸巻き」をタップすると、そのあと糸が光ってどんな虫でもつかまえられる\n・ときどき「とっぷう」で巣がとばされる\n・あさ→ひる→ゆうがた→よる と時間がすぎて、夜があけると次の日。何日いきのびられるかな？\n・キラキラ光る虫はレア。ずかんを集めよう\n・朝になるたびに「おまもり」を3つから1つえらぶ。このプレイのあいだ ずっと きく\n・2日目からは日ごとに天気がかわる（あめ・まんげつ・むしの大群・かぜの日）\n・7日目まで いきのびると、つぎの「むずかしさ★」があそべる。★が高いほど コインとスコアが ふえる\n・虫は1ぴきずつ大きさがちがう。いちばん大きい／小さい記録が 金のラインをこえると 金メダル\n・とても めずらしい「いろちがい」の虫もいるよ\n・「きょうのおだい」をクリアすると「しずく」がもらえる。しずく こうかんで 特別なきせかえと こうかんしよう',
+      howtoBody: '・画面をタップ：クモが糸を張りながら移動\n・巣にかかった虫をタップ：つかまえて食べる\n・虫は少しするとにげてしまう。にげるときは糸が切れる\n・「かぜ」がふくと、巣にかかった虫がにげやすくなる\n・糸がほかの糸とクロスすると、そこが自動でむすばれる。むすばれた糸は じょうぶになって、重い虫もつかまえやすい\n・糸巻きの「いと」は糸を張るとへり、時間でもへっていく。0になるとおしまい\n・虫を食べると いとが回復\n・キャンディの「ボーナス」ゲージが満タンでボーナスタイム\n・ボーナス中の「ひかりの糸巻き」をタップすると、そのあと糸が光ってどんな虫でもつかまえられる\n・ときどき「とっぷう」で巣がとばされる\n・あさ→ひる→ゆうがた→よる と時間がすぎて、夜があけると次の日。何日いきのびられるかな？\n・キラキラ光る虫はレア。ずかんを集めよう\n・朝になるたびに「おまもり」を3つから1つえらぶ。このプレイのあいだ ずっと きく\n・2日目からは日ごとに天気がかわる（あめ・まんげつ・むしの大群・かぜの日）\n・10日目まで いきのびると、つぎの「むずかしさ★」があそべる。★が高いほど コインとスコアが ふえる\n・虫は1ぴきずつ大きさがちがう。いちばん大きい／小さい記録が 金のラインをこえると 金メダル\n・とても めずらしい「いろちがい」の虫もいるよ\n・「きょうのおだい」をクリアすると「しずく」がもらえる。しずく こうかんで 特別なきせかえと こうかんしよう',
     },
     en: {
       title1: 'Spider', title2: 'Hunting',
@@ -168,7 +168,7 @@
       exchangeLead: "Trade the dew drops from today's tasks. Some looks are only here",
       difficulty: 'Difficulty', starZero: 'Normal', starBonus: 'Coins ×{c} · Score ×{s}', starMore: '+{n} more',
       starHint: 'Reach day {d} to open ★{n}', starAll: 'Every ★ cleared!', starLast: 'Reach day {d} to clear ★{n}',
-      starClear: '★{n} cleared!', starClear0: 'Day 7 reached!', starOpen: '★{n} is now open',
+      starClear: '★{n} cleared!', starClear0: 'Day {d} reached!', starOpen: '★{n} is now open',
       charmTitle: 'Day {n} charm', charmLead: 'Pick one. It lasts for the whole run', charmLv: 'have {n}', charmHave: 'Your charms',
       shinyGet: '✨Colour variant!✨', sizeBig: 'Biggest!', sizeSmall: 'Smallest!',
       slotNames: { body: 'Body', hat: 'Hat', face: 'Face', thread: 'Silk', knot: 'Knots', bg: 'Scenery', title: 'Title' },
@@ -183,7 +183,7 @@
       dressMissing: 'Not owned yet: {p} (get them in Style)', dressOwned: 'You own this whole look!', dressAgain: 'Get these parts in Style',
       pauseCharms: 'Charms', pauseWeather: 'Weather', none2: 'none',
       howto: 'How to play',
-      howtoBody: '• Tap: the spider moves there, spinning silk\n• Tap a stuck bug: catch and eat it\n• Stuck bugs break free after a while, snapping the thread\n• A breeze makes stuck bugs break free sooner\n• Where a new thread crosses another, they tie together. Tied threads are tougher and hold heavier bugs\n• Spool = silk. Spinning uses it and it drains over time; at 0 the run ends\n• Eating bugs refills silk\n• Fill the candy (bonus) gauge for bonus time\n• Tap the glowing spool in bonus time: afterwards your silk glows and holds any bug\n• Gusts sometimes blow your web away\n• Morning, daytime, evening, night... then a new day. How many days can you last?\n• Sparkling bugs are rare. Fill your Bugdex\n• Every dawn, pick 1 of 3 charms. It lasts for the whole run\n• From day 2 the weather changes each day (rain, full moon, swarm, windy)\n• Reach day 7 to open the next difficulty ★. Higher ★ means more coins and score\n• Every bug has its own size. Beat the gold line for biggest or smallest to earn a gold medal\n• Very rare colour variants are out there too\n• Finish today\'s tasks for dew drops, and trade them for special looks',
+      howtoBody: '• Tap: the spider moves there, spinning silk\n• Tap a stuck bug: catch and eat it\n• Stuck bugs break free after a while, snapping the thread\n• A breeze makes stuck bugs break free sooner\n• Where a new thread crosses another, they tie together. Tied threads are tougher and hold heavier bugs\n• Spool = silk. Spinning uses it and it drains over time; at 0 the run ends\n• Eating bugs refills silk\n• Fill the candy (bonus) gauge for bonus time\n• Tap the glowing spool in bonus time: afterwards your silk glows and holds any bug\n• Gusts sometimes blow your web away\n• Morning, daytime, evening, night... then a new day. How many days can you last?\n• Sparkling bugs are rare. Fill your Bugdex\n• Every dawn, pick 1 of 3 charms. It lasts for the whole run\n• From day 2 the weather changes each day (rain, full moon, swarm, windy)\n• Reach day 10 to open the next difficulty ★. Higher ★ means more coins and score\n• Every bug has its own size. Beat the gold line for biggest or smallest to earn a gold medal\n• Very rare colour variants are out there too\n• Finish today\'s tasks for dew drops, and trade them for special looks',
     },
   };
 
