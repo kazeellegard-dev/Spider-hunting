@@ -21,9 +21,7 @@
 </head>
 <body>
 <!-- BODY:START -->
-<div id="stage">
-  <canvas id="game" aria-label="game"></canvas>
-
+<!-- in-play HUD: a band above the play field, so gauges and the mission never cover it -->
   <div id="hud" hidden>
     <div class="hud-silk">
       <div class="hud-label"><span id="areaName"></span></div>
@@ -37,13 +35,20 @@
       </div>
     </div>
     <div class="hud-right">
-      <div class="score" id="score">0</div>
-      <button class="icon-btn" id="pauseBtn" aria-label="pause"><svg viewBox="0 0 20 20"><rect x="4" y="3" width="4" height="14" rx="1.5"/><rect x="12" y="3" width="4" height="14" rx="1.5"/></svg></button>
+      <div class="hud-top">
+        <div class="score" id="score">0</div>
+        <button class="icon-btn" id="pauseBtn" aria-label="pause"><svg viewBox="0 0 20 20"><rect x="4" y="3" width="4" height="14" rx="1.5"/><rect x="12" y="3" width="4" height="14" rx="1.5"/></svg></button>
+      </div>
+      <div class="hud-sub"><span id="combo"></span><span id="bestHud"></span></div>
     </div>
-    <div class="hud-sub"><span id="combo"></span><span id="bestHud"></span></div>
     <div class="mission" id="missionBox" hidden><span class="mtime" id="mTime"></span><span class="mgoals" id="mGoals"></span><span class="mclear" data-t="missionClear"></span></div>
   </div>
 
+<div id="stage">
+  <canvas id="game" aria-label="game"></canvas>
+
+  <!-- after a challenge clear the field freezes; a tap opens the details -->
+  <div id="tapGate" hidden><div class="big" data-t="clearTitle"></div><div class="small" data-t="tapNext"></div></div>
   <div id="banner"><div class="big"></div><div class="small"></div></div>
   <div class="bubble" id="tutorial" hidden></div>
   <div class="bubble" id="hint" hidden></div>
