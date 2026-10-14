@@ -148,3 +148,31 @@ test('level achievements give big coins and a look nothing else sells', () => {
   assert.ok(!s.parts.face.includes('hero'));
   assert.strictEqual(s.coins, 9000);
 });
+
+test('web shapes: star, round and heart loops are recognised; plain loops are not', () => {
+  const ring = (k, r, a0 = 0) => Array.from({ length: k }, (_, i) => ({ x: 200 + Math.cos(a0 + i / k * Math.PI * 2) * r, y: 300 + Math.sin(a0 + i / k * Math.PI * 2) * r }));
+  const penta = ring(5, 80, -Math.PI / 2);
+  assert.strictEqual(M.webShape([0, 2, 4, 1, 3].map(i => penta[i])), 'star');
+  assert.strictEqual(M.webShape(ring(8, 70)), 'round');
+  assert.strictEqual(M.webShape(ring(6, 70).reverse()), 'round');
+  const heart = [[0, -20], [30, -45], [55, -25], [40, 10], [0, 50], [-40, 10], [-55, -25], [-30, -45]].map(([x, y]) => ({ x: 200 + x, y: 300 + y }));
+  assert.strictEqual(M.webShape(heart), 'heart');
+  assert.strictEqual(M.webShape(heart.slice().reverse()), 'heart');
+  // a square, a pentagon and a tiny circle are nothing special
+  assert.strictEqual(M.webShape([{ x: 0, y: 0 }, { x: 100, y: 0 }, { x: 100, y: 100 }, { x: 0, y: 100 }]), null);
+  assert.strictEqual(M.webShape(penta), null);
+  assert.strictEqual(M.webShape(ring(8, 20)), null);
+  // an upside-down heart is not a heart
+  assert.strictEqual(M.webShape(heart.map(p => ({ x: p.x, y: 600 - p.y }))), null);
+});
+
+test('spot-on scores and secret achievements', () => {
+  for (const n of [111, 2222, 77777, 123, 12345, 10000, 50000]) assert.ok(M.isPittari(n), n);
+  for (const n of [0, 11, 112, 1235, 10001, 15000]) assert.ok(!M.isPittari(n), n);
+  const s = fresh();
+  const run = { catches: 0, ties: 0, gustsSurvived: 0, bonuses: 0, treats: 0, bosses: 0, weights: [], shinyCaught: 0, charmPicks: 0, maxCombo: 0, day: 1, score: 10000, eggs: { pittari: 1, heart: 2 } };
+  const rw = M.applyRun(s, run).filter(r => r.kind === 'ach' && r.a.secret).map(r => r.a.id).sort();
+  assert.deepStrictEqual(rw, ['egg_heart', 'egg_pittari']);
+  assert.ok(s.titles.includes('pittari'));
+  assert.strictEqual(s.eggs.heart, 2);
+});

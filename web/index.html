@@ -201,6 +201,7 @@
   <!-- pause -->
   <section class="screen dim" id="pauseScr" hidden>
     <div class="sheet">
+      <canvas class="petcv" id="petCv" aria-hidden="true"></canvas>
       <h2 data-t="paused"></h2>
       <div class="pinfo" id="pauseInfo"></div>
       <button class="btn primary" id="resumeBtn" data-t="resume"></button>
@@ -224,6 +225,7 @@
       <h2 data-t="result"></h2>
       <div class="result-score" id="rScore">0</div>
       <div class="badge" id="rBest" data-t="newBest" hidden></div>
+      <div class="napbox" id="rNap" hidden><canvas id="napCv"></canvas><span class="zzz">Zzz</span><div data-t="napText"></div></div>
       <dl class="kv">
         <dt data-t="catches"></dt><dd id="rCatches"></dd>
         <dt data-t="maxCombo"></dt><dd id="rCombo"></dd>

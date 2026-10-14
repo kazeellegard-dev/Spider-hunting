@@ -429,3 +429,13 @@ ul.rewards { margin: 0; padding: 10px 12px; list-style: none; display: grid; gap
 ul.rewards li.title { color: var(--honey); }
 .dnote { font-size: 11px; font-weight: 800; color: #ffd6e6; line-height: 1.45; margin-top: 2px; white-space: pre-line; }
 .dnote.center { text-align: center; background: rgba(255,111,154,0.14); border-radius: 12px; padding: 8px 10px; font-size: 12px; }
+
+/* easter eggs: the spider to pet on the break sheet, the nap on a 0-point result */
+.petcv { display: block; width: 88px; height: 64px; margin: 0 auto -6px; cursor: pointer; touch-action: none; }
+.napbox { position: relative; display: grid; justify-items: center; gap: 2px; font-weight: 800; color: rgba(255,255,255,0.8); }
+.napbox canvas { width: 160px; height: 90px; }
+.napbox .zzz { position: absolute; left: calc(50% + 34px); top: 6px; font-weight: 900; color: #c8f0ff; animation: zzz 2.4s ease-in-out infinite; }
+@keyframes zzz { 0% { opacity: 0; transform: translate(0, 8px) scale(0.8); } 40% { opacity: 1; } 100% { opacity: 0; transform: translate(10px, -12px) scale(1.15); } }
+.item.ach.secret:not(.complete) .name { letter-spacing: 0.2em; color: rgba(255,255,255,0.55); }
+.zcard.secret { box-shadow: inset 0 0 0 2px rgba(255,224,102,0.45); }
+.zsep { grid-column: 1 / -1; font-weight: 900; font-size: 13px; color: var(--honey); margin-top: 8px; }

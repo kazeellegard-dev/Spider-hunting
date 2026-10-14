@@ -24,6 +24,15 @@
       document.querySelectorAll('[data-close]').forEach(b => b.addEventListener('click', () => { audio.play('button'); this.closeSheet(b.closest('.screen').id); }));
       $('playBtn').addEventListener('click', () => this.startGame());
       $('tapGate').addEventListener('click', () => this.gateTap());
+      // easter eggs on the title screen: poke the spider, tap the sun or moon
+      $('title').addEventListener('pointerdown', e => {
+        if (e.target.closest('button, .title-panel')) return;
+        const r = $('game').getBoundingClientRect();
+        const ev = this.game.demoTap((e.clientX - r.left) / r.width * this.game.W, (e.clientY - r.top) / r.height * this.game.H);
+        if (ev === 'sky') this.toast(t(D.AREAS[this.game.areaIdx].night ? 'eggMoon' : 'eggSun'));
+        if (ev === 'dizzy' || ev === 'sky') this.demoEgg(ev);
+      });
+      $('petCv').addEventListener('pointerdown', e => { e.preventDefault(); this.petTap(e); });
       $('sgStart').addEventListener('click', () => this.startStage());
       $('sgRestart').addEventListener('click', () => { $('sgConfirm').hidden = false; });
       $('sgNo').addEventListener('click', () => { $('sgConfirm').hidden = true; });
@@ -462,6 +471,7 @@
       if (g.mode !== 'play' || g.run.over || g.paused) return;
       audio.play('button');
       g.paused = true;
+      this.pet = { n: 0, hearts: [], t: 0, purr: 0 };
       this.renderPauseInfo();
       $('pauseScr').hidden = false;
       audio.stopMusic();
@@ -578,12 +588,67 @@
       $('rLevel').hidden = !r.levels;
       $('rLevel').textContent = t('levelUp') + ' ' + t('level') + ' ' + r.before.level + ' → ' + r.level;
       $('rStar').textContent = r.star ? '★' + r.star : t('starZero');
+      $('rNap').hidden = r.score !== 0;
+      if (r.score === 0) this.drawNap($('napCv'));
       this.fillRewards($('rRewards'), r.rewards, r.drops);
       $('resultScr').hidden = false;
       $('resultScr').scrollTop = 0;
       if (r.levels) setTimeout(() => audio.play('levelup'), 400);
       else if (r.isBest) setTimeout(() => audio.play('bonus'), 300);
       this.refreshTitle();
+    },
+
+    // ---------- easter eggs ----------
+    // found outside a run (title screen): counted and rewarded right away
+    demoEgg(key) {
+      const s = save.data;
+      if ((s.eggs || {})[key]) return;
+      M.addEgg(s, key);
+      const rw = M.checkRewards(s);
+      save.write();
+      // after the sun / moon line has had its moment
+      for (const r of rw) if (r.kind === 'ach') setTimeout(() => this.toast(`🏅 ${t('eggFound').replace('{t}', nm(r.a.text))}  🪙${r.a.coins}`), key === 'sky' ? 1500 : 0);
+      this.refreshTitle();
+    },
+    // the spider on the break sheet: a few strokes and it purrs
+    petTap(e) {
+      const p = this.pet; if (!p) return;
+      const r = $('petCv').getBoundingClientRect();
+      p.n++;
+      p.hearts.push({ x: e.clientX - r.left, y: e.clientY - r.top, t: 0 });
+      audio.play('pop', p.n);
+      if (p.n === 3) {
+        p.purr = 2.5;
+        audio.play('bonus');
+        const run = this.game.run;
+        if (run) run.eggs.pet = (run.eggs.pet || 0) + 1;
+      }
+    },
+    tick(dt) {
+      if (!this.pet || $('pauseScr').hidden) return;
+      const p = this.pet, W = 88, H = 64;
+      p.t += dt; if (p.purr > 0) p.purr -= dt;
+      const g = this.prepCanvas($('petCv'), W, H);
+      const sp = { x: W / 2, y: H / 2 + 6, lookX: 0, lookY: 0.2, scale: 1.25, happy: p.n ? 1 : 0, hurt: 0 };
+      if (p.purr > 0) { sp.x += Math.sin(p.t * 40) * 0.8; sp.smug = 1; }
+      R.drawSpider(g, sp, p.t, this.game.costume());
+      for (const h of p.hearts) {
+        h.t += dt;
+        g.globalAlpha = Math.max(0, 1 - h.t);
+        g.fillStyle = '#ff6f9a'; R.heart(g, h.x, h.y - h.t * 30, 5);
+      }
+      g.globalAlpha = 1;
+      p.hearts = p.hearts.filter(h => h.t < 1);
+      if (p.purr > 0) {
+        g.font = `900 11px ${getComputedStyle(document.body).fontFamily}`; g.textAlign = 'center';
+        g.fillStyle = '#fff3b0'; g.fillText(t('petPurr'), W / 2, 10);
+      }
+    },
+    drawNap(cv) {
+      const W = 160, H = 90, g = this.prepCanvas(cv, W, H);
+      g.strokeStyle = 'rgba(255,255,255,0.7)'; g.lineWidth = 1.2;
+      g.beginPath(); g.moveTo(10, 70); g.quadraticCurveTo(W / 2, 84, W - 10, 70); g.stroke();
+      R.drawSpider(g, { x: W / 2, y: 58, lookX: 0, lookY: 0, scale: 1.3, sleep: true }, 0.5, this.game.costume());
     },
 
     // ---------- HUD ----------
@@ -985,6 +1050,19 @@
       const lines = [];
       for (const a of M.ACHIEVEMENTS) { let l = lines.find(x => x.stat === a.stat); if (!l) lines.push(l = { stat: a.stat, tiers: [] }); l.tiers.push(a); }
       for (const l of lines) {
+        if (l.tiers[0].secret) {
+          // secret achievements stay "???" until found
+          const a = l.tiers[0], got = !!s.ach[a.id];
+          const el = document.createElement('div');
+          el.className = 'item notile ach secret' + (got ? ' complete' : '');
+          const mid = document.createElement('div');
+          mid.innerHTML = '<div class="name"></div><div class="desc"></div>';
+          mid.querySelector('.name').textContent = got ? `🔮 ${nm(a.text)}` : t('unknown');
+          mid.querySelector('.desc').textContent = got ? `${t('secretTag')} ・ 🪙${a.coins}` + (a.title ? ` 👑${this.titleName(a.title)}` : '') : `${t('secretTag')} ・ ${t('secretHint')}`;
+          el.append(mid);
+          list.append(el);
+          continue;
+        }
         const next = l.tiers.find(a => !s.ach[a.id]);
         const a = next || l.tiers[l.tiers.length - 1];
         const v = M.statValue(s, l.stat);
@@ -1071,6 +1149,35 @@
           d.append(h, p, m, rk, sz, c);
         });
         grid.append(card);
+      }
+      if (!shinyTab) {
+        // secret bugs: an empty frame with a faint shadow until caught
+        const sep = document.createElement('div'); sep.className = 'zsep'; sep.textContent = '🔮 ' + t('secretBugs');
+        grid.append(sep);
+        for (const type of D.SECRET_BUGS) {
+          const n = s.caught[type] || 0;
+          const card = document.createElement('button');
+          card.className = 'zcard secret';
+          const cv = document.createElement('canvas');
+          this.drawBug(cv, type, 72, !n);
+          if (!n) cv.style.opacity = '0.35';
+          const name = document.createElement('div'); name.className = 'name';
+          name.textContent = n ? this.insectName(type) : t('unknown');
+          const cnt = document.createElement('div'); cnt.className = 'cnt';
+          cnt.textContent = n ? t('caughtCount') + ' ' + n : t('secretTag');
+          card.append(cv, name, cnt);
+          card.addEventListener('click', () => {
+            audio.play('button');
+            const d = $('zukanDetail');
+            d.hidden = false; d.innerHTML = '';
+            const h = document.createElement('div'); h.className = 'zname';
+            h.textContent = n ? this.insectName(type) : t('unknown');
+            const p = document.createElement('div');
+            p.textContent = n ? nm(D.INSECTS[type].note) : t('secretBugNote');
+            d.append(h, p);
+          });
+          grid.append(card);
+        }
       }
     },
 

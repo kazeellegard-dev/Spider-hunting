@@ -90,6 +90,7 @@
       game.update(dt);
       game.draw(ctx);
       ui.updateHud();
+      ui.tick(Math.min(dt, 0.05));
       root.requestAnimationFrame(frame);
     }
     root.requestAnimationFrame(frame);

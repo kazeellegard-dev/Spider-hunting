@@ -119,6 +119,7 @@
     bee: 13, carpenter: 23, hornet: 40, dragonfly: 52, redfly: 38, emperorfly: 75, oniyanma: 100,
     firefly: 15, firefly2: 8, cicada: 58, minmin: 60, beetle: 27, chafer: 20, jewel: 38, golden: 22,
     kokuwa: 35, stag: 55, miyama: 60, ookuwa: 65, kabuto: 70, caucasus: 100, hercules: 140,
+    oyabun: 14, rainbowfly: 70,
   };
   const SIZE_SPREAD = 0.09, SIZE_MIN = 0.72, SIZE_MAX = 1.28;
   // each bug carries its own gold lines for the biggest and the smallest record;
@@ -301,6 +302,7 @@
     strongman: L('ちからもち', 'Strongman'), sweettooth: L('あまいもの好き', 'Sweet tooth'),
     weather: L('おてんきはかせ', 'Weather expert'), charmer: L('おまもり名人', 'Charm collector'),
     grandspider: L('クモの おおおやぶん', 'Grand old spider'),
+    pittari: L('ぴったりスコア名人', 'Spot-on scorer'),
   };
   // family set titles ('fam_<kind>') are built from the family name in the UI
 
@@ -353,6 +355,74 @@
     if (!p.level) continue;
     const a = ACHIEVEMENTS.find(x => x.stat === 'level' && x.n === p.level);
     if (a) a.part = { slot, id: p.id };
+  }
+
+  // ---------- easter eggs: secret achievements, shown as "???" until found ----------
+  const EGGS = [
+    ['heart', 300, null, L('ハートの すを はる', 'Spin a heart-shaped web')],
+    ['star', 300, null, L('ほしの すを はる', 'Spin a star-shaped web')],
+    ['round', 300, null, L('まんまるの すを はる', 'Spin a perfectly round web')],
+    ['dizzy', 200, null, L('タイトルの クモを めまわしさせる', 'Make the title spider dizzy')],
+    ['sky', 200, null, L('おそらの ひみつを みつける', 'Find the secret of the sky')],
+    ['pet', 200, null, L('ひとやすみちゅうに クモを なでる', 'Pet the spider during a break')],
+    ['oyabun', 1000, null, L('テントウムシの おやぶんを つかまえる', 'Catch the ladybird boss')],
+    ['rainbowfly', 1000, null, L('にじいろの チョウを つかまえる', 'Catch the rainbow butterfly')],
+    ['nap', 100, null, L('なまけもの：スコア0で おわる', 'Lazybones: end a run on 0 points')],
+    ['pittari', 500, 'pittari', L('ぴったりスコアを だす', 'Land on a spot-on score')],
+  ];
+  for (const [key, coins, title, text] of EGGS) {
+    ACHIEVEMENTS.push({ id: 'egg_' + key, stat: 'egg_' + key, n: 1, text, coins, drops: 1, title, part: null, secret: true });
+  }
+  function addEgg(s, key, n) { s.eggs = s.eggs || {}; s.eggs[key] = (s.eggs[key] || 0) + (n || 1); }
+  // spot-on scores: 111, 2222, 77777 ..., 123 / 1234 / 12345 ..., and every 10000
+  function isPittari(n) {
+    if (!(n >= 100)) return false;
+    const d = String(n);
+    if (/^(\d)\1+$/.test(d)) return true;
+    if ('123456789'.startsWith(d)) return true;
+    return n % 10000 === 0;
+  }
+
+  // ---------- easter eggs: web shapes ----------
+  // pts: the corners of a closed loop the spider just spun (last corner joins the first).
+  // Returns 'star' (a five-pointed star drawn in one go), 'round' (6+ corners on a circle),
+  // 'heart' (two bumps on top, a dip between them, a point at the bottom) or null.
+  function webShape(pts) {
+    const n = pts.length;
+    if (n < 4 || n > 14) return null;
+    let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity, cx = 0, cy = 0;
+    for (const p of pts) { minX = Math.min(minX, p.x); maxX = Math.max(maxX, p.x); minY = Math.min(minY, p.y); maxY = Math.max(maxY, p.y); cx += p.x / n; cy += p.y / n; }
+    const w = maxX - minX, h = maxY - minY;
+    if (Math.max(w, h) < 60 || Math.min(w, h) < 30) return null;
+    const turns = pts.map((p, i) => {
+      const a = pts[(i + n - 1) % n], b = pts[(i + 1) % n];
+      const ux = p.x - a.x, uy = p.y - a.y, vx = b.x - p.x, vy = b.y - p.y;
+      return Math.atan2(ux * vy - uy * vx, ux * vx + uy * vy);
+    });
+    const total = turns.reduce((x, y) => x + y, 0), dir = Math.sign(total);
+    const TAU = Math.PI * 2;
+    if (n === 5 && Math.abs(Math.abs(total) - 2 * TAU) < 0.9) return 'star';
+    if (Math.abs(Math.abs(total) - TAU) > 0.7) return null;
+    if (n >= 6 && turns.every(tn => Math.sign(tn) === dir)) {
+      const rs = pts.map(p => Math.hypot(p.x - cx, p.y - cy));
+      const mean = rs.reduce((x, y) => x + y, 0) / n;
+      const sd = Math.sqrt(rs.reduce((x, r) => x + (r - mean) * (r - mean), 0) / n);
+      if (sd / mean < 0.16 && w / h > 0.7 && w / h < 1.4) return 'round';
+    }
+    // heart: a dent near the top middle, the lowest corner near the middle and pointed
+    const mid = (minX + maxX) / 2;
+    const bi = pts.reduce((bi, p, i) => (p.y > pts[bi].y ? i : bi), 0), bot = pts[bi];
+    if (Math.abs(bot.x - mid) > w * 0.25 || Math.abs(turns[bi]) < 0.8 || Math.sign(turns[bi]) !== dir) return null;
+    if (w / h < 0.6 || w / h > 2) return null;
+    for (let i = 0; i < n; i++) {
+      const d = pts[i];
+      if (Math.sign(turns[i]) === dir || Math.abs(turns[i]) < 0.3) continue;
+      if (d.y > minY + h * 0.55 || Math.abs(d.x - mid) > w * 0.25) continue;
+      const leftTop = Math.min(...pts.filter(p => p.x < d.x - 4).map(p => p.y));
+      const rightTop = Math.min(...pts.filter(p => p.x > d.x + 4).map(p => p.y));
+      if (leftTop < d.y - h * 0.08 && rightTop < d.y - h * 0.08) return 'heart';
+    }
+    return null;
   }
 
   // ---------- E2. today's tasks (pay out dew drops, not coins) ----------
@@ -430,6 +500,7 @@
       stars: { cleared: -1, sel: 0, best: {} },
       odai: { date: '', tasks: [], allDone: false },
       weathers: [],
+      eggs: {},
       metaVer: 1,
     };
   }
@@ -474,7 +545,9 @@
       case 'chStage': return (s.challenge && s.challenge.cleared) || 0;
       case 'weatherKinds': return (s.weathers || []).length;
       case 'level': return s.level || 1;
-      default: return st[stat] || 0;
+      default:
+        if (stat.startsWith('egg_')) return (s.eggs && s.eggs[stat.slice(4)]) || 0;
+        return st[stat] || 0;
     }
   }
 
@@ -515,6 +588,7 @@
     for (const k in run.small || {}) if (!s.dex.small[k] || s.dex.small[k] > run.small[k]) s.dex.small[k] = run.small[k];
     for (const k in run.shinies || {}) s.dex.shiny[k] = (s.dex.shiny[k] || 0) + run.shinies[k];
     for (const w of run.weathersSeen || []) if (!s.weathers.includes(w)) s.weathers.push(w);
+    for (const k in run.eggs || {}) addEgg(s, k, run.eggs[k]);
     const out = [];
     // today's tasks
     const od = ensureOdai(s);
@@ -544,6 +618,7 @@
     bump(st, 'catches', run.catches); bump(st, 'ties', run.ties); bump(st, 'treats', run.treats);
     bump(st, 'bosses', run.bosses); bump(st, 'heavy', (run.weights || []).filter(w => w >= 5).length);
     best(st, 'combo', run.maxCombo);
+    for (const k in run.eggs || {}) addEgg(s, k, run.eggs[k]);
     return checkRewards(s);
   }
 
@@ -564,6 +639,7 @@
     PARTS, SLOTS, DEFAULT_LOOK, part, spiderLook, randomLook,
     TITLES, ACHIEVEMENTS, ODAI, ODAI_DROPS, ODAI_ALL_BONUS, makeOdai, today, ensureOdai, odaiProgress, odaiRunValue,
     defaults, migrate, starsOpen, statValue, checkRewards, applyRun, applyStage, buyPart,
+    EGGS, addEgg, isPittari, webShape,
   };
   if (typeof module !== 'undefined' && module.exports) module.exports = root.SH.meta;
 })(typeof globalThis !== 'undefined' ? globalThis : this);
