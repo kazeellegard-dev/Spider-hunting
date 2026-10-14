@@ -147,6 +147,7 @@
 
   // ---------- D1-D3. looks: spider parts, web silk, knots, seasons ----------
   // price: coins; drops: dew-drop price (exchange). Items with only `drops` are exchange-only.
+  // level: given only by the player-level achievement of that level (never sold).
   // Coin prices come in three clear tiers: within reach 100-1000, a bit of effort 2000-5000,
   // long-haul 20000-50000. Silk, knots and scenery lean cheap; only the special ones are pricey.
   const P = (id, o) => Object.assign({ id, price: 0 }, o);
@@ -167,6 +168,7 @@
       P('galaxy',  { price: 50000, drops: 45, body: '#1c1640', belly: '#4a3a9a', pattern: 'galaxy', shiny: true, name: L('ぎんが', 'Galaxy') }),
       P('rainbow', { drops: 40, body: '#ff6f9a', belly: '#ffe066', pattern: 'rainbow', shiny: true, name: L('にじいろ', 'Rainbow') }),
       P('crystal', { drops: 60, body: '#7ad0ff', belly: '#e8fbff', pattern: 'crystal', shiny: true, name: L('すいしょう', 'Crystal') }),
+      P('legend',  { level: 100, body: '#3a1030', belly: '#d8324a', pattern: 'legend', shiny: true, name: L('でんせつの おおぐも', 'Legendary spider') }),
     ],
     hat: [
       P('none',     { name: L('なし', 'None') }),
@@ -190,6 +192,7 @@
       P('crown',    { price: 30000, drops: 20, name: L('おうかん', 'Crown') }),
       P('halo',     { drops: 35, name: L('てんしのわ', 'Halo') }),
       P('dewcrown', { drops: 50, name: L('しずくのかんむり', 'Dew crown') }),
+      P('scholar',  { level: 50, name: L('はかせぼう', 'Scholar cap') }),
     ],
     face: [
       P('none',     { name: L('なし', 'None') }),
@@ -206,6 +209,7 @@
       P('monocle',  { price: 5000, name: L('かためがね', 'Monocle') }),
       P('starglasses', { price: 20000, drops: 30, name: L('ほしがたメガネ', 'Star glasses') }),
       P('stareyes', { drops: 25, name: L('キラキラおめめ', 'Sparkly eyes') }),
+      P('hero',     { level: 75, name: L('ヒーローマスク', 'Hero mask') }),
     ],
     thread: [
       P('white',    { color: null, name: L('しろ', 'White') }),
@@ -225,6 +229,7 @@
       P('fire',     { price: 30000, drops: 35, fire: true, name: L('ほのお', 'Flame') }),
       P('rainbow',  { price: 40000, drops: 35, rainbow: true, name: L('にじいろ', 'Rainbow') }),
       P('aurora',   { drops: 50, aurora: true, glow: true, name: L('オーロラ', 'Aurora') }),
+      P('wakaba',   { level: 10, color: '#e4fbb8', stripe: '#3fae5f', name: L('わかばの いと', 'Sprout silk') }),
     ],
     knot: [
       P('dot',       { name: L('まる', 'Dot') }),
@@ -241,6 +246,7 @@
       P('pearl',     { price: 3000, name: L('しんじゅ', 'Pearl') }),
       P('gem',       { price: 25000, drops: 30, name: L('ほうせき', 'Jewel') }),
       P('diamond',   { drops: 25, name: L('ダイヤ', 'Diamond') }),
+      P('medal',     { level: 30, name: L('メダル', 'Medal') }),
     ],
     bg: [
       P('none',      { name: L('いつもの にわ', 'Garden') }),
@@ -294,6 +300,7 @@
     challenger: L('チャレンジャー', 'Challenger'), taskmaster: L('おだい名人', 'Task master'),
     strongman: L('ちからもち', 'Strongman'), sweettooth: L('あまいもの好き', 'Sweet tooth'),
     weather: L('おてんきはかせ', 'Weather expert'), charmer: L('おまもり名人', 'Charm collector'),
+    grandspider: L('クモの おおおやぶん', 'Grand old spider'),
   };
   // family set titles ('fam_<kind>') are built from the family name in the UI
 
@@ -323,6 +330,8 @@
     ['charms', [10, 100], { title: 'charmer' }, L('おまもりを {n}こ えらぶ', 'Pick {n} charms')],
     ['odai', [3, 30, 100], { title: 'taskmaster' }, L('きょうのおだいを {n}こ たっせい', 'Finish {n} daily tasks')],
     ['weatherKinds', [5], { title: 'weather' }, L('{n}しゅるいの 天気を たいけん', 'See all {n} kinds of weather')],
+    // player level: big coin rewards and a look that can't be had any other way
+    ['level', [10, 30, 50, 75, 100], { title: 'grandspider', coins: [1000, 3000, 5000, 10000, 20000] }, L('レベル{n}に なる', 'Reach level {n}')],
   ];
   const ACHIEVEMENTS = [];
   for (const [stat, tiers, top, text] of ACH_DEF) {
@@ -331,11 +340,19 @@
       const tier = i / Math.max(1, tiers.length - 1);
       ACHIEVEMENTS.push({
         id: stat + '_' + n, stat, n, text,
-        coins: Math.round((60 + 440 * tier) / 10) * 10,
+        coins: top.coins ? top.coins[i] : Math.round((60 + 440 * tier) / 10) * 10,
         drops: last ? 5 : i >= 1 ? 1 : 0,
         title: last ? top.title || null : null,
+        part: null,
       });
     });
+  }
+
+  // level-only looks hang off the level achievements
+  for (const slot of Object.keys(PARTS)) for (const p of PARTS[slot]) {
+    if (!p.level) continue;
+    const a = ACHIEVEMENTS.find(x => x.stat === 'level' && x.n === p.level);
+    if (a) a.part = { slot, id: p.id };
   }
 
   // ---------- E2. today's tasks (pay out dew drops, not coins) ----------
@@ -456,6 +473,7 @@
       case 'stars': return Math.max(0, s.stars.cleared);
       case 'chStage': return (s.challenge && s.challenge.cleared) || 0;
       case 'weatherKinds': return (s.weathers || []).length;
+      case 'level': return s.level || 1;
       default: return st[stat] || 0;
     }
   }
@@ -465,6 +483,7 @@
     if (rw.coins) s.coins += rw.coins;
     if (rw.drops) s.drops += rw.drops;
     if (rw.title && !s.titles.includes(rw.title)) s.titles.push(rw.title);
+    if (rw.part && !s.parts[rw.part.slot].includes(rw.part.id)) s.parts[rw.part.slot].push(rw.part.id);
     out.push(item);
   }
   function checkRewards(s) {

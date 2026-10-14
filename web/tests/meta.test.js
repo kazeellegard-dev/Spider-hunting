@@ -124,3 +124,27 @@ test('coin prices sit in three clear tiers (≤1000, 2000-5000, 20000-50000)', (
     assert.ok(p.price <= 1000 || (p.price >= 2000 && p.price <= 5000) || (p.price >= 20000 && p.price <= 50000), sl + ':' + p.id + ' ' + p.price);
   }
 });
+
+test('level achievements give big coins and a look nothing else sells', () => {
+  const lv = M.ACHIEVEMENTS.filter(a => a.stat === 'level');
+  assert.deepStrictEqual(lv.map(a => a.n), [10, 30, 50, 75, 100]);
+  assert.deepStrictEqual(lv.map(a => a.coins), [1000, 3000, 5000, 10000, 20000]);
+  for (const a of lv) {
+    assert.ok(a.part, 'level ' + a.n + ' has a look');
+    const p = M.part(a.part.slot, a.part.id);
+    assert.strictEqual(p.level, a.n);
+    assert.ok(!p.price && !p.drops, 'level look is not sold');
+  }
+  const s = fresh();
+  s.coins = 999999; s.drops = 999;
+  for (const a of lv) {
+    assert.ok(!M.buyPart(s, a.part.slot, a.part.id, 'coins'));
+    assert.ok(!M.buyPart(s, a.part.slot, a.part.id, 'drops'));
+  }
+  s.level = 52; s.coins = 0;
+  const got = M.checkRewards(s).filter(r => r.kind === 'ach' && r.a.stat === 'level');
+  assert.strictEqual(got.length, 3);
+  assert.ok(s.parts.thread.includes('wakaba') && s.parts.knot.includes('medal') && s.parts.hat.includes('scholar'));
+  assert.ok(!s.parts.face.includes('hero'));
+  assert.strictEqual(s.coins, 9000);
+});

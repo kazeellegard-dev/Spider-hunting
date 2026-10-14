@@ -321,7 +321,7 @@
     lookName(look) {
       return ['body', 'hat', 'face'].filter(sl => look[sl] && look[sl] !== 'none').map(sl => nm(M.part(sl, look[sl]).name)).join(' ＋ ');
     },
-    priceText(p) { return p.price ? '🪙' + p.price.toLocaleString() : '💧' + p.drops; },
+    priceText(p) { return p.level ? 'Lv' + p.level : p.price ? '🪙' + p.price.toLocaleString() : '💧' + p.drops; },
     // parts of a lent look the player doesn't own yet, with where to get them
     lookMissing(look) {
       return ['body', 'hat', 'face'].filter(sl => look[sl] && look[sl] !== 'none' && !save.data.parts[sl].includes(look[sl])).map(sl => M.part(sl, look[sl]));
@@ -673,7 +673,8 @@
       for (const rw of rewards || []) {
         if (rw.kind === 'ach') {
           const a = rw.a;
-          add(`🏅 ${t('rwAch')}${nm(a.text).replace('{n}', a.n.toLocaleString())}  🪙${a.coins}` + (a.drops ? ` 💧${a.drops}` : ''));
+          add(`🏅 ${t('rwAch')}${nm(a.text).replace('{n}', a.n.toLocaleString())}  🪙${a.coins.toLocaleString()}` + (a.drops ? ` 💧${a.drops}` : ''));
+          if (a.part) add('🎁 ' + t('rwPart').replace('{p}', nm(M.part(a.part.slot, a.part.id).name)), 'title');
           if (a.title) add('👑 ' + t('rwTitle').replace('{t}', this.titleName(a.title)), 'title');
         } else if (rw.kind === 'set') {
           add(`🏆 ${t('rwSet')}${t('kindNames')[rw.family]}  🪙${M.SET_REWARD.coins} 💧${M.SET_REWARD.drops}`);
@@ -863,13 +864,14 @@
       const mid = document.createElement('div');
       mid.innerHTML = '<div class="name"></div><div class="desc"></div>';
       mid.querySelector('.name').textContent = nm(p.name);
-      const note = shop === 'drops' ? t('slotNames')[slot] : !p.price && p.drops ? t('dropsOnly') + `（💧${p.drops}）` : p.drops && !owned ? t('alsoDrops').replace('{n}', p.drops) : '';
+      const note = shop === 'drops' ? t('slotNames')[slot] : p.level ? t('levelOnly').replace('{n}', p.level) : !p.price && p.drops ? t('dropsOnly') + `（💧${p.drops}）` : p.drops && !owned ? t('alsoDrops').replace('{n}', p.drops) : '';
       mid.querySelector('.desc').textContent = note;
       const btn = document.createElement('button');
       btn.className = 'btn small';
       const wear = () => { save.data.look[slot] = p.id; save.write(); audio.play('button'); this.rerenderShop(); };
       if (s.look[slot] === p.id) { btn.textContent = t('equipped'); btn.disabled = true; }
       else if (owned) { btn.textContent = t('equip'); btn.addEventListener('click', wear); }
+      else if (p.level) { btn.textContent = t('levelLock').replace('{n}', p.level); btn.disabled = true; }
       else {
         const useDrops = shop === 'drops' || !p.price;
         const cost = useDrops ? p.drops : p.price;
@@ -991,7 +993,7 @@
         const mid = document.createElement('div');
         mid.innerHTML = '<div class="name"></div><div class="desc"></div><div class="abar"><i></i></div><div class="pips"></div>';
         mid.querySelector('.name').textContent = nm(a.text).replace('{n}', a.n.toLocaleString());
-        const reward = `🪙${a.coins}` + (a.drops ? ` 💧${a.drops}` : '') + (a.title ? ` 👑${this.titleName(a.title)}` : '');
+        const reward = `🪙${a.coins.toLocaleString()}` + (a.drops ? ` 💧${a.drops}` : '') + (a.part ? ` 🎁${nm(M.part(a.part.slot, a.part.id).name)}` : '') + (a.title ? ` 👑${this.titleName(a.title)}` : '');
         mid.querySelector('.desc').textContent = next ? `${Math.min(v, a.n).toLocaleString()} / ${a.n.toLocaleString()}  ・ ${reward}` : t('achComplete');
         mid.querySelector('.abar i').style.width = (next ? Math.min(100, v / a.n * 100) : 100) + '%';
         mid.querySelector('.pips').innerHTML = l.tiers.map(x => `<i class="${s.ach[x.id] ? 'on' : ''}"></i>`).join('');
