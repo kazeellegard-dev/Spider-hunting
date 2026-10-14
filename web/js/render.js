@@ -224,6 +224,7 @@
     const def = ins.def;
     g.save();
     g.translate(ins.x, ins.y);
+    if (ins.state === 'escape' && ins.fadeMax) g.globalAlpha *= Math.max(0, ins.fade / ins.fadeMax);
     const face = ins.vx < 0 ? -1 : 1;
     if (ins.state === 'wrapped') {
       drawCocoon(g, def.size, ins.wrapT, time);

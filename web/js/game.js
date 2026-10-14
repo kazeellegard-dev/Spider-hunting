@@ -140,7 +140,7 @@
       const run = this.run = {
         score: 0, silk: this.st.maxSilk, glow: 0, time: 0, combo: 0, lastEat: -99, maxCombo: 0, catches: 0,
         bonusGauge: 0, bonusTimer: 0, coins: 0, caught: {}, continued: false, over: false, dying: 0,
-        windTimer: rand(22, 34), wind: 0, windLeft: 0, maxArea: 0, day: 1, phase: 0, phaseT: 0,
+        windTimer: rand(B.windEvery[0] * 0.6, B.windEvery[1] * 0.6), wind: 0, windLeft: 0, maxArea: 0, day: 1, phase: 0, phaseT: 0,
         gustTimer: -1, gustLeft: 0, gusts: 0, mode: this.runMode,
         kinds: {}, treats: 0, bosses: 0, weights: [], timeLeft: stage ? stage.time : 0, gustDone: false,
         tutorial: save.tutorialDone ? 0 : 1, tutorialTimer: 0, heavyHinted: !!save.tutorialDone && save.plays > 3,
@@ -196,7 +196,7 @@
       // 1) a stuck bug near the tap? rush and wrap it
       let best = null, bd = B.tapInsectRadius;
       for (const ins of this.insects) {
-        if (ins.state !== 'caught' || ins.targeted) continue;
+        if (ins.state !== 'caught' || (ins.targeted && sp.target === ins)) continue;
         const d = Math.hypot(ins.x - x, ins.y - y);
         if (d < bd) { bd = d; best = ins; }
       }
@@ -388,12 +388,9 @@
           const k = Math.sin(Math.PI * Math.min(1, (2.6 - run.gustLeft) / 2.6));
           run.wind = run.windDir * (run.gustLeft < 2.6 ? 4.5 * k : 0.3);
           if (before > 1.6 && run.gustLeft <= 1.6) this.gustBlast();
-          if (run.gustLeft <= 0) {
-            run.gustLeft = 0; run.wind = 0;
-            if (run.mode === 'challenge' ? this.stage && this.stage.gust : run.day >= B.gustFromDay) run.gustTimer = rand(B.gustEvery[0], B.gustEvery[1]);
-          }
+          if (run.gustLeft <= 0) { run.gustLeft = 0; run.wind = 0; }
         } else {
-          // first gust armed at dawn (see enterPhase), later ones after each gust; -1 = none pending
+          // at most one gust per day, armed at dawn (see enterPhase); -1 = none pending
           if (run.gustTimer > 0) run.gustTimer -= dt;
           if (run.gustTimer > -1 && run.gustTimer <= 0) {
             run.gustTimer = -1;
@@ -411,7 +408,7 @@
           run.windLeft -= dt;
           const k = Math.sin(Math.PI * (1 - run.windLeft / 4.5));
           run.wind = run.windDir * k * (1 + Math.min(4, run.day - 1 + run.phase * 0.25) * 0.15);
-          if (run.windLeft <= 0) { run.wind = 0; run.windTimer = rand(20, 35); }
+          if (run.windLeft <= 0) { run.wind = 0; run.windTimer = rand(B.windEvery[0], B.windEvery[1]); }
         } else {
           run.windTimer -= dt;
           if (run.windTimer <= 0) {
@@ -546,7 +543,7 @@
     enterPhase() {
       const run = this.run;
       const idx = D.phaseArea(run.phase, run.day);
-      if (run.phase === 0 && run.day === B.gustFromDay && run.gustTimer === -1 && run.gustLeft <= 0 && run.mode !== 'challenge') run.gustTimer = rand(B.gustDelay[0], B.gustDelay[1]);
+      if (run.phase === 0 && run.day >= B.gustFromDay && run.mode !== 'challenge') run.gustTimer = rand(B.gustDelay[0], B.gustDelay[1]);
       if (run.phase === 0) {
         const record = run.day > (root.SH.save.data.bestDay || 0) && root.SH.save.data.bestDay > 0;
         this.enterArea(idx, this.dayText(run.day), record ? t('newDayRecord') : t('areaNames')[idx]);
@@ -729,7 +726,7 @@
       ins.x += (vx + wind) * dt;
       ins.y = def.pattern === 'jitter' ? ins.baseY : y;
       if (ins.x < -60 || ins.x > this.W + 60 || ins.y < -60) ins.dead = true;
-      if (ins.state === 'escape' && ins.pass <= 0) ins.state = 'fly';
+      if (ins.state === 'escape') { ins.fade -= dt; if (ins.fade <= 0) ins.dead = true; }
     }
 
     hitThread(ins, hit, strength) {
@@ -756,6 +753,7 @@
       let p = hit.t < 0.5 ? a : b;
       if (p.pinned) p = p === a ? b : a;
       ins.state = 'caught';
+      ins.targeted = false;
       ins.point = p;
       ins.load = 0.05 + def.weight * 0.08;
       p.load += ins.load;
@@ -772,8 +770,13 @@
       if (!p || !p.owner || p.owner.broken) { this.release(ins, false); return; }
       ins.x = p.x; ins.y = p.y;
       if (Math.random() < dt * 8) p.impulse(rand(-1.2, 1.2) * ins.def.weight * 0.5, rand(-1, 1) * ins.def.weight * 0.5);
-      const frozen = ins.targeted || (run && run.tutorial === 3);
-      if (!frozen) ins.struggle -= dt;
+      // only the bug the spider is actually going for holds still
+      const frozen = (ins.targeted && this.spider.target === ins) || (run && run.tutorial === 3);
+      if (!frozen) {
+        ins.struggle -= dt;
+        // a breeze (not a gust) works the bug loose: windStruggle of its meter over the 4.5 s
+        if (run && run.windLeft > 0 && run.gustLeft <= 0) ins.struggle -= dt * ins.struggleMax * B.windStruggle / 4.5;
+      }
       if (ins.struggle <= 0) this.release(ins, true);
     }
 
@@ -785,9 +788,15 @@
         const th = p.owner, idx = th.points.indexOf(p);
         this.web.sever(th, Math.min(Math.max(idx, 0), th.points.length - 2));
       }
-      ins.state = 'escape'; ins.point = null; ins.pass = 0.8; ins.vy = -40;
-      ins.baseY = ins.y; ins.phase = 0;
+      // it flies off fading out and can't be caught again
+      ins.state = 'escape'; ins.point = null; ins.targeted = false; ins.pass = 0.8; ins.vy = -40;
+      ins.baseY = ins.y; ins.phase = 0; ins.fade = ins.fadeMax = 0.9;
+      if (tear) {
+        this.puff(ins.x, ins.y, 'rgba(255,255,255,0.9)', 10);
+        for (let i = 0; i < 6; i++) this.particles.push({ x: ins.x, y: ins.y, vx: rand(-90, 90), vy: rand(-120, -20), life: 0.5, max: 0.5, color: ins.def.color, size: rand(1.5, 2.5), kind: 'dot' });
+      }
       if (this.mode !== 'play') return;
+      if (tear) { audio.play('snap'); platform.haptic('light'); }
       const run = this.run;
       audio.play('escape');
       this.floatText(ins.x, ins.y - 20, t('escaped'), '#ffffff', 13);
