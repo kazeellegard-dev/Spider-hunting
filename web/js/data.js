@@ -166,7 +166,7 @@
     silkCostPerPx: 1 / 16,
     drainBase: 0.9,          // silk/s lost over time; the run ends at 0
     drainRamp: 0.012,        // extra silk/s per second played
-    drainCurve: 0.00002,     // ...plus this * t^2, so long upgraded runs still come to an end
+    drainCurve: 0.00007,     // ...plus this * t^2: a mid-upgraded run lasts about 7 min
     drainMax: 30,
     glowDuration: 15,        // seconds of glowing silk after bonus time
     gustFromDay: 5,          // endless: gusts start on this day (about 4 min in)...
