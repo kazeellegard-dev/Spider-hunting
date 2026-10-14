@@ -97,8 +97,15 @@
                  name: { ja: 'コーカサスオオカブト', en: 'Atlas beetle' }, note: { ja: '3本ヅノの大きなカブト。とても重い', en: 'Three horns. Extremely heavy' } }),
     hercules:  I('rhino', { boss: true, score: 800, silk: 35, weight: 12.5, speed: 60, size: 24, struggle: 0.6, pattern: 'straight', color: '#2a2018', color2: '#d8c070', horn: 'hercules', rare: true, coins: 40,
                  name: { ja: 'ヘラクレスオオカブト', en: 'Hercules beetle' }, note: { ja: 'せかいいち長いカブト。ひかる糸でしかつかまえられない', en: 'The longest beetle. Only glowing silk can hold it' } }),
+    // --- secret bugs: about 1 spawn in 10000 each (normal mode), outside the numbered Bugdex ---
+    oyabun:    I('ladybug', { secret: true, score: 1000, silk: 30, weight: 2.0, speed: 55, size: 15, pattern: 'flutter', color: '#e8322f', color2: '#1c1830', spots: 7, kingCrown: true, rare: true, coins: 100,
+                 name: { ja: 'テントウムシの おやぶん', en: 'Ladybird boss' }, note: { ja: 'めったに あえない テントウムシの おやぶん。かんむりが じまん', en: 'The boss of all ladybirds, almost never seen. Proud of its crown' } }),
+    rainbowfly: I('butterfly', { secret: true, score: 1000, silk: 30, weight: 1.5, speed: 65, size: 15, pattern: 'flutter', color: '#ff6f9a', color2: '#ffffff', rainbowWing: true, rare: true, coins: 100,
+                 name: { ja: 'にじいろの チョウ', en: 'Rainbow butterfly' }, note: { ja: 'はねの いろが くるくる かわる まぼろしの チョウ', en: 'A dream butterfly whose wings keep changing colour' } }),
   };
-  const INSECT_ORDER = Object.keys(INSECTS);
+  const INSECT_ORDER = Object.keys(INSECTS).filter(k => !INSECTS[k].secret);
+  const SECRET_BUGS = Object.keys(INSECTS).filter(k => INSECTS[k].secret);
+  const SECRET_CHANCE = 1 / 10000;  // per spawn, for each secret bug
 
   // Bonus time treats: caught automatically on touch, never break threads.
   const TREATS = [
@@ -190,6 +197,6 @@
   function upgradeCost(u, lv) { return Math.round(u.base * Math.pow(lv + 1, u.exp) / 5) * 5; }
 
   root.SH = root.SH || {};
-  root.SH.data = { INSECTS, INSECT_ORDER, TREATS, AREAS, PHASES, phaseArea, GOLDEN_CHANCE, UPGRADES, BALANCE, levelExp, upgradeCost };
+  root.SH.data = { INSECTS, INSECT_ORDER, SECRET_BUGS, SECRET_CHANCE, TREATS, AREAS, PHASES, phaseArea, GOLDEN_CHANCE, UPGRADES, BALANCE, levelExp, upgradeCost };
   if (typeof module !== 'undefined' && module.exports) module.exports = root.SH.data;
 })(typeof globalThis !== 'undefined' ? globalThis : this);

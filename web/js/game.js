@@ -142,6 +142,7 @@
       this.bgPrev = null;
       this.particles = []; this.texts = [];
       this.paused = false;
+      this.trail = []; this.shooters = []; this.skyFx = null;
     }
 
     // opts.stage: 0-based stage index for challenge mode; omitted = endless
@@ -167,7 +168,10 @@
         star: endless ? clamp(save.stars.sel || 0, 0, M.starsOpen(save)) : 0, charms: {}, charmPicks: 0,
         weather: 'clear', weathersSeen: ['clear'], ties: 0, gustsSurvived: 0, bonuses: 0,
         shinyCaught: 0, shinies: {}, big: {}, small: {}, glowMax: B.glowDuration, odaiShown: {},
+        // easter eggs found this run (folded into the save at the end), heart-web lure time
+        eggs: {}, heartT: 0, lastScore: 0,
       };
+      this.trail = []; this.shapeCool = 0; this.shooters = []; this.skyFx = null;
       if (endless) M.ensureOdai(save);
       this.refreshStats();
       run.silk = this.st.maxSilk;
@@ -330,13 +334,21 @@
     }
 
     updateDemo(dt) {
+      const sp0 = this.spider;
+      if (sp0.hurt > 0) sp0.hurt -= dt;
+      if (this.skyFx) { this.skyFx.t += dt; if (this.skyFx.t >= this.skyFx.max) this.skyFx = null; }
+      if (sp0.dizzy) {
+        // hangs upside down from its hub on a single thread, swaying
+        sp0.x = sp0.home.x + Math.sin(this.time * 2) * 6; sp0.y = sp0.home.y + 44;
+        sp0.lookX = 0; sp0.lookY = 0;
+      }
       this.spawnTimer -= dt;
       if (this.spawnTimer <= 0 && this.insects.length < 6) {
         this.spawnTimer = rand(0.9, 1.6);
         this.spawnInsect(pickWeighted(D.AREAS[this.areaIdx].table));
       }
       const sp = this.spider;
-      if (sp.action === 'idle') {
+      if (sp.action === 'idle' && !sp.dizzy) {
         const stuck = this.insects.find(i => i.state === 'caught' && !i.targeted && i.struggle < i.struggleMax - 0.6);
         if (stuck) { stuck.targeted = true; sp.action = 'rush'; sp.target = stuck; sp.node = null; }
         else if (sp.home && Math.hypot(sp.x - sp.home.x, sp.y - sp.home.y) > 4 && !sp.returnWait) {
@@ -360,6 +372,12 @@
         return;
       }
       run.time += dt;
+      if (run.score !== run.lastScore) {
+        run.lastScore = run.score;
+        if (M.isPittari(run.score)) this.pittari(run.score);
+      }
+      if (run.heartT > 0) run.heartT -= dt;
+      if (this.shapeCool > 0) this.shapeCool -= dt;
       const inBonus = run.bonusTimer > 0;
       // silk drains over time and faster as the run goes on (the run's clock)
       const tutorialFree = run.tutorial && run.tutorial < 4;
@@ -385,7 +403,7 @@
         const area = D.AREAS[this.areaIdx];
         const ramp = this.stage ? this.stage.spawn * (1 - Math.min(0.15, run.time / 800))
           : 1 - Math.min(0.4, (run.day - 1) * 0.08 + Math.min(0.1, run.time / 900));
-        let interval = area.spawn * ramp * this.mods.spawn;
+        let interval = area.spawn * ramp * this.mods.spawn * (run.heartT > 0 ? 0.6 : 1);
         if (run.tutorial && run.tutorial < 3) interval = 99;
         else if (run.tutorial === 3) interval = 2.2;
         this.spawnTimer = interval * rand(0.75, 1.25);
@@ -397,7 +415,9 @@
         }
         if (run.tutorial === 3) type = Math.random() < 0.5 ? 'butterfly' : 'fly';
         else if (Math.random() < D.GOLDEN_CHANCE * this.st.lure) type = 'golden';
-        this.spawnInsect(type, run.tutorial === 3);
+        // secret bugs (normal mode only): about one spawn in ten thousand each
+        if (!this.stage && !run.tutorial) for (const k of D.SECRET_BUGS) if (Math.random() < D.SECRET_CHANCE) { type = k; audio.play('area'); }
+        this.spawnInsect(type, run.tutorial === 3 || run.heartT > 0);
         // swarm: sometimes gnats come in a group
         if (type === 'gnat' && Math.random() < 0.4) { this.spawnInsect('gnat'); this.spawnInsect('gnat'); }
       }
@@ -492,6 +512,7 @@
       }
       if (sp.hurt > 0) sp.hurt -= dt;
       if (sp.happy > 0) sp.happy -= dt;
+      if (sp.smug > 0) sp.smug -= dt;
       if (run.mode !== 'challenge') {
         run.odaiT = (run.odaiT || 0) + dt;
         if (run.odaiT >= 0.5) { run.odaiT = 0; this.checkOdai(); }
@@ -694,6 +715,7 @@
       const to = this.nodeAt(sp.x, sp.y, from);
       sp.x = to.x; sp.y = to.y;
       if (to !== from && Math.hypot(to.x - from.x, to.y - from.y) > 6) {
+        if (this.mode === 'play') this.traceShape(from, to);
         const { knots } = this.web.spinTied(from, to, this.st.strength);
         if (knots.length && this.mode === 'play') {
           this.run.ties += knots.length;
@@ -710,6 +732,92 @@
       if (run && run.tutorial === 1) { run.tutorial = 2; this.hooks.tutorial(t('tut2')); }
       else if (run && run.tutorial === 2) { run.tutorial = 3; this.hooks.tutorial(t('tut3')); this.spawnTimer = 0.8; }
       this.afterAction();
+    }
+
+    // ---------- easter eggs ----------
+    // the corners the spider has spun through without stopping to eat; a loop that
+    // comes back to an earlier corner is checked for a heart, a star or a circle
+    traceShape(from, to) {
+      const tr = this.trail, last = tr[tr.length - 1];
+      if (!last || Math.hypot(last.x - from.x, last.y - from.y) > 16) this.trail = [{ x: from.x, y: from.y }];
+      this.trail.push({ x: to.x, y: to.y });
+      if (this.trail.length > 16) this.trail.shift();
+      if (this.shapeCool > 0) return;
+      const pts = this.trail, end = pts[pts.length - 1];
+      for (let i = pts.length - 4; i >= 0; i--) {
+        if (Math.hypot(pts[i].x - end.x, pts[i].y - end.y) > 24) continue;
+        const loop = pts.slice(i, pts.length - 1);
+        const shape = M.webShape(loop);
+        if (shape) { this.webShapeFound(shape, loop); this.trail = [end]; return; }
+      }
+    }
+
+    webShapeFound(shape, loop) {
+      const run = this.run;
+      run.eggs[shape] = (run.eggs[shape] || 0) + 1;
+      this.shapeCool = 3;
+      const cx = loop.reduce((a, p) => a + p.x, 0) / loop.length, cy = loop.reduce((a, p) => a + p.y, 0) / loop.length;
+      audio.play('bonus');
+      platform.haptic('medium');
+      if (shape === 'heart') {
+        // hearts rise from the web, and bugs come to it more often for a while
+        run.heartT = 20;
+        for (let i = 0; i < 14; i++) this.particles.push({ x: cx + rand(-40, 40), y: cy + rand(-30, 30), vx: rand(-30, 30), vy: rand(-140, -60), life: 1.4, max: 1.4, color: i % 2 ? '#ff6f9a' : '#ffb3cf', size: rand(5, 9), kind: 'heart', float: true });
+        this.floatText(cx, cy - 20, t('eggHeart'), '#ff8fb8', 20);
+      } else if (shape === 'star') {
+        // a shooting star crosses the sky
+        this.shooters.push({ x: -40, y: this.H * rand(0.08, 0.2), vx: this.W * 0.9, vy: this.H * 0.12, life: 1.6 });
+        const pts = Math.round(300 * this.mods.score);
+        run.score += pts;
+        this.burst(cx, cy, '#ffe066');
+        this.floatText(cx, cy - 20, t('eggStar').replace('{n}', pts), '#ffe066', 20);
+      } else {
+        // a perfect circle: the spider is very pleased with itself
+        this.spider.smug = 4;
+        this.burst(cx, cy, '#8fd3ff');
+        this.floatText(cx, cy - 20, t('eggRound'), '#c8f0ff', 20);
+      }
+    }
+
+    pittari(score) {
+      const run = this.run;
+      run.eggs.pittari = (run.eggs.pittari || 0) + 1;
+      audio.play('levelup');
+      // confetti from the top of the field
+      const cols = ['#ff6f9a', '#ffe066', '#8fd3ff', '#7be39a', '#d2b8ff'];
+      for (let i = 0; i < 40; i++) this.particles.push({ x: rand(0, this.W), y: rand(-10, this.H * 0.15), vx: rand(-40, 40), vy: rand(20, 120), life: 1.8, max: 1.8, color: cols[i % cols.length], size: rand(3, 5), kind: 'confetti', spin: rand(0, 6) });
+      this.floatText(this.W / 2, this.H * 0.3, t('eggPittari').replace('{n}', score.toLocaleString()), '#ffe066', 24);
+    }
+
+    // taps on the title screen: poke the spider (ten pokes make it dizzy), greet the sun or moon
+    demoTap(x, y) {
+      if (this.mode !== 'demo') return null;
+      const sp = this.spider;
+      const sx = this.W * 0.78, sy = this.H * 0.13;
+      if (Math.hypot(x - sx, y - sy) < 40) {
+        const night = D.AREAS[this.areaIdx].night;
+        this.skyFx = { kind: night ? 'moon' : 'sun', t: 0, max: night ? 4 : 2 };
+        audio.play(night ? 'area' : 'pop');
+        return 'sky';
+      }
+      if (Math.hypot(x - sp.x, y - sp.y) > 46) return null;
+      if (sp.dizzy) {
+        sp.dizzy = false; sp.pokes = 0;
+        sp.action = 'walk'; sp.tx = sp.home.x; sp.ty = sp.home.y;
+        audio.play('land');
+        return 'undizzy';
+      }
+      sp.pokes = (sp.pokes || 0) + 1;
+      sp.hurt = 0.25;
+      audio.play('pop', sp.pokes);
+      if (sp.pokes >= 10) {
+        sp.dizzy = true; sp.action = 'idle'; sp.target = null;
+        this.floatText(sp.x, sp.y - 40, t('eggDizzy'), '#ffe066', 18);
+        audio.play('gameover');
+        return 'dizzy';
+      }
+      this.floatText(sp.x + rand(-14, 14), sp.y - 30, sp.pokes >= 7 ? '!?' : '!', '#ffffff', 14);
+      return 'poke';
     }
 
     beginWrap(ins) {
@@ -924,6 +1032,11 @@
       run.kinds[def.kind] = (run.kinds[def.kind] || 0) + 1;
       run.weights.push(def.weight);
       if (def.boss) run.bosses++;
+      if (def.secret) {
+        run.eggs[ins.type] = (run.eggs[ins.type] || 0) + 1;
+        audio.play('levelup');
+        this.floatText(ins.x, ins.y - 86, t('eggSecretBug'), '#ffe066', 18);
+      }
       run.silk = Math.min(this.st.maxSilk, run.silk + def.silk * this.st.appetite * (def.weight >= 3 ? m.feast : 1));
       if (run.bonusTimer <= 0) run.bonusGauge = Math.min(this.bonusNeed(), run.bonusGauge + (1 + (run.combo >= 5 ? 0.5 : 0)) * m.bonusGain);
       if (def.coins) { run.coins += def.coins; audio.play('coin'); this.floatText(ins.x, ins.y - 44, '+' + def.coins + ' ' + t('coins'), '#ffd23f', 15); }
@@ -1074,7 +1187,16 @@
       this.texts.push({ x, y, text, color, size: size || 16, life: 1.0, max: 1.0 });
     }
     updateFx(dt) {
-      for (const p of this.particles) { p.life -= dt; p.x += p.vx * dt; p.y += p.vy * dt; p.vy += 140 * dt; p.vx *= 0.97; }
+      for (const p of this.particles) {
+        p.life -= dt; p.x += p.vx * dt; p.y += p.vy * dt;
+        if (p.kind === 'confetti') { p.vy = Math.min(p.vy + 40 * dt, 110); p.vx += Math.sin(p.life * 6 + p.spin) * 30 * dt; p.spin += dt * 8; }
+        else if (!p.float) p.vy += 140 * dt;
+        p.vx *= 0.97;
+      }
+      if (this.shooters) {
+        for (const sh of this.shooters) { sh.life -= dt; sh.x += sh.vx * dt; sh.y += sh.vy * dt; }
+        this.shooters = this.shooters.filter(sh => sh.life > 0);
+      }
       this.particles = this.particles.filter(p => p.life > 0);
       for (const tx of this.texts) { tx.life -= dt; tx.y -= 34 * dt; }
       this.texts = this.texts.filter(tx => tx.life > 0);
@@ -1099,6 +1221,14 @@
       if (area.night) this.drawAmbientFireflies(g);
       const look = root.SH.save.data.look;
       if (look.bg !== 'none') R.drawSeason(g, look.bg, this.W, this.H, this.time, area.night);
+      if (this.skyFx) this.drawSkyFx(g);
+      if (this.shooters) for (const sh of this.shooters) {
+        const gr = g.createLinearGradient(sh.x, sh.y, sh.x - sh.vx * 0.18, sh.y - sh.vy * 0.18);
+        gr.addColorStop(0, 'rgba(255,250,210,1)'); gr.addColorStop(1, 'rgba(255,250,210,0)');
+        g.strokeStyle = gr; g.lineWidth = 3; g.lineCap = 'round';
+        g.beginPath(); g.moveTo(sh.x, sh.y); g.lineTo(sh.x - sh.vx * 0.18, sh.y - sh.vy * 0.18); g.stroke();
+        g.fillStyle = '#fffbe0'; R.star(g, sh.x, sh.y, 6);
+      }
       if (run && this.mods.rain) this.drawRain(g);
       if (run && run.wind) this.drawWind(g, run.wind);
 
@@ -1112,6 +1242,10 @@
       for (const tr of this.treats) R.drawTreat(g, tr, this.time);
       for (const it of this.specials) R.drawSpool(g, it, this.time);
       for (const ins of this.insects) R.drawInsect(g, ins, this.time);
+      if (sp.dizzy && sp.home) {
+        g.strokeStyle = 'rgba(255,255,255,0.95)'; g.lineWidth = 1.3;
+        g.beginPath(); g.moveTo(sp.home.x, sp.home.y); g.lineTo(sp.x, sp.y + 14); g.stroke();
+      }
       R.drawSpider(g, sp, this.time, this.costume());
       if (sp.action === 'spin') this.drawTapMark(g, sp.tapX, sp.tapY);
 
@@ -1119,6 +1253,8 @@
         const a = p.life / p.max;
         g.globalAlpha = a; g.fillStyle = p.color; g.strokeStyle = p.color;
         if (p.kind === 'star') R.star(g, p.x, p.y, p.size);
+        else if (p.kind === 'heart') R.heart(g, p.x, p.y, p.size);
+        else if (p.kind === 'confetti') { g.save(); g.translate(p.x, p.y); g.rotate(p.spin); g.fillRect(-p.size / 2, -p.size / 4, p.size, p.size / 2); g.restore(); }
         else if (p.kind === 'ring') { g.lineWidth = 3; g.beginPath(); g.arc(p.x, p.y, p.size + (1 - a) * 30, 0, R.TAU); g.stroke(); }
         else { g.beginPath(); g.arc(p.x, p.y, p.size * (0.5 + a * 0.5), 0, R.TAU); g.fill(); }
       }
@@ -1132,6 +1268,33 @@
         g.fillStyle = tx.color; g.fillText(tx.text, tx.x, tx.y);
       }
       g.globalAlpha = 1;
+    }
+
+    // title-screen sky: the sun winks, the moon goes full with a rabbit on it
+    drawSkyFx(g) {
+      const fx = this.skyFx, x = this.W * 0.78, y = this.H * 0.13;
+      const a = Math.min(1, fx.t * 4, (fx.max - fx.t) * 3);
+      g.save(); g.globalAlpha = a;
+      if (fx.kind === 'sun') {
+        g.strokeStyle = '#8a4a10'; g.fillStyle = '#8a4a10'; g.lineWidth = 2.2; g.lineCap = 'round';
+        g.beginPath(); g.arc(-8 + x, y - 4, 4, Math.PI * 1.1, Math.PI * 1.9); g.stroke();
+        g.beginPath(); g.moveTo(x + 4, y - 5); g.lineTo(x + 12, y - 5); g.stroke();
+        g.beginPath(); g.arc(x, y + 5, 8, Math.PI * 0.15, Math.PI * 0.85); g.stroke();
+        g.fillStyle = 'rgba(255,120,120,0.6)';
+        g.beginPath(); g.arc(x - 14, y + 4, 3.5, 0, R.TAU); g.arc(x + 14, y + 4, 3.5, 0, R.TAU); g.fill();
+      } else {
+        g.fillStyle = '#fff4c2'; g.beginPath(); g.arc(x, y, 26, 0, R.TAU); g.fill();
+        // a rabbit pounding rice cakes, as seen in the moon
+        g.fillStyle = 'rgba(190,160,90,0.55)';
+        g.beginPath(); g.ellipse(x - 6, y + 6, 8, 7, 0, 0, R.TAU); g.fill();
+        g.beginPath(); g.arc(x - 1, y - 3, 5, 0, R.TAU); g.fill();
+        g.beginPath(); g.ellipse(x - 3, y - 13, 1.8, 6, -0.25, 0, R.TAU); g.fill();
+        g.beginPath(); g.ellipse(x + 2, y - 13, 1.8, 6, 0.25, 0, R.TAU); g.fill();
+        g.beginPath(); g.ellipse(x + 11, y + 12, 6, 4, 0, 0, R.TAU); g.fill();
+        g.lineWidth = 2; g.strokeStyle = 'rgba(190,160,90,0.55)';
+        g.beginPath(); g.moveTo(x + 3, y + 1); g.lineTo(x + 12, y + (Math.sin(fx.t * 8) > 0 ? -2 : 6)); g.stroke();
+      }
+      g.restore();
     }
 
     drawTapMark(g, x, y) {
@@ -1176,6 +1339,7 @@
       const run = this.run;
       const save = root.SH.save.data;
       const before = { level: save.level, exp: save.exp };
+      if (run.score === 0 && !run.tutorial) run.eggs.nap = 1;
       const coins = Math.floor((Math.floor(run.score * B.coinsPerScore) + run.coins) * this.mods.coins);
       save.coins += coins;
       save.exp += run.score;

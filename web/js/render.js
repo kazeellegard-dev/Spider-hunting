@@ -390,6 +390,8 @@
     const scale = s.scale || 1;
     g.save(); g.translate(x, y); g.scale(scale, scale);
     if (s.hurt > 0) g.translate(Math.sin(time * 80) * 3, 0);
+    // easter egg: poked ten times on the title screen, it hangs upside down, dizzy
+    if (s.dizzy) g.rotate(Math.PI + Math.sin(time * 2) * 0.12);
     const bob = moving ? Math.sin(time * 30) * 1.2 : Math.sin(time * 3) * 0.8;
     const rainbow = look.pattern === 'rainbow';
     const hue = (time * 60) % 360;
@@ -473,7 +475,11 @@
     // eyes look toward travel direction
     const lx = Math.max(-1, Math.min(1, s.lookX || 0)) * 1.8, ly = Math.max(-1, Math.min(1, s.lookY || 0)) * 1.5;
     const blink = (Math.sin(time * 1.3) > 0.985) ? 0.15 : 1;
-    for (const ex of [-6, 6]) {
+    if (s.sleep) {
+      // napping: closed eyes
+      g.strokeStyle = '#1c1830'; g.lineWidth = 1.6; g.lineCap = 'round';
+      for (const ex of [-6, 6]) { g.beginPath(); g.arc(ex, -3, 3.5, Math.PI * 0.15, Math.PI * 0.85); g.stroke(); }
+    } else for (const ex of [-6, 6]) {
       g.fillStyle = '#fff'; g.beginPath(); g.ellipse(ex, -2, 5, 6 * blink, 0, 0, TAU); g.fill();
       if (blink > 0.5) {
         g.fillStyle = '#1c1830'; g.beginPath(); g.arc(ex + lx, -1.5 + ly, s.sad ? 2.2 : 3, 0, TAU); g.fill();
@@ -481,6 +487,24 @@
         else if (look.face === 'hearteyes') { g.fillStyle = '#ff4f7b'; heart(g, ex + lx, -1.5 + ly, 3); }
         else { g.fillStyle = '#fff'; g.beginPath(); g.arc(ex + lx + 1, -3 + ly, 1.1, 0, TAU); g.fill(); }
       }
+      if (s.dizzy) {
+        // spiral eyes
+        g.fillStyle = '#fff'; g.beginPath(); g.ellipse(ex, -2, 5, 6, 0, 0, TAU); g.fill();
+        g.strokeStyle = '#1c1830'; g.lineWidth = 1.1; g.beginPath();
+        for (let k = 0; k <= 24; k++) { const a = k * 0.55 + time * 6 * Math.sign(ex), r = k * 0.17; g.lineTo(ex + Math.cos(a) * r, -2 + Math.sin(a) * r); }
+        g.stroke();
+      } else if (s.smug > 0) {
+        // smug: heavy lids over the top half of each eye
+        g.fillStyle = body; g.beginPath(); g.ellipse(ex, -2, 5.6, 6.6, 0, Math.PI, TAU); g.fill();
+        g.strokeStyle = '#1c1830'; g.lineWidth = 1.2; g.beginPath(); g.moveTo(ex - 5.2, -2); g.lineTo(ex + 5.2, -2); g.stroke();
+      }
+    }
+    if (s.dizzy) {
+      g.fillStyle = '#ffe066';
+      for (let k = 0; k < 3; k++) { const a = time * 3 + k * TAU / 3; star(g, Math.cos(a) * 16, 20 + Math.sin(a) * 4, 2.6); }
+    }
+    if (s.smug > 0) {
+      g.fillStyle = `rgba(255,255,255,${0.6 + 0.4 * Math.sin(time * 8)})`; star(g, 15, -13, 3);
     }
     // cheeks + mouth
     if (look.face === 'blush') {
@@ -832,9 +856,21 @@
       for (const [x, y] of spots) { g.beginPath(); g.arc(x * s, y * s, s * (d.spots === 2 ? 0.2 : 0.13), 0, TAU); g.fill(); }
       g.fillStyle = '#1c1830'; g.beginPath(); g.arc(s * 0.8, 0, s * 0.3, 0, TAU); g.fill();
       g.fillStyle = '#fff'; g.beginPath(); g.arc(s * 0.85, -s * 0.15, s * 0.1, 0, TAU); g.fill();
+      if (d.kingCrown) {
+        // the ladybird boss wears a little gold crown
+        g.fillStyle = '#ffd23f'; g.strokeStyle = '#c9971a'; g.lineWidth = 0.8;
+        const cx = s * 0.8, cy = -s * 0.32, w = s * 0.32;
+        g.beginPath(); g.moveTo(cx - w, cy); g.lineTo(cx - w, cy - w * 1.1); g.lineTo(cx - w * 0.5, cy - w * 0.5); g.lineTo(cx, cy - w * 1.3); g.lineTo(cx + w * 0.5, cy - w * 0.5); g.lineTo(cx + w, cy - w * 1.1); g.lineTo(cx + w, cy); g.closePath(); g.fill(); g.stroke();
+      }
     },
-    butterfly(g, s, flap, d) {
+    butterfly(g, s, flap, d, time) {
       g.fillStyle = d.color; g.strokeStyle = d.color2; g.lineWidth = 1.2;
+      if (d.rainbowWing) {
+        // the rainbow butterfly's wings keep shifting colour
+        const gr = g.createLinearGradient(-s, -s, s * 0.4, 0), h = ((time || 0) * 90) % 360;
+        for (let i = 0; i <= 4; i++) gr.addColorStop(i / 4, `hsl(${(h + i * 72) % 360},90%,68%)`);
+        g.fillStyle = gr;
+      }
       g.beginPath(); g.ellipse(-s * 0.05, -s * 0.6 * flap, s * 0.42, s * 0.62 * flap + 1, -0.35, 0, TAU); g.fill(); g.stroke();
       g.beginPath(); g.ellipse(-s * 0.42, -s * 0.3 * flap, s * 0.3, s * 0.42 * flap + 1, -0.9, 0, TAU); g.fill(); g.stroke();
       if (d.stripes) {
