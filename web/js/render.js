@@ -116,8 +116,9 @@
   }
   function drawNodes(g, nodes, time) {
     for (const n of nodes) {
-      g.fillStyle = 'rgba(255,255,255,0.95)';
-      g.beginPath(); g.arc(n.x, n.y, 2.6, 0, TAU); g.fill();
+      // knots tied at crossings get a slightly bigger, warmer bead
+      g.fillStyle = n.tie ? 'rgba(255,240,190,1)' : 'rgba(255,255,255,0.95)';
+      g.beginPath(); g.arc(n.x, n.y, n.tie ? 3.4 : 2.6, 0, TAU); g.fill();
       // dew sparkle
       const tw = 0.5 + 0.5 * Math.sin(time * 2 + n.id);
       g.fillStyle = `rgba(200,240,255,${0.25 + tw * 0.4})`;

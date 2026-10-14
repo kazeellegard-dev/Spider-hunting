@@ -55,7 +55,7 @@
       allCatch: 'ふつうの虫はぜんぶつかまえられる！',
       rareTag: 'レア',
       modeMain: 'ノーマルモード', modeChallenge: 'チャレンジモード', mainDesc: 'きょうかして、何日いきのびられるか', challengeDesc: '強化0からスタート。クリアごとに強化をえらぼう', swipeHint: 'スワイプ か ◀ ▶ で モードきりかえ', upgradeFor: 'ノーマルモードの強化です。チャレンジモードには つかわれません', stage: 'ステージ', start: 'スタート',
-      timeLimit: 'せいげんじかん', sec: 'びょう', timeLeft: 'のこり', goalsTitle: 'ミッション', upgradesNow: 'いまの強化', upgradeListBtn: '強化いちらんを見る', chUpTitle: 'チャレンジの強化', chUpLead: 'このチャレンジでえらんだ強化です。ステージをクリアするたびに1つえらべます', none: 'まだなし',
+      timeLimit: 'せいげんじかん', sec: 'びょう', timeLeft: 'のこり', goalsTitle: 'ミッション', upgradesNow: 'いまの強化', tie: 'むすんだ！', tieN: '{n}かしょ むすんだ！', upgradeListBtn: '強化いちらんを見る', chUpTitle: 'チャレンジの強化', chUpLead: 'このチャレンジでえらんだ強化です。ステージをクリアするたびに1つえらべます', none: 'まだなし',
       goal: {
         catch: '虫を {n}ひき つかまえる', kind: '{k}を {n}ひき つかまえる', type: '{k}を {n}ひき つかまえる',
         score: 'スコア {n} をとる', combo: '{n}コンボ をだす', treats: 'ボーナスで おかしを {n}こ あつめる',
@@ -69,9 +69,9 @@
       stageCoins: 'もらったコイン', progressNow: 'すすみぐあい',
       weight: 'おもさ',
       demoHint: 'タップで糸をはる → かかった虫をタップ！',
-      tapOpen: 'タップでひらく', stageDress: 'このステージのきせかえ', howtoChallenge: '・ステージごとに ミッションがあるよ。ぜんぶ たっせいすると クリア！\n・「さいごまで いきのびる」は 時間いっぱい たえればOK\n・いとが0になるか、時間ぎれで しっぱい。同じステージに もう一回ちょうせん\n・強化は0から。クリアするたびに 強化を1つ えらべる（チャレンジモードだけの強化）\n・きせかえは ステージごとに ランダム。そのステージのあいだだけ 着られるよ\n・ボス虫のミッションは、ボーナスタイムの「ひかりの糸巻き」をタップして ひかる糸で つかまえよう\n・操作はノーマルモードと同じ：画面タップで糸をはる、かかった虫をタップで食べる\n・「さいしょから やりなおす」で ステージ1と強化を リセットできる',
+      tapOpen: 'タップでひらく', stageDress: 'このステージのきせかえ', howtoChallenge: '・ステージごとに ミッションがあるよ。ぜんぶ たっせいすると クリア！\n・「さいごまで いきのびる」は 時間いっぱい たえればOK\n・いとが0になるか、時間ぎれで しっぱい。同じステージに もう一回ちょうせん\n・糸がクロスすると自動でむすばれて じょうぶになる\n・強化は0から。クリアするたびに 強化を1つ えらべる（チャレンジモードだけの強化）\n・きせかえは ステージごとに ランダム。そのステージのあいだだけ 着られるよ\n・ボス虫のミッションは、ボーナスタイムの「ひかりの糸巻き」をタップして ひかる糸で つかまえよう\n・操作はノーマルモードと同じ：画面タップで糸をはる、かかった虫をタップで食べる\n・「さいしょから やりなおす」で ステージ1と強化を リセットできる',
       howto: 'あそびかた',
-      howtoBody: '・画面をタップ：クモが糸を張りながら移動\n・巣にかかった虫をタップ：つかまえて食べる\n・虫は少しするとにげてしまう\n・糸巻きの「いと」は糸を張るとへり、時間でもへっていく。0になるとおしまい\n・虫を食べると いとが回復\n・キャンディの「ボーナス」ゲージが満タンでボーナスタイム\n・ボーナス中の「ひかりの糸巻き」をタップすると、そのあと糸が光ってどんな虫でもつかまえられる\n・ときどき「とっぷう」で巣がとばされる\n・あさ→ひる→ゆうがた→よる と時間がすぎて、夜があけると次の日。何日いきのびられるかな？\n・キラキラ光る虫はレア。ずかんを集めよう',
+      howtoBody: '・画面をタップ：クモが糸を張りながら移動\n・巣にかかった虫をタップ：つかまえて食べる\n・虫は少しするとにげてしまう\n・糸がほかの糸とクロスすると、そこが自動でむすばれる。むすばれた糸は じょうぶになって、重い虫もつかまえやすい\n・糸巻きの「いと」は糸を張るとへり、時間でもへっていく。0になるとおしまい\n・虫を食べると いとが回復\n・キャンディの「ボーナス」ゲージが満タンでボーナスタイム\n・ボーナス中の「ひかりの糸巻き」をタップすると、そのあと糸が光ってどんな虫でもつかまえられる\n・ときどき「とっぷう」で巣がとばされる\n・あさ→ひる→ゆうがた→よる と時間がすぎて、夜があけると次の日。何日いきのびられるかな？\n・キラキラ光る虫はレア。ずかんを集めよう',
     },
     en: {
       title1: 'Spider', title2: 'Hunting',
@@ -125,7 +125,7 @@
       allCatch: 'You can catch every regular bug!',
       rareTag: 'Rare',
       modeMain: 'Normal mode', modeChallenge: 'Challenge mode', mainDesc: 'Upgrade and see how many days you last', challengeDesc: 'No upgrades at first. Pick one after each clear', swipeHint: 'Swipe or ◀ ▶ to switch modes', upgradeFor: 'For Normal mode. Challenge mode does not use these', stage: 'Stage', start: 'Start',
-      timeLimit: 'Time limit', sec: 's', timeLeft: 'Left', goalsTitle: 'Mission', upgradesNow: 'Upgrades', upgradeListBtn: 'See all upgrades', chUpTitle: 'Challenge upgrades', chUpLead: 'Upgrades picked in this challenge. You get one pick per stage clear', none: 'none yet',
+      timeLimit: 'Time limit', sec: 's', timeLeft: 'Left', goalsTitle: 'Mission', upgradesNow: 'Upgrades', tie: 'Tied!', tieN: 'Tied ×{n}!', upgradeListBtn: 'See all upgrades', chUpTitle: 'Challenge upgrades', chUpLead: 'Upgrades picked in this challenge. You get one pick per stage clear', none: 'none yet',
       goal: {
         catch: 'Catch {n} bugs', kind: 'Catch {n} {k}', type: 'Catch {n} {k}',
         score: 'Score {n}', combo: 'Make a {n} combo', treats: 'Collect {n} treats in bonus time',
@@ -139,9 +139,9 @@
       stageCoins: 'Coins earned', progressNow: 'Progress',
       weight: 'Weight',
       demoHint: 'Tap to spin → tap stuck bugs!',
-      tapOpen: 'Tap to open', stageDress: 'Outfit for this stage', howtoChallenge: '• Each stage has missions. Meet them all to clear it\n• "Survive" just means lasting until time runs out\n• You fail if your silk hits 0 or time runs out. Then try the stage again\n• Upgrades start at 0. After each clear, pick one (challenge-only upgrades)\n• Your outfit is random each stage and only lasts for that stage\n• For boss missions, tap the glowing spool in bonus time and catch them with glowing silk\n• Controls are the same as Normal mode: tap to spin, tap stuck bugs to eat\n• "Start over" resets to stage 1 and clears the upgrades',
+      tapOpen: 'Tap to open', stageDress: 'Outfit for this stage', howtoChallenge: '• Each stage has missions. Meet them all to clear it\n• "Survive" just means lasting until time runs out\n• You fail if your silk hits 0 or time runs out. Then try the stage again\n• Threads that cross tie together and get tougher\n• Upgrades start at 0. After each clear, pick one (challenge-only upgrades)\n• Your outfit is random each stage and only lasts for that stage\n• For boss missions, tap the glowing spool in bonus time and catch them with glowing silk\n• Controls are the same as Normal mode: tap to spin, tap stuck bugs to eat\n• "Start over" resets to stage 1 and clears the upgrades',
       howto: 'How to play',
-      howtoBody: '• Tap: the spider moves there, spinning silk\n• Tap a stuck bug: catch and eat it\n• Stuck bugs break free after a while\n• Spool = silk. Spinning uses it and it drains over time; at 0 the run ends\n• Eating bugs refills silk\n• Fill the candy (bonus) gauge for bonus time\n• Tap the glowing spool in bonus time: afterwards your silk glows and holds any bug\n• Gusts sometimes blow your web away\n• Morning, daytime, evening, night... then a new day. How many days can you last?\n• Sparkling bugs are rare. Fill your Bugdex',
+      howtoBody: '• Tap: the spider moves there, spinning silk\n• Tap a stuck bug: catch and eat it\n• Stuck bugs break free after a while\n• Where a new thread crosses another, they tie together. Tied threads are tougher and hold heavier bugs\n• Spool = silk. Spinning uses it and it drains over time; at 0 the run ends\n• Eating bugs refills silk\n• Fill the candy (bonus) gauge for bonus time\n• Tap the glowing spool in bonus time: afterwards your silk glows and holds any bug\n• Gusts sometimes blow your web away\n• Morning, daytime, evening, night... then a new day. How many days can you last?\n• Sparkling bugs are rare. Fill your Bugdex',
     },
   };
 

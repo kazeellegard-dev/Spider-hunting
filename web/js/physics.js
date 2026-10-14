@@ -49,6 +49,7 @@
       this.strength = opts.strength;
       this.age = 0;
       this.broken = false;
+      this.ties = 0;
       if (opts.points) {
         this.points = opts.points;
         this.segmentLength = opts.segmentLength;
@@ -158,6 +159,56 @@
       return t;
     }
 
+    // Spins a straight thread from a to b, but ties it into every live thread it crosses:
+    // each crossing becomes a shared knot and the new thread is laid as a chain through them.
+    // Threads on both sides of a knot count one more tie (they hold heavier bugs).
+    // Crossings closer than `gap` to an end, a knot or each other are left alone.
+    spinTied(a, b, strength, gap = 12, maxTies = 6) {
+      const len = Math.hypot(b.x - a.x, b.y - a.y);
+      const knots = [];
+      if (len > gap * 2) {
+        const dx = b.x - a.x, dy = b.y - a.y;
+        let u0 = gap / len;
+        const u1 = 1 - gap / len;
+        while (knots.length < maxTies) {
+          let best = null;
+          for (const th of this.threads) {
+            if (th.broken) continue;
+            const pts = th.points;
+            for (let i = 0; i < pts.length - 1; i++) {
+              const p = pts[i], q = pts[i + 1];
+              const ex = q.x - p.x, ey = q.y - p.y;
+              const den = dx * ey - dy * ex;
+              if (Math.abs(den) < 1e-9) continue;
+              const u = ((p.x - a.x) * ey - (p.y - a.y) * ex) / den;
+              const w = ((p.x - a.x) * dy - (p.y - a.y) * dx) / den;
+              if (u <= u0 || u >= u1 || w < 0 || w > 1 || (best && u >= best.u)) continue;
+              best = { thread: th, i, w, u };
+            }
+          }
+          if (!best) break;
+          const x = a.x + dx * best.u, y = a.y + dy * best.u;
+          u0 = best.u + gap / len;
+          // crossing right at an existing knot: run through that knot instead of tying a new one
+          const near = this.nodes.find(n => n !== a && n !== b && Math.hypot(n.x - x, n.y - y) < gap);
+          if (near && knots.includes(near)) continue;
+          const knot = near || this.split(best.thread, best.i, best.w);
+          knot.tie = true;
+          for (const t of this.threads) if (t.nodeA === knot || t.nodeB === knot) t.ties++;
+          knots.push(knot);
+        }
+      }
+      const chain = [a, ...knots, b], made = [];
+      for (let i = 0; i < chain.length - 1; i++) {
+        const t = this.spin(chain[i], chain[i + 1], strength);
+        t.ties = knots.length ? 1 : 0;
+        made.push(t);
+      }
+      // split() prunes knots no thread uses yet; the ends may be brand new
+      for (const n of [a, b]) if (!this.nodes.includes(n)) this.nodes.push(n);
+      return { threads: made, knots };
+    }
+
     // Splits `thread` at segmentIndex/t by inserting a new pinned knot there.
     // Existing point objects survive so anything attached to them stays put.
     split(thread, segmentIndex, t) {
@@ -173,7 +224,7 @@
       const made = [];
       if (before.length >= 2) made.push(new Thread({ points: before, segmentLength: thread.segmentLength, strength: thread.strength, nodeA: thread.nodeA, nodeB: node }));
       if (after.length >= 2) made.push(new Thread({ points: after, segmentLength: thread.segmentLength, strength: thread.strength, nodeA: node, nodeB: thread.nodeB }));
-      for (const m of made) { m.age = thread.age; this.threads.push(m); }
+      for (const m of made) { m.age = thread.age; m.ties = thread.ties || 0; this.threads.push(m); }
       this.prune();
       return node;
     }
@@ -197,6 +248,7 @@
           const s = new Thread({ points: chain, segmentLength: thread.segmentLength, strength: thread.strength, nodeA: chain[0].pinned ? thread.nodeA : null, nodeB: chain[chain.length - 1].pinned ? thread.nodeB : null });
           s.stub = true;
           s.age = thread.age;
+          s.ties = thread.ties || 0;
           stubs.push(s);
           this.threads.push(s);
         }

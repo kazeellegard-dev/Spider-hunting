@@ -388,9 +388,12 @@
           const k = Math.sin(Math.PI * Math.min(1, (2.6 - run.gustLeft) / 2.6));
           run.wind = run.windDir * (run.gustLeft < 2.6 ? 4.5 * k : 0.3);
           if (before > 1.6 && run.gustLeft <= 1.6) this.gustBlast();
-          if (run.gustLeft <= 0) { run.gustLeft = 0; run.wind = 0; }
+          if (run.gustLeft <= 0) {
+            run.gustLeft = 0; run.wind = 0;
+            if (run.mode === 'challenge' ? this.stage && this.stage.gust : run.day >= B.gustFromDay) run.gustTimer = rand(B.gustEvery[0], B.gustEvery[1]);
+          }
         } else {
-          // at most one gust per day, armed at dawn (see enterPhase); -1 = none pending
+          // first gust armed at dawn (see enterPhase), later ones after each gust; -1 = none pending
           if (run.gustTimer > 0) run.gustTimer -= dt;
           if (run.gustTimer > -1 && run.gustTimer <= 0) {
             run.gustTimer = -1;
@@ -543,7 +546,7 @@
     enterPhase() {
       const run = this.run;
       const idx = D.phaseArea(run.phase, run.day);
-      if (run.phase === 0 && run.day >= B.gustFromDay && run.mode !== 'challenge') run.gustTimer = rand(B.gustDelay[0], B.gustDelay[1]);
+      if (run.phase === 0 && run.day === B.gustFromDay && run.gustTimer === -1 && run.gustLeft <= 0 && run.mode !== 'challenge') run.gustTimer = rand(B.gustDelay[0], B.gustDelay[1]);
       if (run.phase === 0) {
         const record = run.day > (root.SH.save.data.bestDay || 0) && root.SH.save.data.bestDay > 0;
         this.enterArea(idx, this.dayText(run.day), record ? t('newDayRecord') : t('areaNames')[idx]);
@@ -617,7 +620,12 @@
       const to = this.nodeAt(sp.x, sp.y, from);
       sp.x = to.x; sp.y = to.y;
       if (to !== from && Math.hypot(to.x - from.x, to.y - from.y) > 6) {
-        this.web.spin(from, to, this.st.strength);
+        const { knots } = this.web.spinTied(from, to, this.st.strength);
+        if (knots.length && this.mode === 'play') {
+          for (const k of knots) this.puff(k.x, k.y, 'rgba(255,240,170,0.95)', 7);
+          this.floatText((from.x + to.x) / 2, (from.y + to.y) / 2 - 18, knots.length > 1 ? t('tieN').replace('{n}', knots.length) : t('tie'), '#fff3b0', 15);
+          audio.play('stick', 0.6);
+        }
       }
       sp.node = to; sp.action = 'idle';
       audio.play('land');
@@ -728,7 +736,9 @@
       const def = ins.def;
       const th = hit.thread;
       const glow = this.mode === 'play' && this.run.glow > 0;
-      const tooHeavy = this.mode === 'play' && !glow && (def.boss || def.weight > strength);
+      // threads tied in at crossings hold heavier bugs
+      const held = strength + Math.min(th.ties || 0, B.tieMax) * B.tieBonus;
+      const tooHeavy = this.mode === 'play' && !glow && (def.boss || def.weight > held);
       if (tooHeavy) {
         this.web.sever(th, hit.segmentIndex);
         ins.pass = 0.12; ins.vx *= 0.85;

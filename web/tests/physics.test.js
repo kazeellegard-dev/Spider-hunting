@@ -105,3 +105,39 @@ test('Thread can be built from raw points', () => {
   const copy = new Thread({ points: t.points.slice(), segmentLength: t.segmentLength, strength: 2 });
   assert.strictEqual(copy.points[0].owner, copy);
 });
+
+test('a thread spun across another is tied in at the crossing', () => {
+  const web = new Web();
+  const a = web.addNode(0, 100), b = web.addNode(200, 100);
+  const old = web.spin(a, b, 3);
+  const c = web.addNode(100, 0), d = web.addNode(100, 200);
+  const { threads, knots } = web.spinTied(c, d, 3);
+  assert.strictEqual(knots.length, 1);
+  assert.ok(old.broken, 'crossed thread is split');
+  assert.strictEqual(threads.length, 2);
+  const k = knots[0];
+  assert.ok(Math.abs(k.x - 100) < 1 && Math.abs(k.y - 100) < 1);
+  // four live threads meet at the knot, each counting one tie
+  const atKnot = web.threads.filter(t => t.nodeA === k || t.nodeB === k);
+  assert.strictEqual(atKnot.length, 4);
+  for (const t of atKnot) assert.strictEqual(t.ties, 1);
+  for (const n of [a, b, c, d, k]) assert.ok(web.nodes.includes(n));
+});
+
+test('crossings near the ends are not tied', () => {
+  const web = new Web();
+  const a = web.addNode(0, 100), b = web.addNode(200, 100);
+  web.spin(a, b, 3);
+  const c = web.addNode(100, 95), d = web.addNode(100, 300);
+  const { knots } = web.spinTied(c, d, 3);
+  assert.strictEqual(knots.length, 0);
+});
+
+test('a thread across several others ties each one', () => {
+  const web = new Web();
+  for (const y of [50, 100, 150]) web.spin(web.addNode(0, y), web.addNode(200, y), 3);
+  const { threads, knots } = web.spinTied(web.addNode(100, 0), web.addNode(100, 200), 3);
+  assert.strictEqual(knots.length, 3);
+  assert.strictEqual(threads.length, 4);
+  assert.deepStrictEqual(knots.map(k => Math.round(k.y)), [50, 100, 150]);
+});

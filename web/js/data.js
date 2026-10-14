@@ -177,9 +177,12 @@
     drainCurve: 0.00002,     // ...plus this * t^2, so long upgraded runs still come to an end
     drainMax: 30,
     glowDuration: 15,        // seconds of glowing silk after bonus time
-    gustFromDay: 3,          // endless: gusts start on this day...
-    gustDelay: [15, 85],     // ...once per day, this many seconds after dawn
-    gustPower: 0.33,         // share of threads a gust tears or blows away
+    gustFromDay: 2,          // endless: gusts start on this day...
+    gustDelay: [10, 40],     // ...this many seconds after that dawn...
+    gustEvery: [40, 70],     // ...then again every so often (challenge stages too, after their first)
+    gustPower: 0.1,          // share of threads a gust tears or blows away
+    tieBonus: 0.3,           // extra strength per crossing a thread was tied into...
+    tieMax: 3,               // ...counting up to this many
     comboWindow: 3.0,
     bonusNeed: 14,           // meals to fill the bonus gauge (first time)
     bonusNeedStep: 8,        // each later bonus needs this many more meals
