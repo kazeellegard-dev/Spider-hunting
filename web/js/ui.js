@@ -65,7 +65,7 @@
 
     applyTexts() {
       document.querySelectorAll('[data-t]').forEach(el => { el.textContent = t(el.dataset.t); });
-      document.title = i18n.lang === 'ja' ? 'クモの巣ハンティング' : 'Spider Hunting';
+      document.title = i18n.lang === 'ja' ? 'クモの巣ハンティング' : 'Spider Web Catch';
     },
 
     open(id, howto) {

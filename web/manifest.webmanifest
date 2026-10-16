@@ -1,6 +1,6 @@
 {
   "name": "クモの巣ハンティング",
-  "short_name": "クモの巣",
+  "short_name": "クモハン",
   "start_url": "./",
   "display": "standalone",
   "orientation": "portrait",
