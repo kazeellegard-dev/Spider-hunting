@@ -24,7 +24,7 @@ npm run sync     # web/ → www/ → ios/App/App/public にコピー
 ```
 
 - `ios/` などを push すると、GitHub Actions（`.github/workflows/ios.yml`）が署名なしのシミュレーター用ビルドで確認する
-- Actions 画面の「Run workflow」で TestFlight にアップロードできる（要: Secrets の `ASC_KEY_ID` / `ASC_ISSUER_ID` / `ASC_KEY_P8` / `APPLE_TEAM_ID`、App Store Connect にバンドルID `dev.kazeellegard.spiderhunting` のアプリ登録）
+- Actions 画面の「Run workflow」で TestFlight にアップロードできる（要: Secrets の `ASC_KEY_ID` / `ASC_ISSUER_ID` / `ASC_KEY_P8` / `APPLE_TEAM_ID`、App Store Connect にバンドルID `com.kazeellegard.spiderwebcatch` のアプリ登録。App Store の名前は英語「Spider Web Catch: Bug Hunt」／日本語「クモの巣ハンティング」）
 
 ### 広告（AdMob）
 

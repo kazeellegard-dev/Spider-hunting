@@ -76,7 +76,7 @@
 
 | 項目 | 内容 |
 |---|---|
-| タイトル | 日本語「クモの巣ハンティング」／英語「Spider Web Catch」。ホーム画面の名前は日本語「クモハン」／英語「Web Catch」 |
+| タイトル | 日本語「クモの巣ハンティング」／英語「Spider Web Catch」（App Store の名前は「Spider Web Catch: Bug Hunt」）。ホーム画面の名前は日本語「クモハン」／英語「Web Catch」 |
 | ジャンル | カジュアルアクション／育成 |
 | プラットフォーム | Webブラウザ（開発・確認用）→ iOS（iPhone/iPad、Capacitorでアプリ化） |
 | 操作方法 | タップ／ドラッグ（片手プレイ想定） |
