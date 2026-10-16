@@ -28,6 +28,12 @@ npm run sync     # web/ → www/ → ios/App/App/public にコピー
 
 ### 広告（AdMob）
 
-- いまは **Google のテスト用ID** で動く（アプリID: `Info.plist` の `GADApplicationIdentifier`、バナー: `web/js/platform.js` の `ADMOB`）
-- 本番に切り替えるときは、AdMob で作ったアプリID・バナーIDに差し替え、`ADMOB.useTest` を `false` にする
+- 広告は2種類
+  - **バナー**: 画面のいちばん下にずっと出す
+  - **インタースティシャル**: いとがなくなったあと「広告を見て つづける」を押したときに1回出す（1プレイ1回まで）。広告が読み込めていないときは、広告なしでそのままつづけられる
+- いまは **Google のテスト用ID** で動く（アプリID: `Info.plist` の `GADApplicationIdentifier`、広告ユニット: `web/js/platform.js` の `ADMOB.test`）
+- 本番用の広告ユニットIDは `ADMOB.live` に登録済み
+  - バナー: `ca-app-pub-8743645031370957/1267859878`
+  - インタースティシャル: `ca-app-pub-8743645031370957/6451158939`
+- 本番に切り替えるときは、`Info.plist` の `GADApplicationIdentifier` を AdMob のアプリID（`ca-app-pub-8743645031370957~…`）に差し替え、`ADMOB.useTest` を `false` にする
 - バナーは画面のいちばん下（ホームバーのすぐ上）。ゲーム画面は最初からバナーの高さぶん上に収める。Web版は同じ場所を「AD」の帯であけてある
