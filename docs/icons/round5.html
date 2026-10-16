@@ -1,0 +1,278 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head><body><title>クモの巣ハンティング アイコン案</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@700;800&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap">
+<style>
+/* Layout: a home-screen strip to compare at a glance, then one card per icon at store size */
+:root {
+  --bg: #f6f3ef;
+  --panel: #ffffff;
+  --ink: #2a2230;
+  --muted: #6f6574;
+  --line: #e7e0da;
+  --accent: #e0703f;
+  --chip: #f4ece6;
+  --pick: #fff1e4;
+  --font-display: "M PLUS Rounded 1c", "Hiragino Maru Gothic ProN", system-ui, sans-serif;
+  --font-body: "Zen Kaku Gothic New", "Hiragino Sans", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #17141b; --panel: #221e27; --ink: #f1ecf3; --muted: #aaa1ad; --line: #352f3b; --accent: #f29a68; --chip: #2d2733; --pick: #33261f;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #17141b; --panel: #221e27; --ink: #f1ecf3; --muted: #aaa1ad; --line: #352f3b; --accent: #f29a68; --chip: #2d2733; --pick: #33261f;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 15px; line-height: 1.7;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 32px 56px;
+}
+.wrap { max-width: 1080px; margin: 0 auto; display: grid; gap: 36px; }
+header { display: grid; gap: 8px; }
+.eyebrow { font-size: 12px; letter-spacing: .14em; color: var(--accent); font-weight: 700; margin: 0; }
+h1 { font-family: var(--font-display); font-weight: 800; font-size: clamp(26px, 5vw, 38px); line-height: 1.25; margin: 0; text-wrap: balance; }
+header p { margin: 0; color: var(--muted); max-width: 64ch; }
+h2 { font-family: var(--font-display); font-size: 21px; margin: 0; }
+.phone {
+  border-radius: 28px; padding: 26px 18px 18px; display: grid; gap: 12px;
+  background: linear-gradient(160deg, #6f86c9 0%, #9a7fc4 45%, #e39ab0 100%);
+}
+.phone .hs { display: grid; grid-template-columns: repeat(auto-fill, minmax(72px, 1fr)); gap: 18px 8px; }
+.app { display: grid; justify-items: center; gap: 5px; }
+.app svg, .app .dummy { width: 60px; height: 60px; border-radius: 13.5px; display: block; box-shadow: 0 2px 6px rgba(0, 0, 0, .18); }
+.app .dummy { background: rgba(255, 255, 255, .35); }
+.app small { color: #fff; font-size: 11px; line-height: 1.2; text-shadow: 0 1px 2px rgba(0, 0, 0, .35); }
+.phone p { margin: 0; color: #fff; font-size: 12px; opacity: .9; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 18px; padding: 18px; display: grid; gap: 10px; align-content: start; min-width: 0; }
+.card.pick { background: var(--pick); border-color: var(--accent); }
+.card .big svg { width: 100%; max-width: 220px; height: auto; aspect-ratio: 1; display: block; border-radius: 22.5%; box-shadow: 0 8px 22px rgba(40, 20, 30, .2); }
+.row { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.code { font-family: var(--font-display); font-size: 13px; color: var(--accent); letter-spacing: .06em; margin: 0; }
+.badge { font-size: 11px; font-weight: 700; color: #fff; background: var(--accent); border-radius: 99px; padding: 1px 9px; }
+h3 { font-family: var(--font-display); font-size: 19px; margin: 0; line-height: 1.35; }
+.card p { margin: 0; color: var(--muted); font-size: 14px; }
+.tags { display: flex; flex-wrap: wrap; gap: 6px; margin: 0; padding: 0; list-style: none; }
+.tags li { background: var(--chip); border-radius: 99px; padding: 2px 10px; font-size: 12px; }
+footer { color: var(--muted); font-size: 13px; border-top: 1px solid var(--line); padding-top: 16px; display: grid; gap: 4px; }
+footer p { margin: 0; }
+</style>
+
+<div class="wrap">
+  <header>
+    <p class="eyebrow">SPIDER WEB CATCH · APP ICON · ROUND 5</p>
+    <h1>オレンジのまんまるクモ 7種</h1>
+    <p>Q1のオレンジ背景に、Q2の「枠に結んだ巣」とQ5の「朝つゆ」を組み合わせたものを基本形（R1）にしました。そこから、縁あり・糸の太さ・素材を変えた版を作っています。</p>
+  </header>
+
+  <section class="phone" aria-label="ホーム画面に並べたときの見え方">
+    <div class="hs" id="hs"></div>
+    <p>ホーム画面と同じ大きさです。白い四角は、ほかのアプリのつもりです。パッと目に入るかどうかの目安にしてください。</p>
+  </section>
+
+  <section style="display:grid;gap:16px">
+    <h2>1案ずつ</h2>
+    <div class="grid" id="cards"></div>
+  </section>
+
+  <footer>
+    <p>気になる案の番号（例：R3）を教えてください。「R2の縁でR5の金の糸」のような組み合わせでも大丈夫です。</p>
+    <p>選んだ案は、線の太さやしずくの数を整えて、1024×1024の正式なアイコンに仕上げます。角の丸みはiPhoneが自動でつけます。</p>
+  </footer>
+</div>
+
+<script>
+// Round 4: the round-1 "まんまるクモ" spider, unchanged, on nine different grounds, frames and webs.
+(function (root) {
+  const f = n => +(+n).toFixed(2);
+  function rng(seed) { let a = seed >>> 0; return () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+
+  // Round-1 web: spokes plus rings sagging toward the centre.
+  function web(cx, cy, r, n, rings, color, w, rot = 0, sag = 0.88, op = 1) {
+    const pt = (rr, i) => { const a = rot + i * 2 * Math.PI / n; return [cx + Math.cos(a) * rr, cy + Math.sin(a) * rr]; };
+    let d = '';
+    for (let i = 0; i < n; i++) { const [x, y] = pt(r, i); d += `M${f(cx)} ${f(cy)}L${f(x)} ${f(y)}`; }
+    for (let k = 1; k <= rings; k++) {
+      const rr = r * k / rings;
+      for (let i = 0; i < n; i++) {
+        const [x1, y1] = pt(rr, i), [x2, y2] = pt(rr, i + 1);
+        const qx = cx + ((x1 + x2) / 2 - cx) * sag, qy = cy + ((y1 + y2) / 2 - cy) * sag;
+        d += `M${f(x1)} ${f(y1)}Q${f(qx)} ${f(qy)} ${f(x2)} ${f(y2)}`;
+      }
+    }
+    return `<path d="${d}" fill="none" stroke="${color}" stroke-width="${w}" stroke-linecap="round" opacity="${op}"/>`;
+  }
+  // Web whose spokes run out to a square frame [m, 100-m], tied on with little knots.
+  function frameWeb(cx, cy, m, n, rings, color, w, rot = 0, sag = 0.9, op = 1, knots = true) {
+    const ends = [];
+    for (let i = 0; i < n; i++) {
+      const a = rot + i * 2 * Math.PI / n, dx = Math.cos(a), dy = Math.sin(a); let t = Infinity;
+      if (dx > 1e-6) t = Math.min(t, (100 - m - cx) / dx); if (dx < -1e-6) t = Math.min(t, (m - cx) / dx);
+      if (dy > 1e-6) t = Math.min(t, (100 - m - cy) / dy); if (dy < -1e-6) t = Math.min(t, (m - cy) / dy);
+      ends.push([cx + dx * t, cy + dy * t]);
+    }
+    const at = (i, fr) => { const e = ends[(i + n) % n]; return [cx + (e[0] - cx) * fr, cy + (e[1] - cy) * fr]; };
+    let d = '', segs = [];
+    ends.forEach(e => { d += `M${f(cx)} ${f(cy)}L${f(e[0])} ${f(e[1])}`; });
+    for (let k = 1; k <= rings; k++) {
+      const fr = k / (rings + 0.6);
+      for (let i = 0; i < n; i++) {
+        const p0 = at(i, fr), p1 = at(i + 1, fr);
+        const qx = cx + ((p0[0] + p1[0]) / 2 - cx) * sag, qy = cy + ((p0[1] + p1[1]) / 2 - cy) * sag;
+        d += `M${f(p0[0])} ${f(p0[1])}Q${f(qx)} ${f(qy)} ${f(p1[0])} ${f(p1[1])}`;
+        segs.push([p0, [qx, qy], p1, k]);
+      }
+    }
+    let s = `<path d="${d}" fill="none" stroke="${color}" stroke-width="${w}" stroke-linecap="round" opacity="${op}"/>`;
+    if (knots) ends.forEach(e => { s += `<circle cx="${f(e[0])}" cy="${f(e[1])}" r="${f(w * 1.5)}" fill="${color}"/>`; });
+    return { svg: s, ends, d, segs };
+  }
+  // Spiral web (round, like a target of circles).
+  function spiralWeb(cx, cy, r, n, turns, color, w, op = 1) {
+    let d = '';
+    for (let i = 0; i < n; i++) { const a = i * 2 * Math.PI / n; d += `M${cx} ${cy}L${f(cx + Math.cos(a) * r)} ${f(cy + Math.sin(a) * r)}`; }
+    const steps = turns * 72; d += `M${cx} ${cy}`;
+    for (let k = 1; k <= steps; k++) { const t = k / steps, a = t * turns * 2 * Math.PI, rr = r * (0.08 + 0.92 * t); d += `L${f(cx + Math.cos(a) * rr)} ${f(cy + Math.sin(a) * rr)}`; }
+    return `<path d="${d}" fill="none" stroke="${color}" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round" opacity="${op}"/>`;
+  }
+  // Round-1 spider, exactly as before.
+  function cuteSpider(cx, cy, s, body, leg, opt = {}) {
+    let legs = '';
+    [-1, 1].forEach(side => {
+      [[-0.55, -1.25, -1.6, -0.2], [-0.15, -0.95, -1.75, 0.35], [0.25, -0.8, -1.65, 0.95], [0.6, -0.55, -1.25, 1.45]].forEach(([y0, kx, ex, ey]) => {
+        const x0 = cx + side * s * 0.8, yy = cy + y0 * s;
+        legs += `M${f(x0)} ${f(yy)}Q${f(cx - side * kx * s)} ${f(cy + (y0 - 0.75) * s)} ${f(cx - side * ex * s)} ${f(cy + ey * s)}`;
+      });
+    });
+    const eye = (dx) => `<circle cx="${f(cx + dx * s)}" cy="${f(cy - 0.1 * s)}" r="${f(0.32 * s)}" fill="#fff"/><circle cx="${f(cx + dx * s + 0.05 * s)}" cy="${f(cy - 0.05 * s)}" r="${f(0.17 * s)}" fill="#1b1430"/><circle cx="${f(cx + dx * s + 0.11 * s)}" cy="${f(cy - 0.13 * s)}" r="${f(0.06 * s)}" fill="#fff"/>`;
+    return (opt.outline ? `<g stroke="${opt.outline}" stroke-linecap="round"><path d="${legs}" fill="none" stroke-width="${f(s * 0.17 + opt.ow * 2)}"/><ellipse cx="${cx}" cy="${cy}" rx="${f(s + opt.ow)}" ry="${f(s * 0.92 + opt.ow)}" fill="${opt.outline}"/></g>` : '')
+      + `<path d="${legs}" fill="none" stroke="${leg}" stroke-width="${f(s * 0.17)}" stroke-linecap="round"/>`
+      + `<ellipse cx="${cx}" cy="${cy}" rx="${f(s)}" ry="${f(s * 0.92)}" fill="${body}"/>`
+      + `<ellipse cx="${f(cx - 0.3 * s)}" cy="${f(cy - 0.5 * s)}" rx="${f(0.35 * s)}" ry="${f(0.2 * s)}" fill="#fff" opacity=".18"/>`
+      + eye(-0.38) + eye(0.38)
+      + `<ellipse cx="${f(cx - 0.68 * s)}" cy="${f(cy + 0.35 * s)}" rx="${f(0.17 * s)}" ry="${f(0.1 * s)}" fill="#ff8fa8" opacity=".85"/><ellipse cx="${f(cx + 0.68 * s)}" cy="${f(cy + 0.35 * s)}" rx="${f(0.17 * s)}" ry="${f(0.1 * s)}" fill="#ff8fa8" opacity=".85"/>`
+      + `<path d="M${f(cx - 0.14 * s)} ${f(cy + 0.4 * s)}q${f(0.14 * s)} ${f(0.14 * s)} ${f(0.28 * s)} 0" fill="none" stroke="#1b1430" stroke-width="${f(0.07 * s)}" stroke-linecap="round"/>`;
+  }
+  const SP = (cx, cy, s, opt) => cuteSpider(cx, cy, s, '#3d2f63', '#3d2f63', opt);
+  const lg = (id, a, b, x2 = 0, y2 = 1) => `<linearGradient id="${id}" x1="0" y1="0" x2="${x2}" y2="${y2}"><stop offset="0" stop-color="${a}"/><stop offset="1" stop-color="${b}"/></linearGradient>`;
+  const rg = (id, a, b, cx = 0.5, cy = 0.4, r = 0.75) => `<radialGradient id="${id}" cx="${cx}" cy="${cy}" r="${r}"><stop offset="0" stop-color="${a}"/><stop offset="1" stop-color="${b}"/></radialGradient>`;
+  const SH = `<filter id="sh" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="1.4" stdDeviation="1.3" flood-color="#2a1030" flood-opacity=".25"/></filter>`;
+  const dewDots = (pts) => pts.map(([x, y, r]) => `<circle cx="${x}" cy="${y}" r="${r}" fill="url(#dw)" stroke="#5aa8de" stroke-width=".5"/><ellipse cx="${f(x - r * 0.32)}" cy="${f(y - r * 0.35)}" rx="${f(r * 0.38)}" ry="${f(r * 0.26)}" fill="#fff"/>`).join('');
+  const star = (x, y, r, c) => `<path d="M${x} ${f(y - r)}L${f(x + r * 0.28)} ${f(y - r * 0.28)}L${f(x + r)} ${y}L${f(x + r * 0.28)} ${f(y + r * 0.28)}L${x} ${f(y + r)}L${f(x - r * 0.28)} ${f(y + r * 0.28)}L${f(x - r)} ${y}L${f(x - r * 0.28)} ${f(y - r * 0.28)}Z" fill="${c}"/>`;
+
+  // ---- Round 5: Q1 orange + Q2 frame-tied web + Q5 dew, and its variations ----
+  const qpt = (s, t) => [(1 - t) * (1 - t) * s[0][0] + 2 * (1 - t) * t * s[1][0] + t * t * s[2][0], (1 - t) * (1 - t) * s[0][1] + 2 * (1 - t) * t * s[1][1] + t * t * s[2][1]];
+  // dew drops placed on chosen ring segments (avoid the spider in the middle)
+  function drops(segs, n, seed, rmin, rmax, fill, rim) {
+    const R = rng(seed); let out = '', placed = 0, guard = 0;
+    while (placed < n && guard++ < 400) {
+      const sg = segs[Math.floor(R() * segs.length)], p = qpt(sg, 0.25 + R() * 0.5);
+      if (Math.hypot(p[0] - 50, p[1] - 54) < 26) continue;
+      const r = rmin + R() * (rmax - rmin);
+      out += `<circle cx="${f(p[0])}" cy="${f(p[1] + r * 0.55)}" r="${f(r)}" fill="url(#${fill})" stroke="${rim}" stroke-width="${f(r * 0.14)}"/>`
+        + `<ellipse cx="${f(p[0] - r * 0.32)}" cy="${f(p[1] + r * 0.2)}" rx="${f(r * 0.36)}" ry="${f(r * 0.24)}" fill="#fff"/>`;
+      placed++;
+    }
+    return out;
+  }
+  const ORANGE = () => rg('bg', '#ffd2a8', '#ff8a56', 0.5, 0.35, 0.8);
+  const DROPG = `<radialGradient id="dw" cx=".4" cy=".35" r=".75"><stop offset="0" stop-color="#ffffff"/><stop offset=".55" stop-color="#fff4e8"/><stop offset="1" stop-color="#ffc79c"/></radialGradient>`;
+  const spider = (s = 17) => `<g filter="url(#sh)">${SP(50, 54, s)}</g>`;
+
+  const ICONS = {
+    // R1. The base: orange, web tied to the icon edge with knots, dew drops
+    base: () => {
+      const w = frameWeb(50, 48, 1.2, 12, 4, '#fff', 1.2, -Math.PI / 2 + 0.13, 0.9, 0.92);
+      return `<defs>${ORANGE()}${SH}${DROPG}</defs><rect width="100" height="100" fill="url(#bg)"/>`
+        + w.svg + drops(w.segs, 9, 5, 1.8, 3.1, 'dw', '#f2a072') + spider();
+    },
+    // R2. With a rim: a white inner frame the web is tied to
+    rim: () => {
+      const w = frameWeb(50, 48, 7, 12, 4, '#fff', 1.15, -Math.PI / 2 + 0.13, 0.9, 0.92);
+      return `<defs>${ORANGE()}${SH}${DROPG}</defs><rect width="100" height="100" fill="url(#bg)"/>`
+        + `<rect x="5.5" y="5.5" width="89" height="89" rx="17" fill="none" stroke="#fff" stroke-width="3"/>`
+        + w.svg + drops(w.segs, 8, 7, 1.8, 3, 'dw', '#f2a072') + spider();
+    },
+    // R3. Thick, bold silk: fewer rings, reads well at home-screen size
+    thick: () => {
+      const w = frameWeb(50, 48, 1.5, 10, 3, '#fff', 2.3, -Math.PI / 2 + 0.16, 0.88, 1);
+      return `<defs>${ORANGE()}${SH}${DROPG}</defs><rect width="100" height="100" fill="url(#bg)"/>`
+        + w.svg + drops(w.segs, 7, 11, 2.6, 3.8, 'dw', '#f2a072') + spider(18);
+    },
+    // R4. Fine silk: delicate, more rings, many small drops
+    fine: () => {
+      const w = frameWeb(50, 48, 0.8, 16, 6, '#fff', 0.65, -Math.PI / 2 + 0.1, 0.92, 0.9);
+      return `<defs>${ORANGE()}${SH}${DROPG}</defs><rect width="100" height="100" fill="url(#bg)"/>`
+        + w.svg + drops(w.segs, 16, 13, 1.1, 2.1, 'dw', '#f2a072') + spider();
+    },
+    // R5. Golden silk: metallic gold thread and amber drops
+    gold: () => {
+      const w = frameWeb(50, 48, 1.2, 12, 4, 'url(#gd)', 1.6, -Math.PI / 2 + 0.13, 0.9, 1, false);
+      const knots = w.ends.map(e => `<circle cx="${f(e[0])}" cy="${f(e[1])}" r="2.2" fill="#fff1b0" stroke="#d99a1e" stroke-width=".6"/>`).join('');
+      return `<defs>${rg('bg', '#ffc58f', '#f06a3c', 0.5, 0.35, 0.8)}${SH}`
+        + `<linearGradient id="gd" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="100" y2="100"><stop offset="0" stop-color="#fff6c4"/><stop offset=".3" stop-color="#ffd257"/><stop offset=".55" stop-color="#fff2b8"/><stop offset=".8" stop-color="#f0b330"/><stop offset="1" stop-color="#fff0a8"/></linearGradient>`
+        + `<radialGradient id="dw" cx=".4" cy=".35" r=".75"><stop offset="0" stop-color="#fffbe6"/><stop offset=".6" stop-color="#ffd76a"/><stop offset="1" stop-color="#e59a1c"/></radialGradient></defs>`
+        + `<rect width="100" height="100" fill="url(#bg)"/>` + w.svg + knots + drops(w.segs, 9, 5, 1.8, 3.1, 'dw', '#c98512') + spider();
+    },
+    // R6. Glowing silk: soft light around each thread, like the game's glowing silk
+    glow: () => {
+      const w = frameWeb(50, 48, 1.2, 12, 4, '#fff', 1.1, -Math.PI / 2 + 0.13, 0.9, 1);
+      return `<defs>${rg('bg', '#ffbe8c', '#f2683e', 0.5, 0.4, 0.85)}${SH}${DROPG}<filter id="gl" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="1.6"/></filter></defs><rect width="100" height="100" fill="url(#bg)"/>`
+        + `<g filter="url(#gl)"><path d="${w.d}" stroke="#fff7d8" stroke-width="3.2" fill="none" opacity=".9"/></g>`
+        + w.svg + drops(w.segs, 9, 5, 1.8, 3.1, 'dw', '#f6b27e') + spider();
+    },
+    // R7. Felt and yarn: a soft fabric ground, stitched yarn web, button-like drops
+    felt: () => {
+      const w = frameWeb(50, 48, 3, 12, 4, '#fffaf2', 1.8, -Math.PI / 2 + 0.13, 0.9, 1, false);
+      const stitches = `<path d="${w.d}" stroke="#f7c8a6" stroke-width=".7" stroke-dasharray="1.6 1.6" fill="none"/>`;
+      const knots = w.ends.map(e => `<circle cx="${f(e[0])}" cy="${f(e[1])}" r="2.3" fill="#fffaf2"/><circle cx="${f(e[0])}" cy="${f(e[1])}" r="1" fill="#f2a072"/>`).join('');
+      return `<defs>${ORANGE()}${SH}${DROPG}<filter id="nz" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency="1.4" numOctaves="2" seed="4" stitchTiles="stitch"/><feColorMatrix values="0 0 0 0 0.45  0 0 0 0 0.2  0 0 0 0 0.1  0 0 0 .55 -.18"/></filter></defs>`
+        + `<rect width="100" height="100" fill="url(#bg)"/><rect width="100" height="100" filter="url(#nz)" opacity=".55"/>`
+        + `<rect x="4" y="4" width="92" height="92" rx="18" fill="none" stroke="#fff3e6" stroke-width="1.2" stroke-dasharray="3 2.4" opacity=".9"/>`
+        + w.svg + stitches + knots + drops(w.segs, 8, 5, 2, 3.2, 'dw', '#e9915e') + spider();
+    },
+  };
+
+  root.K5ICONS = ICONS;
+})(typeof window !== 'undefined' ? window : globalThis);
+
+
+(() => {
+  const LIST = [
+    ['R1', 'base', '基本形', true, 'オレンジの背景に、ふちまで張って結び目をつけた巣と、朝つゆのしずく。ご指定どおりの組み合わせです。', ['Q1＋Q2＋Q5', '基本']],
+    ['R2', 'rim', '縁あり', true, '内側に白い縁を引き、巣をその縁に結びました。額縁に入ったようなまとまりが出ます。', ['まとまりが出る', '縁']],
+    ['R3', 'thick', '太い糸', true, '糸を太く、輪を少なくしました。ホーム画面の小さいサイズでも、巣がはっきり見えます。', ['小さくても分かる', 'ポップ']],
+    ['R4', 'fine', '細い糸', false, '糸を細く、輪を多くして、小さなしずくをたくさん。繊細で上品な印象です。', ['繊細', 'しずく多め']],
+    ['R5', 'gold', '金の糸', false, '糸を金色に、しずくを琥珀色に。ゲームの「ひかる糸」を思わせる、少し特別な感じです。', ['素材：金属', 'リッチ']],
+    ['R6', 'glow', '光る糸', false, '糸のまわりがふんわり光ります。あたたかく、やさしい雰囲気です。', ['素材：光', 'やわらかい']],
+    ['R7', 'felt', 'フェルトと毛糸', false, '背景を布のような質感にし、巣を毛糸のステッチで。ボタンのような結び目つき。', ['素材：布', '手作り感']],
+  ];
+  const svg = (key, suffix) => {
+    let inner = K5ICONS[key]();
+    if (suffix) inner = inner.replace(/id="([\w-]+)"/g, `id="$1${suffix}"`).replace(/url\(#([\w-]+)\)/g, `url(#$1${suffix})`);
+    return `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="${key}">${inner}</svg>`;
+  };
+  const hs = document.getElementById('hs');
+  const cells = [];
+  LIST.forEach(([code, key], i) => {
+    cells.push(`<div class="app">${svg(key, 'h' + i)}<small>${code}</small></div>`);
+    if (i === 3) cells.push(`<div class="app"><div class="dummy"></div><small>アプリ</small></div>`);
+  });
+  hs.innerHTML = cells.join('');
+  document.getElementById('cards').innerHTML = LIST.map(([code, key, name, pick, desc, tags], i) => `
+    <article class="card${pick ? ' pick' : ''}">
+      <div class="big">${svg(key, 'c' + i)}</div>
+      <div class="row"><p class="code">${code}</p>${pick ? '<span class="badge">おすすめ</span>' : ''}</div>
+      <h3>${name}</h3>
+      <p>${desc}</p>
+      <ul class="tags">${tags.map(t => `<li>${t}</li>`).join('')}</ul>
+    </article>`).join('');
+})();
+</script>
+</body></html>

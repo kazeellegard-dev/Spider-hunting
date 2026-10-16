@@ -1,0 +1,487 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head><body><title>クモの巣ハンティング アイコン案</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@700;800&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap">
+<style>
+/* Layout: a home-screen strip to compare at a glance, then one card per icon at store size */
+:root {
+  --bg: #f6f3ef;
+  --panel: #ffffff;
+  --ink: #2a2230;
+  --muted: #6f6574;
+  --line: #e7e0da;
+  --accent: #e0703f;
+  --chip: #f4ece6;
+  --pick: #fff1e4;
+  --font-display: "M PLUS Rounded 1c", "Hiragino Maru Gothic ProN", system-ui, sans-serif;
+  --font-body: "Zen Kaku Gothic New", "Hiragino Sans", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #17141b; --panel: #221e27; --ink: #f1ecf3; --muted: #aaa1ad; --line: #352f3b; --accent: #f29a68; --chip: #2d2733; --pick: #33261f;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #17141b; --panel: #221e27; --ink: #f1ecf3; --muted: #aaa1ad; --line: #352f3b; --accent: #f29a68; --chip: #2d2733; --pick: #33261f;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 15px; line-height: 1.7;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 32px 56px;
+}
+.wrap { max-width: 1080px; margin: 0 auto; display: grid; gap: 36px; }
+header { display: grid; gap: 8px; }
+.eyebrow { font-size: 12px; letter-spacing: .14em; color: var(--accent); font-weight: 700; margin: 0; }
+h1 { font-family: var(--font-display); font-weight: 800; font-size: clamp(26px, 5vw, 38px); line-height: 1.25; margin: 0; text-wrap: balance; }
+header p { margin: 0; color: var(--muted); max-width: 64ch; }
+h2 { font-family: var(--font-display); font-size: 21px; margin: 0; }
+.phone {
+  border-radius: 28px; padding: 26px 18px 18px; display: grid; gap: 12px;
+  background: linear-gradient(160deg, #6f86c9 0%, #9a7fc4 45%, #e39ab0 100%);
+}
+.phone .hs { display: grid; grid-template-columns: repeat(auto-fill, minmax(72px, 1fr)); gap: 18px 8px; }
+.app { display: grid; justify-items: center; gap: 5px; }
+.app svg, .app .dummy { width: 60px; height: 60px; border-radius: 13.5px; display: block; box-shadow: 0 2px 6px rgba(0, 0, 0, .18); }
+.app .dummy { background: rgba(255, 255, 255, .35); }
+.app small { color: #fff; font-size: 11px; line-height: 1.2; text-shadow: 0 1px 2px rgba(0, 0, 0, .35); }
+.phone p { margin: 0; color: #fff; font-size: 12px; opacity: .9; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 18px; padding: 18px; display: grid; gap: 10px; align-content: start; min-width: 0; }
+.card.pick { background: var(--pick); border-color: var(--accent); }
+.card .big svg { width: 100%; max-width: 220px; height: auto; aspect-ratio: 1; display: block; border-radius: 22.5%; box-shadow: 0 8px 22px rgba(40, 20, 30, .2); }
+.row { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.code { font-family: var(--font-display); font-size: 13px; color: var(--accent); letter-spacing: .06em; margin: 0; }
+.badge { font-size: 11px; font-weight: 700; color: #fff; background: var(--accent); border-radius: 99px; padding: 1px 9px; }
+h3 { font-family: var(--font-display); font-size: 19px; margin: 0; line-height: 1.35; }
+.card p { margin: 0; color: var(--muted); font-size: 14px; }
+.tags { display: flex; flex-wrap: wrap; gap: 6px; margin: 0; padding: 0; list-style: none; }
+.tags li { background: var(--chip); border-radius: 99px; padding: 2px 10px; font-size: 12px; }
+footer { color: var(--muted); font-size: 13px; border-top: 1px solid var(--line); padding-top: 16px; display: grid; gap: 4px; }
+footer p { margin: 0; }
+</style>
+
+<div class="wrap">
+  <header>
+    <p class="eyebrow">SPIDER WEB CATCH · APP ICON · ROUND 3</p>
+    <h1>かわいいアイコン 8案</h1>
+    <p>前回はリアルすぎたので、ゲームのキャラクターのような、まるくてつるんとしたクモに描き直しました。毛並みやキバはなくして、大きなうるうるの目と、短くまるい脚にしています。巣はどの案も、アイコンのふちに結んであります。</p>
+  </header>
+
+  <section class="phone" aria-label="ホーム画面に並べたときの見え方">
+    <div class="hs" id="hs"></div>
+    <p>ホーム画面と同じ大きさです。白い四角は、ほかのアプリのつもりです。パッと目に入るかどうかの目安にしてください。</p>
+  </section>
+
+  <section style="display:grid;gap:16px">
+    <h2>1案ずつ</h2>
+    <div class="grid" id="cards"></div>
+  </section>
+
+  <footer>
+    <p>気になる案の番号（例：P1）を教えてください。「P1の構図でP8の色」のような組み合わせでも大丈夫です。</p>
+    <p>選んだ案は、毛並みや光り方をさらに整えて、1024×1024の正式なアイコンに仕上げます。角の丸みはiPhoneが自動でつけます。</p>
+  </footer>
+</div>
+
+<script>
+// Icon drawing kit (viewBox 0 0 100 100). Pure string builders, shared by the dev sheet and the page.
+(function (root) {
+  const f = n => +(+n).toFixed(2);
+  function rng(seed) { let a = seed >>> 0; return () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+
+  // where a ray from (cx,cy) leaves the square [m, 100-m]
+  function toFrame(cx, cy, a, m) {
+    const dx = Math.cos(a), dy = Math.sin(a); let t = Infinity;
+    if (dx > 1e-6) t = Math.min(t, (100 - m - cx) / dx); if (dx < -1e-6) t = Math.min(t, (m - cx) / dx);
+    if (dy > 1e-6) t = Math.min(t, (100 - m - cy) / dy); if (dy < -1e-6) t = Math.min(t, (m - cy) / dy);
+    return [cx + dx * t, cy + dy * t];
+  }
+  const qpt = (p0, c, p1, t) => [(1 - t) * (1 - t) * p0[0] + 2 * (1 - t) * t * c[0] + t * t * p1[0], (1 - t) * (1 - t) * p0[1] + 2 * (1 - t) * t * c[1] + t * t * p1[1]];
+
+  // Orb web stretched across the icon and tied to its edge.
+  // o: {cx, cy, n, rot, rings:[...fractions], sag, color, w, op, dew, seed, nubs, skip:[spoke idx], hub}
+  function webFrame(o) {
+    const R = rng(o.seed || 7), n = o.n, m = o.m == null ? 0.6 : o.m;
+    const ends = [];
+    for (let i = 0; i < n; i++) {
+      const a = (o.rot || 0) + i * 2 * Math.PI / n + (R() - 0.5) * 0.12;
+      ends.push(toFrame(o.cx, o.cy, a, m));
+    }
+    const at = (i, fr) => { const e = ends[(i + n) % n]; return [o.cx + (e[0] - o.cx) * fr, o.cy + (e[1] - o.cy) * fr]; };
+    let d = '', segs = [];
+    ends.forEach((e, i) => { if (!(o.skip || []).includes(i)) d += `M${f(o.cx)} ${f(o.cy)}L${f(e[0])} ${f(e[1])}`; });
+    const rings = o.rings || [0.2, 0.35, 0.5, 0.65, 0.8];
+    rings.forEach((fr0, k) => {
+      const jit = Array.from({ length: n }, () => fr0 * (1 + (R() - 0.5) * 0.08));
+      for (let i = 0; i < n; i++) {
+        if ((o.gap || []).some(([gk, gi]) => gk === k && gi === i)) continue;
+        const p0 = at(i, jit[i]), p1 = at(i + 1, jit[(i + 1) % n]);
+        const mx = (p0[0] + p1[0]) / 2, my = (p0[1] + p1[1]) / 2, sag = o.sag == null ? 0.9 : o.sag;
+        const c = [o.cx + (mx - o.cx) * sag, o.cy + (my - o.cy) * sag];
+        d += `M${f(p0[0])} ${f(p0[1])}Q${f(c[0])} ${f(c[1])} ${f(p1[0])} ${f(p1[1])}`;
+        segs.push([p0, c, p1]);
+      }
+    });
+    let s = `<path d="${d}" fill="none" stroke="${o.color || '#fff'}" stroke-width="${o.w || 0.7}" stroke-linecap="round" opacity="${o.op == null ? 0.85 : o.op}"/>`;
+    if (o.hub !== false) s += `<circle cx="${f(o.cx)}" cy="${f(o.cy)}" r="${f((o.w || 0.7) * 2.2)}" fill="${o.color || '#fff'}" opacity="${o.op == null ? 0.85 : o.op}"/>`;
+    if (o.nubs !== false) ends.forEach(e => { s += `<circle cx="${f(e[0])}" cy="${f(e[1])}" r="${f((o.w || 0.7) * 1.6)}" fill="${o.color || '#fff'}" opacity=".95"/>`; });
+    if (o.dew) {
+      for (let k = 0; k < o.dew; k++) {
+        const sg = segs[Math.floor(R() * segs.length)], p = qpt(sg[0], sg[1], sg[2], 0.2 + R() * 0.6), r = 0.55 + R() * (o.dewMax || 0.9);
+        s += `<circle cx="${f(p[0])}" cy="${f(p[1] + r * 0.4)}" r="${f(r)}" fill="url(#dew)"/><circle cx="${f(p[0] - r * 0.3)}" cy="${f(p[1] + r * 0.1)}" r="${f(r * 0.28)}" fill="#fff"/>`;
+      }
+    }
+    return s;
+  }
+
+  // Hair along the rim of an ellipse: short strokes pointing outward.
+  function fur(cx, cy, rx, ry, count, len, color, w, seed, from = 0, to = 2 * Math.PI, op = 1) {
+    const R = rng(seed); let d = '';
+    for (let i = 0; i < count; i++) {
+      const a = from + (to - from) * (i + R() * 0.8) / count;
+      const x = cx + Math.cos(a) * rx * (0.9 + R() * 0.08), y = cy + Math.sin(a) * ry * (0.9 + R() * 0.08);
+      const b = a + (R() - 0.5) * 0.7, L = len * (0.6 + R() * 0.7);
+      d += `M${f(x)} ${f(y)}l${f(Math.cos(b) * L)} ${f(Math.sin(b) * L)}`;
+    }
+    return `<path d="${d}" stroke="${color}" stroke-width="${w}" stroke-linecap="round" fill="none" opacity="${op}"/>`;
+  }
+
+  // Smooth tapering leg through the points (Catmull-Rom), shaded for roundness, with soft bands and a few hairs.
+  function smooth(pts) {
+    let d = `M${f(pts[0][0])} ${f(pts[0][1])}`;
+    for (let i = 0; i < pts.length - 1; i++) {
+      const p0 = pts[i - 1] || pts[i], p1 = pts[i], p2 = pts[i + 1], p3 = pts[i + 2] || p2;
+      const c1 = [p1[0] + (p2[0] - p0[0]) / 6, p1[1] + (p2[1] - p0[1]) / 6], c2 = [p2[0] - (p3[0] - p1[0]) / 6, p2[1] - (p3[1] - p1[1]) / 6];
+      d += `C${f(c1[0])} ${f(c1[1])} ${f(c2[0])} ${f(c2[1])} ${f(p2[0])} ${f(p2[1])}`;
+    }
+    return d;
+  }
+  function leg(pts, w, color, band, bandDash, hi) {
+    // taper: the whole leg at tip width, the inner part again at full width
+    const d = smooth(pts), inner = smooth(pts.slice(0, Math.max(2, pts.length - 1)));
+    let s = `<path d="${d}" stroke="${color}" stroke-width="${f(w * 0.62)}" stroke-linecap="round" stroke-linejoin="round" fill="none"/>`
+      + `<path d="${inner}" stroke="${color}" stroke-width="${f(w)}" stroke-linecap="round" stroke-linejoin="round" fill="none"/>`;
+    if (band) s += `<path d="${d}" stroke="${band}" stroke-width="${f(w * 0.6)}" stroke-dasharray="${bandDash || '1.2 4'}" fill="none" opacity=".5"/>`;
+    s += `<path d="${d}" stroke="${hi || '#ffffff'}" stroke-width="${f(w * 0.28)}" fill="none" stroke-linecap="round" opacity=".18" transform="translate(${f(-w * 0.15)} ${f(-w * 0.2)})"/>`;
+    return s;
+  }
+  // knee points: bend a leg from a to b with a knee offset
+  const mirror = (pts, cx) => pts.map(([x, y]) => [2 * cx - x, y]);
+
+  function eye(id, x, y, r, opt = {}) {
+    let refl = '';
+    if (opt.reflect) {
+      let d = '';
+      const rx = x - r * 0.3, ry = y - r * 0.32, rr = r * 0.62;
+      for (let i = 0; i < 8; i++) { const a = i * Math.PI / 4; d += `M${f(rx)} ${f(ry)}L${f(rx + Math.cos(a) * rr)} ${f(ry + Math.sin(a) * rr)}`; }
+      [0.35, 0.65, 0.95].forEach(k => { d += `M${f(rx + rr * k)} ${f(ry)}A${f(rr * k)} ${f(rr * k)} 0 1 1 ${f(rx + rr * k - 0.01)} ${f(ry)}`; });
+      refl = `<clipPath id="${id}rc${Math.round(x * 10)}"><circle cx="${f(x)}" cy="${f(y)}" r="${f(r * 0.96)}"/></clipPath><g clip-path="url(#${id}rc${Math.round(x * 10)})"><path d="${d}" stroke="#fff" stroke-width="${f(r * 0.025)}" fill="none" opacity=".35"/></g>`;
+    }
+    return `<circle cx="${f(x)}" cy="${f(y)}" r="${f(r * 1.12)}" fill="${opt.rim || '#2a1d14'}"/>`
+      + `<circle cx="${f(x)}" cy="${f(y)}" r="${f(r)}" fill="url(#${id}eye)"/>`
+      + refl + `<ellipse cx="${f(x - r * 0.32)}" cy="${f(y - r * 0.36)}" rx="${f(r * 0.34)}" ry="${f(r * 0.26)}" fill="#fff" transform="rotate(-25 ${f(x - r * 0.32)} ${f(y - r * 0.36)})"/>`
+      + `<circle cx="${f(x + r * 0.38)}" cy="${f(y + r * 0.34)}" r="${f(r * 0.12)}" fill="#fff" opacity=".9"/>`
+      + (opt.ring ? `<circle cx="${f(x)}" cy="${f(y)}" r="${f(r * 0.72)}" fill="none" stroke="${opt.ring}" stroke-width="${f(r * 0.08)}" opacity=".35"/>` : '');
+  }
+
+  // Jumping spider, front view. o: {id, cx, cy, s, pal, legs:'wave'|'hug'|'peek'|'rest', blush}
+  function jumper(o) {
+    const { id, cx, cy, s } = o, p = Object.assign({
+      body: '#2b2431', hi: '#55485f', furc: '#6d6078', tuft: '#fff4e4', fang1: '#5ff0b8', fang2: '#2b86d6',
+      leg: '#2b2431', band: '#d9cfc4', palp: '#fbf3e9', blush: '#ff8fae', eyeRing: '#c9925a',
+    }, o.pal || {});
+    const defs = `<radialGradient id="${id}eye" cx=".42" cy=".38" r=".7"><stop offset="0" stop-color="#4a3a5e"/><stop offset=".55" stop-color="#140c1d"/><stop offset="1" stop-color="#050208"/></radialGradient>`
+      + `<radialGradient id="${id}head" cx=".45" cy=".3" r=".8"><stop offset="0" stop-color="${p.hi}"/><stop offset="1" stop-color="${p.body}"/></radialGradient>`
+ + `<radialGradient id="${id}shade" cx=".5" cy=".2" r=".95"><stop offset="0" stop-color="#fff" stop-opacity=".16"/><stop offset=".45" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".35"/></radialGradient>`
+      + `<linearGradient id="${id}fang" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${p.fang1}"/><stop offset="1" stop-color="${p.fang2}"/></linearGradient>`;
+    let back = '', front = '';
+    const L = (pts, w) => leg(pts.map(([x, y]) => [cx + x * s, cy + y * s]), w * s, p.leg, p.band, `${f(0.04 * s)} ${f(0.34 * s)}`);
+    const pair = (pts, w) => L(pts, w) + L(pts.map(([x, y]) => [-x, y]), w);
+    const mode = o.legs || 'wave';
+    if (mode !== 'peek') {
+      back += pair([[0.6, 0.3], [1.45, 0.05], [1.85, 0.8]], 0.13);
+      back += pair([[0.55, 0.45], [1.35, 0.55], [1.6, 1.15]], 0.12);
+      back += pair([[0.45, 0.55], [1.0, 0.85], [1.1, 1.35]], 0.11);
+    }
+    if (mode === 'wave') {
+      front += L([[0.55, 0.5], [1.1, 0.4], [1.3, -0.35], [1.18, -0.85]], 0.17);
+      front += L([[-0.55, 0.5], [-1.15, 0.6], [-1.45, 0.25], [-1.85, 0.4]], 0.17);
+    } else if (mode === 'hug') {
+      front += pair([[0.5, 0.5], [0.95, 0.75], [0.62, 1.05], [0.25, 1.05]], 0.16);
+    } else if (mode === 'peek') {
+      front += pair([[0.6, 0.55], [1.05, 0.62], [1.2, 1.05]], 0.17);
+      front += pair([[0.75, 0.35], [1.5, 0.3], [1.7, 0.95]], 0.14);
+    } else {
+      front += pair([[0.55, 0.5], [1.15, 0.5], [1.3, 1.05]], 0.16);
+    }
+    const hx = s, hy = s * 0.9;
+    let head = `<ellipse cx="${cx}" cy="${cy}" rx="${f(hx)}" ry="${f(hy)}" fill="url(#${id}head)"/>`
+      + fur(cx, cy, hx * 0.99, hy * 0.99, 260, 0.075 * s, p.body, f(0.03 * s), (o.seed || 3) + 1, 0, 2 * Math.PI, 1)
+      + fur(cx, cy, hx * 0.97, hy * 0.97, 140, 0.07 * s, p.furc, f(0.018 * s), o.seed || 3, Math.PI * 1.05, Math.PI * 1.95, 0.7)
+      // sheen across the forehead
+      + `<ellipse cx="${f(cx - 0.2 * s)}" cy="${f(cy - 0.55 * s)}" rx="${f(0.42 * s)}" ry="${f(0.13 * s)}" fill="#fff" opacity=".12" transform="rotate(-8 ${cx} ${cy})"/>`
+      // shade underneath, light on top
+      + `<ellipse cx="${cx}" cy="${cy}" rx="${f(hx)}" ry="${f(hy)}" fill="url(#${id}shade)"/>`
+      // soft brow tufts over the eyes, like Phidippus
+      + [-1, 1].map(k => {
+        const bx = cx + k * 0.4 * s, by = cy - 0.43 * s;
+        return `<path d="M${f(bx - 0.27 * s)} ${f(by + 0.06 * s)}Q${f(bx)} ${f(by - 0.2 * s)} ${f(bx + 0.27 * s)} ${f(by + 0.06 * s)}Q${f(bx)} ${f(by - 0.06 * s)} ${f(bx - 0.27 * s)} ${f(by + 0.06 * s)}Z" fill="${p.tuft}" opacity=".9"/>`
+          + fur(bx, by - 0.02 * s, 0.24 * s, 0.09 * s, 9, 0.05 * s, p.tuft, f(0.022 * s), 11 + k, Math.PI * 1.1, Math.PI * 1.9, 0.85);
+      }).join('');
+    // side eyes, main eyes
+    head += eye(id, cx - 0.84 * s, cy - 0.22 * s, 0.1 * s) + eye(id, cx + 0.84 * s, cy - 0.22 * s, 0.1 * s);
+    head += eye(id, cx - 0.37 * s, cy - 0.02 * s, 0.32 * s, { ring: p.eyeRing, reflect: o.reflect }) + eye(id, cx + 0.37 * s, cy - 0.02 * s, 0.32 * s, { ring: p.eyeRing, reflect: o.reflect });
+    if (o.blush !== false) head += `<ellipse cx="${f(cx - 0.72 * s)}" cy="${f(cy + 0.32 * s)}" rx="${f(0.16 * s)}" ry="${f(0.09 * s)}" fill="${p.blush}" opacity=".7"/><ellipse cx="${f(cx + 0.72 * s)}" cy="${f(cy + 0.32 * s)}" rx="${f(0.16 * s)}" ry="${f(0.09 * s)}" fill="${p.blush}" opacity=".7"/>`;
+    // iridescent fangs and fluffy palps
+    head += [-1, 1].map(k => `<ellipse cx="${f(cx + k * 0.15 * s)}" cy="${f(cy + 0.52 * s)}" rx="${f(0.12 * s)}" ry="${f(0.17 * s)}" fill="url(#${id}fang)"/><ellipse cx="${f(cx + k * 0.15 * s - 0.04 * s)}" cy="${f(cy + 0.45 * s)}" rx="${f(0.04 * s)}" ry="${f(0.08 * s)}" fill="#fff" opacity=".55"/>`).join('');
+    const palps = [-1, 1].map(k => `<ellipse cx="${f(cx + k * 0.45 * s)}" cy="${f(cy + 0.66 * s)}" rx="${f(0.15 * s)}" ry="${f(0.13 * s)}" fill="${p.palp}"/>` + fur(cx + k * 0.45 * s, cy + 0.66 * s, 0.14 * s, 0.12 * s, 26, 0.07 * s, p.palp, f(0.03 * s), 20 + k)).join('');
+    return { defs, svg: back + head + palps + front };
+  }
+
+  // Orb weaver hanging head-down: striped abdomen above, silver face below. o: {id, cx, cy, s, pal, thread}
+  function orb(o) {
+    const { id, cx, cy, s } = o, p = Object.assign({
+      ab1: '#ffd23f', ab2: '#2b2232', ceph: '#f1ede6', cephHi: '#ffffff', leg: '#2b2232', band: '#ffd23f', blush: '#ff8fae',
+    }, o.pal || {});
+    const ay = cy - 1.25 * s, arx = 0.95 * s, ary = 1.18 * s;
+    const defs = `<radialGradient id="${id}eye" cx=".42" cy=".38" r=".7"><stop offset="0" stop-color="#4a3a5e"/><stop offset=".55" stop-color="#140c1d"/><stop offset="1" stop-color="#050208"/></radialGradient>`
+      + `<clipPath id="${id}ab"><ellipse cx="${cx}" cy="${f(ay)}" rx="${f(arx)}" ry="${f(ary)}"/></clipPath>`
+      + `<radialGradient id="${id}abg" cx=".35" cy=".3" r=".9"><stop offset="0" stop-color="#fff" stop-opacity=".5"/><stop offset=".5" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".25"/></radialGradient>`
+      + `<radialGradient id="${id}ceph" cx=".4" cy=".3" r=".8"><stop offset="0" stop-color="${p.cephHi}"/><stop offset="1" stop-color="${p.ceph}"/></radialGradient>`;
+    const L = (pts, w) => leg(pts.map(([x, y]) => [cx + x * s, cy + y * s]), w * s, p.leg, p.band, `${f(0.1 * s)} ${f(0.22 * s)}`);
+    const pair = (pts, w) => L(pts, w) + L(pts.map(([x, y]) => [-x, y]), w);
+    let legs = pair([[0.4, 0.1], [1.2, 0.5], [1.75, 1.55]], 0.1) + pair([[0.45, 0.0], [1.35, 0.25], [2.0, 1.1]], 0.1)
+      + pair([[0.45, -0.15], [1.15, -0.55], [1.45, -0.2]], 0.09) + pair([[0.4, -0.25], [1.05, -1.0], [1.6, -1.55]], 0.09);
+    let ab = `<g clip-path="url(#${id}ab)"><rect x="${f(cx - arx)}" y="${f(ay - ary)}" width="${f(2 * arx)}" height="${f(2 * ary)}" fill="${p.ab1}"/>`;
+    [-0.62, -0.18, 0.26].forEach((k, i) => {
+      const y = ay + k * ary;
+      ab += `<path d="M${f(cx - arx)} ${f(y)}Q${f(cx)} ${f(y + 0.28 * s)} ${f(cx + arx)} ${f(y)}L${f(cx + arx)} ${f(y + 0.2 * s)}Q${f(cx)} ${f(y + 0.48 * s)} ${f(cx - arx)} ${f(y + 0.2 * s)}Z" fill="${p.ab2}"/>`;
+    });
+    ab += `<path d="M${f(cx - arx)} ${f(ay + 0.62 * ary)}Q${f(cx)} ${f(ay + 0.62 * ary + 0.3 * s)} ${f(cx + arx)} ${f(ay + 0.62 * ary)}V${f(ay + ary)}H${f(cx - arx)}Z" fill="${p.ab2}"/>`;
+    ab += `<rect x="${f(cx - arx)}" y="${f(ay - ary)}" width="${f(2 * arx)}" height="${f(2 * ary)}" fill="url(#${id}abg)"/></g>`;
+    ab += fur(cx, ay, arx, ary, 70, 0.07 * s, p.ab1, f(0.02 * s), 31, 0, 2 * Math.PI, 0.6);
+    const cr = 0.62 * s;
+    let ceph = `<ellipse cx="${cx}" cy="${cy}" rx="${f(cr)}" ry="${f(cr * 0.88)}" fill="url(#${id}ceph)"/>` + fur(cx, cy, cr, cr * 0.88, 80, 0.1 * s, p.ceph, f(0.025 * s), 41);
+    ceph += eye(id, cx - 0.25 * s, cy + 0.02 * s, 0.2 * s) + eye(id, cx + 0.25 * s, cy + 0.02 * s, 0.2 * s);
+    ceph += `<circle cx="${f(cx - 0.1 * s)}" cy="${f(cy - 0.3 * s)}" r="${f(0.05 * s)}" fill="#1a1020"/><circle cx="${f(cx + 0.1 * s)}" cy="${f(cy - 0.3 * s)}" r="${f(0.05 * s)}" fill="#1a1020"/>`;
+    ceph += `<ellipse cx="${f(cx - 0.45 * s)}" cy="${f(cy + 0.25 * s)}" rx="${f(0.11 * s)}" ry="${f(0.06 * s)}" fill="${p.blush}" opacity=".8"/><ellipse cx="${f(cx + 0.45 * s)}" cy="${f(cy + 0.25 * s)}" rx="${f(0.11 * s)}" ry="${f(0.06 * s)}" fill="${p.blush}" opacity=".8"/>`;
+    ceph += `<path d="M${f(cx - 0.08 * s)} ${f(cy + 0.32 * s)}q${f(0.08 * s)} ${f(0.08 * s)} ${f(0.16 * s)} 0" stroke="#3a2a3a" stroke-width="${f(0.04 * s)}" fill="none" stroke-linecap="round"/>`;
+    const thread = o.thread ? `<path d="M${cx} ${f(o.thread)}V${f(ay - ary + 0.1)}" stroke="#fff" stroke-width=".7" opacity=".9"/>` : '';
+    return { defs, svg: thread + legs + ab + ceph };
+  }
+
+  // Silk-wrapped snack.
+  function bundle(cx, cy, rx, ry, rot) {
+    let s = `<g transform="rotate(${rot} ${cx} ${cy})"><ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" fill="#fffaf0"/>`;
+    for (let i = -3; i <= 3; i++) s += `<path d="M${f(cx - rx)} ${f(cy + i * ry * 0.27)}q${f(rx)} ${f(ry * 0.32)} ${f(2 * rx)} ${f(-ry * 0.1)}" stroke="#e4dccb" stroke-width=".7" fill="none"/>`;
+    s += `<ellipse cx="${f(cx - rx * 0.35)}" cy="${f(cy - ry * 0.45)}" rx="${f(rx * 0.3)}" ry="${f(ry * 0.18)}" fill="#fff"/></g>`;
+    return s;
+  }
+
+  // A small cute fly stuck in the web.
+  function fly(cx, cy, s, rot = 0) {
+    return `<g transform="rotate(${rot} ${cx} ${cy})">`
+      + `<ellipse cx="${f(cx - 0.75 * s)}" cy="${f(cy - 0.55 * s)}" rx="${f(0.75 * s)}" ry="${f(0.4 * s)}" fill="#eaf6ff" opacity=".85" transform="rotate(30 ${f(cx - 0.75 * s)} ${f(cy - 0.55 * s)})"/>`
+      + `<ellipse cx="${f(cx + 0.75 * s)}" cy="${f(cy - 0.55 * s)}" rx="${f(0.75 * s)}" ry="${f(0.4 * s)}" fill="#eaf6ff" opacity=".85" transform="rotate(-30 ${f(cx + 0.75 * s)} ${f(cy - 0.55 * s)})"/>`
+      + `<ellipse cx="${cx}" cy="${f(cy + 0.25 * s)}" rx="${f(0.5 * s)}" ry="${f(0.65 * s)}" fill="#2c5a64"/>`
+      + `<ellipse cx="${f(cx - 0.15 * s)}" cy="${f(cy + 0.05 * s)}" rx="${f(0.15 * s)}" ry="${f(0.25 * s)}" fill="#fff" opacity=".25"/>`
+      + `<circle cx="${cx}" cy="${f(cy - 0.45 * s)}" r="${f(0.4 * s)}" fill="#2c5a64"/>`
+      + `<circle cx="${f(cx - 0.27 * s)}" cy="${f(cy - 0.5 * s)}" r="${f(0.22 * s)}" fill="#e2483d"/><circle cx="${f(cx + 0.27 * s)}" cy="${f(cy - 0.5 * s)}" r="${f(0.22 * s)}" fill="#e2483d"/>`
+      + `<circle cx="${f(cx - 0.32 * s)}" cy="${f(cy - 0.57 * s)}" r="${f(0.07 * s)}" fill="#fff"/><circle cx="${f(cx + 0.22 * s)}" cy="${f(cy - 0.57 * s)}" r="${f(0.07 * s)}" fill="#fff"/>`
+      + `</g>`;
+  }
+  const DEW = `<radialGradient id="dew" cx=".4" cy=".35" r=".7"><stop offset="0" stop-color="#ffffff"/><stop offset=".6" stop-color="#e9f6ff" stop-opacity=".9"/><stop offset="1" stop-color="#9cc6e8" stop-opacity=".9"/></radialGradient>`;
+  function bokeh(list) { return `<g filter="url(#blur)">${list.map(([x, y, r, c, op]) => `<circle cx="${x}" cy="${y}" r="${r}" fill="${c}" opacity="${op}"/>`).join('')}</g>`; }
+  const BLUR = `<filter id="blur" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="2.2"/></filter>`
+    + `<filter id="sh" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="1.6" stdDeviation="1.6" flood-color="#2a1030" flood-opacity=".28"/></filter>`;
+
+  root.IK = { f, rng, webFrame, fur, leg, jumper, orb, bundle, fly, DEW, bokeh, BLUR, smooth, eye };
+})(typeof window !== 'undefined' ? window : globalThis);
+
+// Mascot-style spider: a smooth round body, short noodle legs, big glossy eyes. No fur, no fangs.
+(function (root) {
+  const { f, smooth, eye } = root.IK;
+
+  // o: {id, cx, cy, s, pal:{body, hi, leg, sock, blush}, pose:'wave'|'hug'|'peek'|'rest'|'up', mini:true, tuft:true, look:[dx,dy]}
+  function chibi(o) {
+    const { id, cx, cy, s } = o, p = Object.assign({ body: '#3d3160', hi: '#7a68a8', leg: '#33294f', sock: null, blush: '#ff8fb0' }, o.pal || {});
+    const defs = `<radialGradient id="${id}eye" cx=".42" cy=".38" r=".7"><stop offset="0" stop-color="#4a3a68"/><stop offset=".6" stop-color="#160e24"/><stop offset="1" stop-color="#07040c"/></radialGradient>`
+      + `<radialGradient id="${id}b" cx=".38" cy=".28" r=".85"><stop offset="0" stop-color="${p.hi}"/><stop offset=".75" stop-color="${p.body}"/><stop offset="1" stop-color="${p.leg}"/></radialGradient>`;
+    const legPath = (pts, w) => {
+      const P = pts.map(([x, y]) => [cx + x * s, cy + y * s]);
+      let out = `<path d="${smooth(P)}" stroke="${p.leg}" stroke-width="${f(w * s)}" stroke-linecap="round" stroke-linejoin="round" fill="none"/>`;
+      if (p.sock) { const t = P[P.length - 1]; out += `<circle cx="${f(t[0])}" cy="${f(t[1])}" r="${f(w * s * 0.62)}" fill="${p.sock}"/>`; }
+      return out;
+    };
+    const pair = (pts, w) => legPath(pts, w) + legPath(pts.map(([x, y]) => [-x, y]), w);
+    const W = 0.16;
+    const L1 = [[0.68, -0.15], [1.22, -0.45], [1.5, -0.12]], L2 = [[0.78, 0.12], [1.34, 0.08], [1.6, 0.42]],
+      L3 = [[0.74, 0.38], [1.2, 0.56], [1.33, 0.9]], L4 = [[0.52, 0.62], [0.86, 0.86], [0.93, 1.14]];
+    const WAVE = [[0.7, -0.2], [1.12, -0.6], [1.05, -1.08]], HUG = [[0.48, 0.6], [0.84, 0.88], [0.44, 1.02]];
+    let legs = '', front = '';
+    const pose = o.pose || 'rest';
+    if (pose === 'peek') {
+      front += pair([[0.55, 0.45], [0.95, 0.42], [1.12, 0.78]], W * 1.1);
+      front += pair([[0.75, 0.2], [1.35, 0.1], [1.55, 0.55]], W);
+    } else {
+      legs += legPath(L1.map(([x, y]) => [-x, y]), W) + legPath(pose === 'wave' ? WAVE : L1, W);
+      legs += pair(L2, W) + pair(L3, W);
+      front += pair(pose === 'hug' ? HUG : L4, W);
+    }
+    const rx = s, ry = s * 0.9;
+    let body = `<ellipse cx="${cx}" cy="${cy}" rx="${f(rx)}" ry="${f(ry)}" fill="url(#${id}b)"/>`
+      + `<ellipse cx="${f(cx - 0.3 * s)}" cy="${f(cy - 0.55 * s)}" rx="${f(0.36 * s)}" ry="${f(0.17 * s)}" fill="#fff" opacity=".28" transform="rotate(-18 ${f(cx - 0.3 * s)} ${f(cy - 0.55 * s)})"/>`;
+    if (o.tuft !== false) body += `<path d="M${f(cx - 0.06 * s)} ${f(cy - 0.86 * s)}q${f(-0.05 * s)} ${f(-0.26 * s)} ${f(0.16 * s)} ${f(-0.32 * s)}M${f(cx + 0.08 * s)} ${f(cy - 0.88 * s)}q${f(0.08 * s)} ${f(-0.16 * s)} ${f(0.24 * s)} ${f(-0.14 * s)}" stroke="${p.body}" stroke-width="${f(0.075 * s)}" stroke-linecap="round" fill="none"/>`;
+    const [lx, ly] = o.look || [0, 0];
+    const ey = cy - 0.02 * s + ly * s;
+    body += eye(id, cx - 0.36 * s + lx * s, ey, 0.3 * s, { rim: '#1a1028' }) + eye(id, cx + 0.36 * s + lx * s, ey, 0.3 * s, { rim: '#1a1028' });
+    if (o.mini !== false) body += `<circle cx="${f(cx - 0.7 * s)}" cy="${f(cy - 0.36 * s)}" r="${f(0.065 * s)}" fill="#1a1028"/><circle cx="${f(cx + 0.7 * s)}" cy="${f(cy - 0.36 * s)}" r="${f(0.065 * s)}" fill="#1a1028"/>`;
+    body += `<ellipse cx="${f(cx - 0.66 * s)}" cy="${f(cy + 0.32 * s)}" rx="${f(0.15 * s)}" ry="${f(0.09 * s)}" fill="${p.blush}" opacity=".85"/><ellipse cx="${f(cx + 0.66 * s)}" cy="${f(cy + 0.32 * s)}" rx="${f(0.15 * s)}" ry="${f(0.09 * s)}" fill="${p.blush}" opacity=".85"/>`;
+    body += `<path d="M${f(cx - 0.12 * s)} ${f(cy + 0.42 * s)}q${f(0.06 * s)} ${f(0.1 * s)} ${f(0.12 * s)} 0q${f(0.06 * s)} ${f(0.1 * s)} ${f(0.12 * s)} 0" stroke="#1a1028" stroke-width="${f(0.05 * s)}" stroke-linecap="round" stroke-linejoin="round" fill="none"/>`;
+    return { defs, svg: legs + body + front };
+  }
+
+  // Mascot orb weaver hanging head-down: round striped abdomen on top, small round head below.
+  function chibiOrb(o) {
+    const { id, cx, cy, s } = o, p = Object.assign({ ab1: '#ffd84a', ab2: '#3a2f4f', head: '#fff7ee', headHi: '#ffffff', leg: '#3a2f4f', blush: '#ff8fb0' }, o.pal || {});
+    const ay = cy - 1.05 * s, ar = 0.92 * s;
+    const defs = `<radialGradient id="${id}eye" cx=".42" cy=".38" r=".7"><stop offset="0" stop-color="#4a3a68"/><stop offset=".6" stop-color="#160e24"/><stop offset="1" stop-color="#07040c"/></radialGradient>`
+      + `<clipPath id="${id}ab"><circle cx="${cx}" cy="${f(ay)}" r="${f(ar)}"/></clipPath>`
+      + `<radialGradient id="${id}abg" cx=".35" cy=".3" r=".85"><stop offset="0" stop-color="#fff" stop-opacity=".45"/><stop offset=".55" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".18"/></radialGradient>`
+      + `<radialGradient id="${id}h" cx=".4" cy=".3" r=".8"><stop offset="0" stop-color="${p.headHi}"/><stop offset="1" stop-color="${p.head}"/></radialGradient>`;
+    const legPath = (pts) => `<path d="${smooth(pts.map(([x, y]) => [cx + x * s, cy + y * s]))}" stroke="${p.leg}" stroke-width="${f(0.13 * s)}" stroke-linecap="round" fill="none"/>`;
+    const pair = pts => legPath(pts) + legPath(pts.map(([x, y]) => [-x, y]));
+    const legs = pair([[0.35, 0.1], [0.95, 0.35], [1.25, 0.95]]) + pair([[0.4, -0.05], [1.1, 0.0], [1.5, 0.45]])
+      + pair([[0.4, -0.25], [1.05, -0.55], [1.4, -0.35]]) + pair([[0.3, -0.4], [0.95, -1.2], [1.35, -1.45]]);
+    let ab = `<g clip-path="url(#${id}ab)"><rect x="${f(cx - ar)}" y="${f(ay - ar)}" width="${f(2 * ar)}" height="${f(2 * ar)}" fill="${p.ab1}"/>`;
+    [-0.5, 0.0, 0.5].forEach(k => {
+      const y = ay + k * ar;
+      ab += `<path d="M${f(cx - ar)} ${f(y)}Q${f(cx)} ${f(y + 0.22 * s)} ${f(cx + ar)} ${f(y)}" stroke="${p.ab2}" stroke-width="${f(0.2 * s)}" fill="none"/>`;
+    });
+    ab += `<rect x="${f(cx - ar)}" y="${f(ay - ar)}" width="${f(2 * ar)}" height="${f(2 * ar)}" fill="url(#${id}abg)"/></g>`;
+    const hr = 0.58 * s;
+    let head = `<circle cx="${cx}" cy="${cy}" r="${f(hr)}" fill="url(#${id}h)"/>`;
+    head += eye(id, cx - 0.22 * s, cy + 0.02 * s, 0.19 * s, { rim: '#1a1028' }) + eye(id, cx + 0.22 * s, cy + 0.02 * s, 0.19 * s, { rim: '#1a1028' });
+    head += `<ellipse cx="${f(cx - 0.4 * s)}" cy="${f(cy + 0.25 * s)}" rx="${f(0.1 * s)}" ry="${f(0.06 * s)}" fill="${p.blush}" opacity=".9"/><ellipse cx="${f(cx + 0.4 * s)}" cy="${f(cy + 0.25 * s)}" rx="${f(0.1 * s)}" ry="${f(0.06 * s)}" fill="${p.blush}" opacity=".9"/>`;
+    head += `<path d="M${f(cx - 0.07 * s)} ${f(cy + 0.3 * s)}q${f(0.07 * s)} ${f(0.08 * s)} ${f(0.14 * s)} 0" stroke="#1a1028" stroke-width="${f(0.04 * s)}" stroke-linecap="round" fill="none"/>`;
+    const thread = o.thread != null ? `<path d="M${cx} ${f(o.thread)}V${f(ay - ar + 0.5)}" stroke="#fff" stroke-width=".8" opacity=".95"/>` : '';
+    return { defs, svg: thread + legs + ab + head };
+  }
+
+  Object.assign(root.IK, { chibi, chibiOrb });
+})(typeof window !== 'undefined' ? window : globalThis);
+
+// Round-3 compositions: mascot spiders on webs tied to the icon edge.
+(function (root) {
+  const { webFrame, chibi, chibiOrb, bundle, fly, DEW, bokeh, BLUR } = root.IK;
+  const grad = (id, stops, x2 = 0, y2 = 1) => `<linearGradient id="${id}" x1="0" y1="0" x2="${x2}" y2="${y2}">${stops.map(([o, c]) => `<stop offset="${o}" stop-color="${c}"/>`).join('')}</linearGradient>`;
+  const rgrad = (id, stops, cx = 0.5, cy = 0.5, r = 0.7) => `<radialGradient id="${id}" cx="${cx}" cy="${cy}" r="${r}">${stops.map(([o, c]) => `<stop offset="${o}" stop-color="${c}"/>`).join('')}</radialGradient>`;
+  const wrap = (defs, body) => `<defs>${DEW}${BLUR}${defs}</defs>${body}`;
+  const sh = svg => `<g filter="url(#sh)">${svg}</g>`;
+  const PURPLE = { body: '#463a72', hi: '#8c7bc4', leg: '#382d5e' };
+
+  const ICONS = {
+    peek: () => {
+      const sp = chibi({ id: 'p', cx: 50, cy: 80, s: 30, pose: 'peek', pal: PURPLE });
+      return wrap(grad('pbg', [[0, '#d2ecff'], [1, '#93cff4']]) + sp.defs,
+        `<rect width="100" height="100" fill="url(#pbg)"/>`
+        + bokeh([[18, 16, 9, '#fff', 0.55], [82, 24, 6, '#fff', 0.5]])
+        + webFrame({ cx: 50, cy: 28, n: 11, rot: -1.0, rings: [0.17, 0.34, 0.51, 0.68, 0.85], color: '#fff', w: 0.8, op: 0.95, dew: 12, seed: 4 })
+        + sh(sp.svg));
+    },
+    hello: () => {
+      const sp = chibi({ id: 'h', cx: 50, cy: 54, s: 23, pose: 'wave', pal: PURPLE });
+      return wrap(rgrad('hbg', [[0, '#ffe6bf'], [0.6, '#ffae80'], [1, '#f47a62']], 0.5, 0.35, 0.85) + sp.defs,
+        `<rect width="100" height="100" fill="url(#hbg)"/>`
+        + bokeh([[16, 20, 7, '#fff', 0.35], [86, 14, 5, '#fff', 0.3]])
+        + webFrame({ cx: 50, cy: 44, n: 11, rot: -1.2, rings: [0.16, 0.31, 0.46, 0.61, 0.76, 0.91], color: '#fff', w: 0.75, op: 0.9, dew: 14, seed: 9 })
+        + sh(sp.svg));
+    },
+    snack: () => {
+      const sp = chibi({ id: 's', cx: 45, cy: 52, s: 22, pose: 'hug', pal: PURPLE });
+      return wrap(rgrad('sbg', [[0, '#fff3cf'], [1, '#ffc75a']], 0.4, 0.3, 0.9) + sp.defs,
+        `<rect width="100" height="100" fill="url(#sbg)"/>`
+        + webFrame({ cx: 100, cy: 0, n: 22, rot: 0, rings: [0.15, 0.3, 0.45, 0.6, 0.75], color: '#fff', w: 0.75, op: 0.95, dew: 10, seed: 3, hub: false })
+        + sh(sp.svg) + sh(bundle(66, 74, 11, 14, -25))
+        + `<path d="M84 50l1.6 4 4 1.6-4 1.6-1.6 4-1.6-4-4-1.6 4-1.6z" fill="#fff"/>`);
+    },
+    hunt: () => {
+      const sp = chibi({ id: 'u', cx: 38, cy: 68, s: 21, pose: 'rest', look: [0.05, -0.04], pal: PURPLE });
+      return wrap(grad('ubg', [[0, '#ffdcea'], [1, '#ff9fbd']], 1, 1) + sp.defs,
+        `<rect width="100" height="100" fill="url(#ubg)"/>`
+        + webFrame({ cx: 74, cy: 28, n: 11, rot: -0.3, rings: [0.15, 0.3, 0.45, 0.6, 0.75, 0.9], color: '#fff', w: 0.75, op: 0.95, dew: 10, seed: 41 })
+        + fly(74, 28, 7.5, 12) + sh(sp.svg));
+    },
+    corner: () => {
+      const sp = chibiOrb({ id: 'c', cx: 60, cy: 74, s: 15, thread: 28, pal: { ab1: '#ffc4d8', ab2: '#c4568a', leg: '#7a3d6a' } });
+      return wrap(grad('cbg', [[0, '#ebe2ff'], [1, '#bba8f6']], 1, 1) + sp.defs,
+        `<rect width="100" height="100" fill="url(#cbg)"/>`
+        + bokeh([[82, 20, 9, '#fff', 0.5], [20, 86, 7, '#fff', 0.4]])
+        + webFrame({ cx: 4, cy: 4, n: 12, rot: 0.14, rings: [0.15, 0.3, 0.45, 0.6, 0.75], color: '#fff', w: 0.8, op: 0.95, dew: 12, seed: 44, hub: false })
+        + sh(sp.svg));
+    },
+    hang: () => {
+      const sp = chibiOrb({ id: 'o', cx: 50, cy: 70, s: 17, thread: 0 });
+      return wrap(grad('obg', [[0, '#c6f4dd'], [1, '#62c99f']]) + sp.defs,
+        `<rect width="100" height="100" fill="url(#obg)"/>`
+        + bokeh([[82, 18, 9, '#fff', 0.45], [14, 82, 8, '#fff', 0.35]])
+        + webFrame({ cx: 50, cy: 52, n: 12, rot: -1.5, rings: [0.15, 0.3, 0.45, 0.6, 0.75, 0.9], color: '#fff', w: 0.7, op: 0.9, dew: 12, seed: 21 })
+        + sh(sp.svg));
+    },
+    night: () => {
+      const sp = chibi({ id: 'n', cx: 50, cy: 56, s: 23, pose: 'rest', pal: { body: '#7462b4', hi: '#c3b4f5', leg: '#5c4c96' } });
+      return wrap(rgrad('nbg', [[0, '#3f4f94'], [0.7, '#1d2456'], [1, '#0f1335']], 0.7, 0.2, 1) + sp.defs,
+        `<rect width="100" height="100" fill="url(#nbg)"/>`
+        + `<circle cx="80" cy="19" r="12" fill="#fff6d0" opacity=".16"/><circle cx="80" cy="19" r="8" fill="#fff4c4"/>`
+        + webFrame({ cx: 50, cy: 46, n: 11, rot: -1.3, rings: [0.16, 0.31, 0.46, 0.61, 0.76, 0.91], color: '#d6e6ff', w: 0.7, op: 0.85, dew: 22, dewMax: 0.7, seed: 12 })
+        + sh(sp.svg));
+    },
+    socks: () => {
+      const sp = chibi({ id: 'k', cx: 50, cy: 54, s: 23, pose: 'rest', pal: { body: '#c9673a', hi: '#ffb27c', leg: '#a8522c', sock: '#fff6ea', blush: '#ff7f8f' } });
+      return wrap(rgrad('kbg', [[0, '#fff6ee'], [1, '#ffd4c4']], 0.5, 0.4, 0.8) + sp.defs,
+        `<rect width="100" height="100" fill="url(#kbg)"/>`
+        + webFrame({ cx: 50, cy: 50, n: 12, rot: 0.05, rings: [0.15, 0.29, 0.43, 0.57, 0.71, 0.85], color: '#c88a70', w: 0.75, op: 0.8, dew: 0, seed: 2 })
+        + sh(sp.svg));
+    },
+  };
+  root.ICONS3 = ICONS;
+})(typeof window !== 'undefined' ? window : globalThis);
+
+(() => {
+  const LIST = [
+    ['P1', 'peek', 'ひょっこり', true, '下のふちから、まるいクモが顔を出しています。上には枠に張った巣。ホーム画面でいちばん目が合う案です。', ['小さくても分かる', '目が合う']],
+    ['P2', 'hello', 'こんにちは', true, '夕焼け色の巣のまんなかで、片方の脚を上げてあいさつ。全身が見えて、ゲームのクモとも結びつきます。', ['全身', 'あたたかい色']],
+    ['P3', 'snack', 'おやつ', true, '糸でくるんだ虫をだっこ。「つかまえて食べる」ゲームだと、かわいく伝わります。', ['遊び方が伝わる', '明るい']],
+    ['P4', 'hunt', 'ねらってる', false, '右上の巣にかかったハエを、じっと見つめています。', ['ストーリー', 'ピンク']],
+    ['P5', 'corner', 'するする', false, '左上の角に引っかけた巣から、ピンクのしまのクモが糸で下りてきます。', ['枠に引っかかる', 'パステル']],
+    ['P6', 'hang', 'しましま', false, '黄色と黒のしまのクモが、ミントの巣にとまっています。', ['しま模様', 'さわやか']],
+    ['P7', 'night', 'おつきさま', false, '夜の巣に、星のように光るしずく。ゲームの夜の場面の雰囲気です。', ['夜', '落ち着いた色']],
+    ['P8', 'socks', 'くつした', false, 'オレンジのクモが、脚の先に白いくつしたをはいています。やさしい色合いです。', ['やさしい', 'おしゃれ']],
+  ];
+  const svg = (key, suffix) => {
+    let inner = ICONS3[key]();
+    if (suffix) inner = inner.replace(/id="([\w-]+)"/g, `id="$1${suffix}"`).replace(/url\(#([\w-]+)\)/g, `url(#$1${suffix})`);
+    return `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="${key}">${inner}</svg>`;
+  };
+  const hs = document.getElementById('hs');
+  const cells = [];
+  LIST.forEach(([code, key], i) => {
+    cells.push(`<div class="app">${svg(key, 'h' + i)}<small>${code}</small></div>`);
+    if (i === 1 || i === 4) cells.push(`<div class="app"><div class="dummy"></div><small>アプリ</small></div>`);
+  });
+  hs.innerHTML = cells.join('');
+  document.getElementById('cards').innerHTML = LIST.map(([code, key, name, pick, desc, tags], i) => `
+    <article class="card${pick ? ' pick' : ''}">
+      <div class="big">${svg(key, 'c' + i)}</div>
+      <div class="row"><p class="code">${code}</p>${pick ? '<span class="badge">おすすめ</span>' : ''}</div>
+      <h3>${name}</h3>
+      <p>${desc}</p>
+      <ul class="tags">${tags.map(t => `<li>${t}</li>`).join('')}</ul>
+    </article>`).join('');
+})();
+</script>
+</body></html>

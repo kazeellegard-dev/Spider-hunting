@@ -1,0 +1,433 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head><body><title>クモの巣ハンティング アイコン案</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@700;800&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap">
+<style>
+/* Layout: a home-screen strip to compare at a glance, then one card per icon at store size */
+:root {
+  --bg: #f6f3ef;
+  --panel: #ffffff;
+  --ink: #2a2230;
+  --muted: #6f6574;
+  --line: #e7e0da;
+  --accent: #e0703f;
+  --chip: #f4ece6;
+  --pick: #fff1e4;
+  --font-display: "M PLUS Rounded 1c", "Hiragino Maru Gothic ProN", system-ui, sans-serif;
+  --font-body: "Zen Kaku Gothic New", "Hiragino Sans", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #17141b; --panel: #221e27; --ink: #f1ecf3; --muted: #aaa1ad; --line: #352f3b; --accent: #f29a68; --chip: #2d2733; --pick: #33261f;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #17141b; --panel: #221e27; --ink: #f1ecf3; --muted: #aaa1ad; --line: #352f3b; --accent: #f29a68; --chip: #2d2733; --pick: #33261f;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 15px; line-height: 1.7;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 32px 56px;
+}
+.wrap { max-width: 1080px; margin: 0 auto; display: grid; gap: 36px; }
+header { display: grid; gap: 8px; }
+.eyebrow { font-size: 12px; letter-spacing: .14em; color: var(--accent); font-weight: 700; margin: 0; }
+h1 { font-family: var(--font-display); font-weight: 800; font-size: clamp(26px, 5vw, 38px); line-height: 1.25; margin: 0; text-wrap: balance; }
+header p { margin: 0; color: var(--muted); max-width: 64ch; }
+h2 { font-family: var(--font-display); font-size: 21px; margin: 0; }
+.phone {
+  border-radius: 28px; padding: 26px 18px 18px; display: grid; gap: 12px;
+  background: linear-gradient(160deg, #6f86c9 0%, #9a7fc4 45%, #e39ab0 100%);
+}
+.phone .hs { display: grid; grid-template-columns: repeat(auto-fill, minmax(72px, 1fr)); gap: 18px 8px; }
+.app { display: grid; justify-items: center; gap: 5px; }
+.app svg, .app .dummy { width: 60px; height: 60px; border-radius: 13.5px; display: block; box-shadow: 0 2px 6px rgba(0, 0, 0, .18); }
+.app .dummy { background: rgba(255, 255, 255, .35); }
+.app small { color: #fff; font-size: 11px; line-height: 1.2; text-shadow: 0 1px 2px rgba(0, 0, 0, .35); }
+.phone p { margin: 0; color: #fff; font-size: 12px; opacity: .9; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 18px; padding: 18px; display: grid; gap: 10px; align-content: start; min-width: 0; }
+.card.pick { background: var(--pick); border-color: var(--accent); }
+.card .big svg { width: 100%; max-width: 220px; height: auto; aspect-ratio: 1; display: block; border-radius: 22.5%; box-shadow: 0 8px 22px rgba(40, 20, 30, .2); }
+.row { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.code { font-family: var(--font-display); font-size: 13px; color: var(--accent); letter-spacing: .06em; margin: 0; }
+.badge { font-size: 11px; font-weight: 700; color: #fff; background: var(--accent); border-radius: 99px; padding: 1px 9px; }
+h3 { font-family: var(--font-display); font-size: 19px; margin: 0; line-height: 1.35; }
+.card p { margin: 0; color: var(--muted); font-size: 14px; }
+.tags { display: flex; flex-wrap: wrap; gap: 6px; margin: 0; padding: 0; list-style: none; }
+.tags li { background: var(--chip); border-radius: 99px; padding: 2px 10px; font-size: 12px; }
+footer { color: var(--muted); font-size: 13px; border-top: 1px solid var(--line); padding-top: 16px; display: grid; gap: 4px; }
+footer p { margin: 0; }
+</style>
+
+<div class="wrap">
+  <header>
+    <p class="eyebrow">SPIDER WEB CATCH · APP ICON · ROUND 2</p>
+    <h1>かわいいアイコン 9案</h1>
+    <p>本物のクモの中でも「かわいい」と人気のハエトリグモ（大きな丸い目・ふわふわの毛・虹色のキバ）と、しま模様のコガネグモをモデルに、少しリアルに描きました。どの案も、巣はアイコンのふちに引っかけて張ってあります。</p>
+  </header>
+
+  <section class="phone" aria-label="ホーム画面に並べたときの見え方">
+    <div class="hs" id="hs"></div>
+    <p>ホーム画面と同じ大きさです。白い四角は、ほかのアプリのつもりです。パッと目に入るかどうかの目安にしてください。</p>
+  </section>
+
+  <section style="display:grid;gap:16px">
+    <h2>1案ずつ</h2>
+    <div class="grid" id="cards"></div>
+  </section>
+
+  <footer>
+    <p>気になる案の番号（例：A1）を教えてください。「A1の構図でB3の色」のような組み合わせでも大丈夫です。</p>
+    <p>選んだ案は、毛並みや光り方をさらに整えて、1024×1024の正式なアイコンに仕上げます。角の丸みはiPhoneが自動でつけます。</p>
+  </footer>
+</div>
+
+<script>
+// Icon drawing kit (viewBox 0 0 100 100). Pure string builders, shared by the dev sheet and the page.
+(function (root) {
+  const f = n => +(+n).toFixed(2);
+  function rng(seed) { let a = seed >>> 0; return () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+
+  // where a ray from (cx,cy) leaves the square [m, 100-m]
+  function toFrame(cx, cy, a, m) {
+    const dx = Math.cos(a), dy = Math.sin(a); let t = Infinity;
+    if (dx > 1e-6) t = Math.min(t, (100 - m - cx) / dx); if (dx < -1e-6) t = Math.min(t, (m - cx) / dx);
+    if (dy > 1e-6) t = Math.min(t, (100 - m - cy) / dy); if (dy < -1e-6) t = Math.min(t, (m - cy) / dy);
+    return [cx + dx * t, cy + dy * t];
+  }
+  const qpt = (p0, c, p1, t) => [(1 - t) * (1 - t) * p0[0] + 2 * (1 - t) * t * c[0] + t * t * p1[0], (1 - t) * (1 - t) * p0[1] + 2 * (1 - t) * t * c[1] + t * t * p1[1]];
+
+  // Orb web stretched across the icon and tied to its edge.
+  // o: {cx, cy, n, rot, rings:[...fractions], sag, color, w, op, dew, seed, nubs, skip:[spoke idx], hub}
+  function webFrame(o) {
+    const R = rng(o.seed || 7), n = o.n, m = o.m == null ? 0.6 : o.m;
+    const ends = [];
+    for (let i = 0; i < n; i++) {
+      const a = (o.rot || 0) + i * 2 * Math.PI / n + (R() - 0.5) * 0.12;
+      ends.push(toFrame(o.cx, o.cy, a, m));
+    }
+    const at = (i, fr) => { const e = ends[(i + n) % n]; return [o.cx + (e[0] - o.cx) * fr, o.cy + (e[1] - o.cy) * fr]; };
+    let d = '', segs = [];
+    ends.forEach((e, i) => { if (!(o.skip || []).includes(i)) d += `M${f(o.cx)} ${f(o.cy)}L${f(e[0])} ${f(e[1])}`; });
+    const rings = o.rings || [0.2, 0.35, 0.5, 0.65, 0.8];
+    rings.forEach((fr0, k) => {
+      const jit = Array.from({ length: n }, () => fr0 * (1 + (R() - 0.5) * 0.08));
+      for (let i = 0; i < n; i++) {
+        if ((o.gap || []).some(([gk, gi]) => gk === k && gi === i)) continue;
+        const p0 = at(i, jit[i]), p1 = at(i + 1, jit[(i + 1) % n]);
+        const mx = (p0[0] + p1[0]) / 2, my = (p0[1] + p1[1]) / 2, sag = o.sag == null ? 0.9 : o.sag;
+        const c = [o.cx + (mx - o.cx) * sag, o.cy + (my - o.cy) * sag];
+        d += `M${f(p0[0])} ${f(p0[1])}Q${f(c[0])} ${f(c[1])} ${f(p1[0])} ${f(p1[1])}`;
+        segs.push([p0, c, p1]);
+      }
+    });
+    let s = `<path d="${d}" fill="none" stroke="${o.color || '#fff'}" stroke-width="${o.w || 0.7}" stroke-linecap="round" opacity="${o.op == null ? 0.85 : o.op}"/>`;
+    if (o.hub !== false) s += `<circle cx="${f(o.cx)}" cy="${f(o.cy)}" r="${f((o.w || 0.7) * 2.2)}" fill="${o.color || '#fff'}" opacity="${o.op == null ? 0.85 : o.op}"/>`;
+    if (o.nubs !== false) ends.forEach(e => { s += `<circle cx="${f(e[0])}" cy="${f(e[1])}" r="${f((o.w || 0.7) * 1.6)}" fill="${o.color || '#fff'}" opacity=".95"/>`; });
+    if (o.dew) {
+      for (let k = 0; k < o.dew; k++) {
+        const sg = segs[Math.floor(R() * segs.length)], p = qpt(sg[0], sg[1], sg[2], 0.2 + R() * 0.6), r = 0.55 + R() * (o.dewMax || 0.9);
+        s += `<circle cx="${f(p[0])}" cy="${f(p[1] + r * 0.4)}" r="${f(r)}" fill="url(#dew)"/><circle cx="${f(p[0] - r * 0.3)}" cy="${f(p[1] + r * 0.1)}" r="${f(r * 0.28)}" fill="#fff"/>`;
+      }
+    }
+    return s;
+  }
+
+  // Hair along the rim of an ellipse: short strokes pointing outward.
+  function fur(cx, cy, rx, ry, count, len, color, w, seed, from = 0, to = 2 * Math.PI, op = 1) {
+    const R = rng(seed); let d = '';
+    for (let i = 0; i < count; i++) {
+      const a = from + (to - from) * (i + R() * 0.8) / count;
+      const x = cx + Math.cos(a) * rx * (0.9 + R() * 0.08), y = cy + Math.sin(a) * ry * (0.9 + R() * 0.08);
+      const b = a + (R() - 0.5) * 0.7, L = len * (0.6 + R() * 0.7);
+      d += `M${f(x)} ${f(y)}l${f(Math.cos(b) * L)} ${f(Math.sin(b) * L)}`;
+    }
+    return `<path d="${d}" stroke="${color}" stroke-width="${w}" stroke-linecap="round" fill="none" opacity="${op}"/>`;
+  }
+
+  // Smooth tapering leg through the points (Catmull-Rom), shaded for roundness, with soft bands and a few hairs.
+  function smooth(pts) {
+    let d = `M${f(pts[0][0])} ${f(pts[0][1])}`;
+    for (let i = 0; i < pts.length - 1; i++) {
+      const p0 = pts[i - 1] || pts[i], p1 = pts[i], p2 = pts[i + 1], p3 = pts[i + 2] || p2;
+      const c1 = [p1[0] + (p2[0] - p0[0]) / 6, p1[1] + (p2[1] - p0[1]) / 6], c2 = [p2[0] - (p3[0] - p1[0]) / 6, p2[1] - (p3[1] - p1[1]) / 6];
+      d += `C${f(c1[0])} ${f(c1[1])} ${f(c2[0])} ${f(c2[1])} ${f(p2[0])} ${f(p2[1])}`;
+    }
+    return d;
+  }
+  function leg(pts, w, color, band, bandDash, hi) {
+    // taper: the whole leg at tip width, the inner part again at full width
+    const d = smooth(pts), inner = smooth(pts.slice(0, Math.max(2, pts.length - 1)));
+    let s = `<path d="${d}" stroke="${color}" stroke-width="${f(w * 0.62)}" stroke-linecap="round" stroke-linejoin="round" fill="none"/>`
+      + `<path d="${inner}" stroke="${color}" stroke-width="${f(w)}" stroke-linecap="round" stroke-linejoin="round" fill="none"/>`;
+    if (band) s += `<path d="${d}" stroke="${band}" stroke-width="${f(w * 0.6)}" stroke-dasharray="${bandDash || '1.2 4'}" fill="none" opacity=".5"/>`;
+    s += `<path d="${d}" stroke="${hi || '#ffffff'}" stroke-width="${f(w * 0.28)}" fill="none" stroke-linecap="round" opacity=".18" transform="translate(${f(-w * 0.15)} ${f(-w * 0.2)})"/>`;
+    return s;
+  }
+  // knee points: bend a leg from a to b with a knee offset
+  const mirror = (pts, cx) => pts.map(([x, y]) => [2 * cx - x, y]);
+
+  function eye(id, x, y, r, opt = {}) {
+    let refl = '';
+    if (opt.reflect) {
+      let d = '';
+      const rx = x - r * 0.3, ry = y - r * 0.32, rr = r * 0.62;
+      for (let i = 0; i < 8; i++) { const a = i * Math.PI / 4; d += `M${f(rx)} ${f(ry)}L${f(rx + Math.cos(a) * rr)} ${f(ry + Math.sin(a) * rr)}`; }
+      [0.35, 0.65, 0.95].forEach(k => { d += `M${f(rx + rr * k)} ${f(ry)}A${f(rr * k)} ${f(rr * k)} 0 1 1 ${f(rx + rr * k - 0.01)} ${f(ry)}`; });
+      refl = `<clipPath id="${id}rc${Math.round(x * 10)}"><circle cx="${f(x)}" cy="${f(y)}" r="${f(r * 0.96)}"/></clipPath><g clip-path="url(#${id}rc${Math.round(x * 10)})"><path d="${d}" stroke="#fff" stroke-width="${f(r * 0.025)}" fill="none" opacity=".35"/></g>`;
+    }
+    return `<circle cx="${f(x)}" cy="${f(y)}" r="${f(r * 1.12)}" fill="${opt.rim || '#2a1d14'}"/>`
+      + `<circle cx="${f(x)}" cy="${f(y)}" r="${f(r)}" fill="url(#${id}eye)"/>`
+      + refl + `<ellipse cx="${f(x - r * 0.32)}" cy="${f(y - r * 0.36)}" rx="${f(r * 0.34)}" ry="${f(r * 0.26)}" fill="#fff" transform="rotate(-25 ${f(x - r * 0.32)} ${f(y - r * 0.36)})"/>`
+      + `<circle cx="${f(x + r * 0.38)}" cy="${f(y + r * 0.34)}" r="${f(r * 0.12)}" fill="#fff" opacity=".9"/>`
+      + (opt.ring ? `<circle cx="${f(x)}" cy="${f(y)}" r="${f(r * 0.72)}" fill="none" stroke="${opt.ring}" stroke-width="${f(r * 0.08)}" opacity=".35"/>` : '');
+  }
+
+  // Jumping spider, front view. o: {id, cx, cy, s, pal, legs:'wave'|'hug'|'peek'|'rest', blush}
+  function jumper(o) {
+    const { id, cx, cy, s } = o, p = Object.assign({
+      body: '#2b2431', hi: '#55485f', furc: '#6d6078', tuft: '#fff4e4', fang1: '#5ff0b8', fang2: '#2b86d6',
+      leg: '#2b2431', band: '#d9cfc4', palp: '#fbf3e9', blush: '#ff8fae', eyeRing: '#c9925a',
+    }, o.pal || {});
+    const defs = `<radialGradient id="${id}eye" cx=".42" cy=".38" r=".7"><stop offset="0" stop-color="#4a3a5e"/><stop offset=".55" stop-color="#140c1d"/><stop offset="1" stop-color="#050208"/></radialGradient>`
+      + `<radialGradient id="${id}head" cx=".45" cy=".3" r=".8"><stop offset="0" stop-color="${p.hi}"/><stop offset="1" stop-color="${p.body}"/></radialGradient>`
+ + `<radialGradient id="${id}shade" cx=".5" cy=".2" r=".95"><stop offset="0" stop-color="#fff" stop-opacity=".16"/><stop offset=".45" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".35"/></radialGradient>`
+      + `<linearGradient id="${id}fang" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${p.fang1}"/><stop offset="1" stop-color="${p.fang2}"/></linearGradient>`;
+    let back = '', front = '';
+    const L = (pts, w) => leg(pts.map(([x, y]) => [cx + x * s, cy + y * s]), w * s, p.leg, p.band, `${f(0.04 * s)} ${f(0.34 * s)}`);
+    const pair = (pts, w) => L(pts, w) + L(pts.map(([x, y]) => [-x, y]), w);
+    const mode = o.legs || 'wave';
+    if (mode !== 'peek') {
+      back += pair([[0.6, 0.3], [1.45, 0.05], [1.85, 0.8]], 0.13);
+      back += pair([[0.55, 0.45], [1.35, 0.55], [1.6, 1.15]], 0.12);
+      back += pair([[0.45, 0.55], [1.0, 0.85], [1.1, 1.35]], 0.11);
+    }
+    if (mode === 'wave') {
+      front += L([[0.55, 0.5], [1.1, 0.4], [1.3, -0.35], [1.18, -0.85]], 0.17);
+      front += L([[-0.55, 0.5], [-1.15, 0.6], [-1.45, 0.25], [-1.85, 0.4]], 0.17);
+    } else if (mode === 'hug') {
+      front += pair([[0.5, 0.5], [0.95, 0.75], [0.62, 1.05], [0.25, 1.05]], 0.16);
+    } else if (mode === 'peek') {
+      front += pair([[0.6, 0.55], [1.05, 0.62], [1.2, 1.05]], 0.17);
+      front += pair([[0.75, 0.35], [1.5, 0.3], [1.7, 0.95]], 0.14);
+    } else {
+      front += pair([[0.55, 0.5], [1.15, 0.5], [1.3, 1.05]], 0.16);
+    }
+    const hx = s, hy = s * 0.9;
+    let head = `<ellipse cx="${cx}" cy="${cy}" rx="${f(hx)}" ry="${f(hy)}" fill="url(#${id}head)"/>`
+      + fur(cx, cy, hx * 0.99, hy * 0.99, 260, 0.075 * s, p.body, f(0.03 * s), (o.seed || 3) + 1, 0, 2 * Math.PI, 1)
+      + fur(cx, cy, hx * 0.97, hy * 0.97, 140, 0.07 * s, p.furc, f(0.018 * s), o.seed || 3, Math.PI * 1.05, Math.PI * 1.95, 0.7)
+      // sheen across the forehead
+      + `<ellipse cx="${f(cx - 0.2 * s)}" cy="${f(cy - 0.55 * s)}" rx="${f(0.42 * s)}" ry="${f(0.13 * s)}" fill="#fff" opacity=".12" transform="rotate(-8 ${cx} ${cy})"/>`
+      // shade underneath, light on top
+      + `<ellipse cx="${cx}" cy="${cy}" rx="${f(hx)}" ry="${f(hy)}" fill="url(#${id}shade)"/>`
+      // soft brow tufts over the eyes, like Phidippus
+      + [-1, 1].map(k => {
+        const bx = cx + k * 0.4 * s, by = cy - 0.43 * s;
+        return `<path d="M${f(bx - 0.27 * s)} ${f(by + 0.06 * s)}Q${f(bx)} ${f(by - 0.2 * s)} ${f(bx + 0.27 * s)} ${f(by + 0.06 * s)}Q${f(bx)} ${f(by - 0.06 * s)} ${f(bx - 0.27 * s)} ${f(by + 0.06 * s)}Z" fill="${p.tuft}" opacity=".9"/>`
+          + fur(bx, by - 0.02 * s, 0.24 * s, 0.09 * s, 9, 0.05 * s, p.tuft, f(0.022 * s), 11 + k, Math.PI * 1.1, Math.PI * 1.9, 0.85);
+      }).join('');
+    // side eyes, main eyes
+    head += eye(id, cx - 0.84 * s, cy - 0.22 * s, 0.1 * s) + eye(id, cx + 0.84 * s, cy - 0.22 * s, 0.1 * s);
+    head += eye(id, cx - 0.37 * s, cy - 0.02 * s, 0.32 * s, { ring: p.eyeRing, reflect: o.reflect }) + eye(id, cx + 0.37 * s, cy - 0.02 * s, 0.32 * s, { ring: p.eyeRing, reflect: o.reflect });
+    if (o.blush !== false) head += `<ellipse cx="${f(cx - 0.72 * s)}" cy="${f(cy + 0.32 * s)}" rx="${f(0.16 * s)}" ry="${f(0.09 * s)}" fill="${p.blush}" opacity=".7"/><ellipse cx="${f(cx + 0.72 * s)}" cy="${f(cy + 0.32 * s)}" rx="${f(0.16 * s)}" ry="${f(0.09 * s)}" fill="${p.blush}" opacity=".7"/>`;
+    // iridescent fangs and fluffy palps
+    head += [-1, 1].map(k => `<ellipse cx="${f(cx + k * 0.15 * s)}" cy="${f(cy + 0.52 * s)}" rx="${f(0.12 * s)}" ry="${f(0.17 * s)}" fill="url(#${id}fang)"/><ellipse cx="${f(cx + k * 0.15 * s - 0.04 * s)}" cy="${f(cy + 0.45 * s)}" rx="${f(0.04 * s)}" ry="${f(0.08 * s)}" fill="#fff" opacity=".55"/>`).join('');
+    const palps = [-1, 1].map(k => `<ellipse cx="${f(cx + k * 0.45 * s)}" cy="${f(cy + 0.66 * s)}" rx="${f(0.15 * s)}" ry="${f(0.13 * s)}" fill="${p.palp}"/>` + fur(cx + k * 0.45 * s, cy + 0.66 * s, 0.14 * s, 0.12 * s, 26, 0.07 * s, p.palp, f(0.03 * s), 20 + k)).join('');
+    return { defs, svg: back + head + palps + front };
+  }
+
+  // Orb weaver hanging head-down: striped abdomen above, silver face below. o: {id, cx, cy, s, pal, thread}
+  function orb(o) {
+    const { id, cx, cy, s } = o, p = Object.assign({
+      ab1: '#ffd23f', ab2: '#2b2232', ceph: '#f1ede6', cephHi: '#ffffff', leg: '#2b2232', band: '#ffd23f', blush: '#ff8fae',
+    }, o.pal || {});
+    const ay = cy - 1.25 * s, arx = 0.95 * s, ary = 1.18 * s;
+    const defs = `<radialGradient id="${id}eye" cx=".42" cy=".38" r=".7"><stop offset="0" stop-color="#4a3a5e"/><stop offset=".55" stop-color="#140c1d"/><stop offset="1" stop-color="#050208"/></radialGradient>`
+      + `<clipPath id="${id}ab"><ellipse cx="${cx}" cy="${f(ay)}" rx="${f(arx)}" ry="${f(ary)}"/></clipPath>`
+      + `<radialGradient id="${id}abg" cx=".35" cy=".3" r=".9"><stop offset="0" stop-color="#fff" stop-opacity=".5"/><stop offset=".5" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".25"/></radialGradient>`
+      + `<radialGradient id="${id}ceph" cx=".4" cy=".3" r=".8"><stop offset="0" stop-color="${p.cephHi}"/><stop offset="1" stop-color="${p.ceph}"/></radialGradient>`;
+    const L = (pts, w) => leg(pts.map(([x, y]) => [cx + x * s, cy + y * s]), w * s, p.leg, p.band, `${f(0.1 * s)} ${f(0.22 * s)}`);
+    const pair = (pts, w) => L(pts, w) + L(pts.map(([x, y]) => [-x, y]), w);
+    let legs = pair([[0.4, 0.1], [1.2, 0.5], [1.75, 1.55]], 0.1) + pair([[0.45, 0.0], [1.35, 0.25], [2.0, 1.1]], 0.1)
+      + pair([[0.45, -0.15], [1.15, -0.55], [1.45, -0.2]], 0.09) + pair([[0.4, -0.25], [1.05, -1.0], [1.6, -1.55]], 0.09);
+    let ab = `<g clip-path="url(#${id}ab)"><rect x="${f(cx - arx)}" y="${f(ay - ary)}" width="${f(2 * arx)}" height="${f(2 * ary)}" fill="${p.ab1}"/>`;
+    [-0.62, -0.18, 0.26].forEach((k, i) => {
+      const y = ay + k * ary;
+      ab += `<path d="M${f(cx - arx)} ${f(y)}Q${f(cx)} ${f(y + 0.28 * s)} ${f(cx + arx)} ${f(y)}L${f(cx + arx)} ${f(y + 0.2 * s)}Q${f(cx)} ${f(y + 0.48 * s)} ${f(cx - arx)} ${f(y + 0.2 * s)}Z" fill="${p.ab2}"/>`;
+    });
+    ab += `<path d="M${f(cx - arx)} ${f(ay + 0.62 * ary)}Q${f(cx)} ${f(ay + 0.62 * ary + 0.3 * s)} ${f(cx + arx)} ${f(ay + 0.62 * ary)}V${f(ay + ary)}H${f(cx - arx)}Z" fill="${p.ab2}"/>`;
+    ab += `<rect x="${f(cx - arx)}" y="${f(ay - ary)}" width="${f(2 * arx)}" height="${f(2 * ary)}" fill="url(#${id}abg)"/></g>`;
+    ab += fur(cx, ay, arx, ary, 70, 0.07 * s, p.ab1, f(0.02 * s), 31, 0, 2 * Math.PI, 0.6);
+    const cr = 0.62 * s;
+    let ceph = `<ellipse cx="${cx}" cy="${cy}" rx="${f(cr)}" ry="${f(cr * 0.88)}" fill="url(#${id}ceph)"/>` + fur(cx, cy, cr, cr * 0.88, 80, 0.1 * s, p.ceph, f(0.025 * s), 41);
+    ceph += eye(id, cx - 0.25 * s, cy + 0.02 * s, 0.2 * s) + eye(id, cx + 0.25 * s, cy + 0.02 * s, 0.2 * s);
+    ceph += `<circle cx="${f(cx - 0.1 * s)}" cy="${f(cy - 0.3 * s)}" r="${f(0.05 * s)}" fill="#1a1020"/><circle cx="${f(cx + 0.1 * s)}" cy="${f(cy - 0.3 * s)}" r="${f(0.05 * s)}" fill="#1a1020"/>`;
+    ceph += `<ellipse cx="${f(cx - 0.45 * s)}" cy="${f(cy + 0.25 * s)}" rx="${f(0.11 * s)}" ry="${f(0.06 * s)}" fill="${p.blush}" opacity=".8"/><ellipse cx="${f(cx + 0.45 * s)}" cy="${f(cy + 0.25 * s)}" rx="${f(0.11 * s)}" ry="${f(0.06 * s)}" fill="${p.blush}" opacity=".8"/>`;
+    ceph += `<path d="M${f(cx - 0.08 * s)} ${f(cy + 0.32 * s)}q${f(0.08 * s)} ${f(0.08 * s)} ${f(0.16 * s)} 0" stroke="#3a2a3a" stroke-width="${f(0.04 * s)}" fill="none" stroke-linecap="round"/>`;
+    const thread = o.thread ? `<path d="M${cx} ${f(o.thread)}V${f(ay - ary + 0.1)}" stroke="#fff" stroke-width=".7" opacity=".9"/>` : '';
+    return { defs, svg: thread + legs + ab + ceph };
+  }
+
+  // Silk-wrapped snack.
+  function bundle(cx, cy, rx, ry, rot) {
+    let s = `<g transform="rotate(${rot} ${cx} ${cy})"><ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" fill="#fffaf0"/>`;
+    for (let i = -3; i <= 3; i++) s += `<path d="M${f(cx - rx)} ${f(cy + i * ry * 0.27)}q${f(rx)} ${f(ry * 0.32)} ${f(2 * rx)} ${f(-ry * 0.1)}" stroke="#e4dccb" stroke-width=".7" fill="none"/>`;
+    s += `<ellipse cx="${f(cx - rx * 0.35)}" cy="${f(cy - ry * 0.45)}" rx="${f(rx * 0.3)}" ry="${f(ry * 0.18)}" fill="#fff"/></g>`;
+    return s;
+  }
+
+  // A small cute fly stuck in the web.
+  function fly(cx, cy, s, rot = 0) {
+    return `<g transform="rotate(${rot} ${cx} ${cy})">`
+      + `<ellipse cx="${f(cx - 0.75 * s)}" cy="${f(cy - 0.55 * s)}" rx="${f(0.75 * s)}" ry="${f(0.4 * s)}" fill="#eaf6ff" opacity=".85" transform="rotate(30 ${f(cx - 0.75 * s)} ${f(cy - 0.55 * s)})"/>`
+      + `<ellipse cx="${f(cx + 0.75 * s)}" cy="${f(cy - 0.55 * s)}" rx="${f(0.75 * s)}" ry="${f(0.4 * s)}" fill="#eaf6ff" opacity=".85" transform="rotate(-30 ${f(cx + 0.75 * s)} ${f(cy - 0.55 * s)})"/>`
+      + `<ellipse cx="${cx}" cy="${f(cy + 0.25 * s)}" rx="${f(0.5 * s)}" ry="${f(0.65 * s)}" fill="#2c5a64"/>`
+      + `<ellipse cx="${f(cx - 0.15 * s)}" cy="${f(cy + 0.05 * s)}" rx="${f(0.15 * s)}" ry="${f(0.25 * s)}" fill="#fff" opacity=".25"/>`
+      + `<circle cx="${cx}" cy="${f(cy - 0.45 * s)}" r="${f(0.4 * s)}" fill="#2c5a64"/>`
+      + `<circle cx="${f(cx - 0.27 * s)}" cy="${f(cy - 0.5 * s)}" r="${f(0.22 * s)}" fill="#e2483d"/><circle cx="${f(cx + 0.27 * s)}" cy="${f(cy - 0.5 * s)}" r="${f(0.22 * s)}" fill="#e2483d"/>`
+      + `<circle cx="${f(cx - 0.32 * s)}" cy="${f(cy - 0.57 * s)}" r="${f(0.07 * s)}" fill="#fff"/><circle cx="${f(cx + 0.22 * s)}" cy="${f(cy - 0.57 * s)}" r="${f(0.07 * s)}" fill="#fff"/>`
+      + `</g>`;
+  }
+  const DEW = `<radialGradient id="dew" cx=".4" cy=".35" r=".7"><stop offset="0" stop-color="#ffffff"/><stop offset=".6" stop-color="#e9f6ff" stop-opacity=".9"/><stop offset="1" stop-color="#9cc6e8" stop-opacity=".9"/></radialGradient>`;
+  function bokeh(list) { return `<g filter="url(#blur)">${list.map(([x, y, r, c, op]) => `<circle cx="${x}" cy="${y}" r="${r}" fill="${c}" opacity="${op}"/>`).join('')}</g>`; }
+  const BLUR = `<filter id="blur" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="2.2"/></filter>`
+    + `<filter id="sh" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="1.6" stdDeviation="1.6" flood-color="#2a1030" flood-opacity=".28"/></filter>`;
+
+  root.IK = { f, rng, webFrame, fur, leg, jumper, orb, bundle, fly, DEW, bokeh, BLUR };
+})(typeof window !== 'undefined' ? window : globalThis);
+
+// The round-2 icon compositions. Each returns the inner SVG for a 100x100 icon.
+(function (root) {
+  const { webFrame, jumper, orb, bundle, fly, DEW, bokeh, BLUR } = root.IK;
+  const grad = (id, stops, x2 = 0, y2 = 1) => `<linearGradient id="${id}" x1="0" y1="0" x2="${x2}" y2="${y2}">${stops.map(([o, c]) => `<stop offset="${o}" stop-color="${c}"/>`).join('')}</linearGradient>`;
+  const rgrad = (id, stops, cx = 0.5, cy = 0.5, r = 0.7) => `<radialGradient id="${id}" cx="${cx}" cy="${cy}" r="${r}">${stops.map(([o, c, a]) => `<stop offset="${o}" stop-color="${c}" stop-opacity="${a == null ? 1 : a}"/>`).join('')}</radialGradient>`;
+  const wrap = (defs, body) => `<defs>${DEW}${BLUR}${defs}</defs>${body}`;
+
+  const ICONS = {
+    // 1. Close-up jumping spider waving, web tied to the frame behind it
+    hello: () => {
+      const sp = jumper({ id: 'h', cx: 50, cy: 56, s: 24, legs: 'wave', seed: 5 });
+      return wrap(rgrad('hbg', [[0, '#ffe2b8'], [0.6, '#ffab7a'], [1, '#f2745a']], 0.5, 0.35, 0.85) + sp.defs,
+        `<rect width="100" height="100" fill="url(#hbg)"/>`
+        + bokeh([[16, 20, 7, '#fff', 0.35], [86, 14, 5, '#fff', 0.3], [90, 80, 9, '#ffd9a8', 0.4]])
+        + webFrame({ cx: 50, cy: 40, n: 11, rot: -1.2, rings: [0.16, 0.31, 0.46, 0.61, 0.76, 0.91], color: '#fff', w: 0.7, op: 0.85, dew: 18, seed: 9, sag: 0.92 })
+        + `<g filter="url(#sh)">${sp.svg}</g>`);
+    },
+    // 2. Peeking up from the bottom edge, front legs hooked over it
+    peek: () => {
+      const sp = jumper({ id: 'p', cx: 50, cy: 84, s: 30, legs: 'peek', seed: 8, pal: { body: '#3a2c22', hi: '#7a5a43', furc: '#a07a5a', leg: '#3a2c22', band: '#e8d2b8', fang1: '#5ce0a0', fang2: '#2f9be0' } });
+      return wrap(grad('pbg', [[0, '#c9e8ff'], [1, '#8fd0f5']]) + sp.defs,
+        `<rect width="100" height="100" fill="url(#pbg)"/>`
+        + bokeh([[20, 18, 10, '#fff', 0.5], [78, 26, 6, '#fff', 0.45]])
+        + webFrame({ cx: 50, cy: 30, n: 11, rot: -1.0, rings: [0.17, 0.34, 0.51, 0.68, 0.85], color: '#fff', w: 0.75, op: 0.9, dew: 14, seed: 4 })
+        + `<g filter="url(#sh)">${sp.svg}</g>`);
+    },
+    // 3. Orb weaver hanging head-down from the top edge, in a sunny web
+    hang: () => {
+      const sp = orb({ id: 'o', cx: 50, cy: 72, s: 17, thread: 0 });
+      return wrap(grad('obg', [[0, '#bdf2d8'], [1, '#62c99f']]) + sp.defs,
+        `<rect width="100" height="100" fill="url(#obg)"/>`
+        + bokeh([[82, 18, 9, '#fff', 0.45], [14, 82, 8, '#fff', 0.35]])
+        + webFrame({ cx: 50, cy: 54, n: 12, rot: -1.5, rings: [0.15, 0.3, 0.45, 0.6, 0.75, 0.9], color: '#fff', w: 0.65, op: 0.8, dew: 16, seed: 21 })
+        + `<g filter="url(#sh)">${sp.svg}</g>`);
+    },
+    // 4. Hugging a silk-wrapped snack
+    snack: () => {
+      const sp = jumper({ id: 's', cx: 47, cy: 52, s: 21, legs: 'hug', seed: 13, pal: { body: '#2f2440', hi: '#5c4a75', furc: '#7a6795', leg: '#2f2440' } });
+      return wrap(rgrad('sbg', [[0, '#fff1c9'], [1, '#ffc95e']], 0.4, 0.3, 0.9) + sp.defs,
+        `<rect width="100" height="100" fill="url(#sbg)"/>`
+        + webFrame({ cx: 100, cy: 0, n: 22, rot: 0, rings: [0.15, 0.3, 0.45, 0.6, 0.75], color: '#fff', w: 0.6, op: 0.9, dew: 10, seed: 3, hub: false })
+        + webFrame({ cx: 0, cy: 100, n: 22, rot: 0, rings: [0.2, 0.4, 0.6], color: '#fff', w: 0.5, op: 0.6, seed: 6, hub: false })
+        + `<g filter="url(#sh)">${sp.svg}</g>` + bundle(66, 74, 11, 14, -25)
+        + `<path d="M84 52l1.6 4 4 1.6-4 1.6-1.6 4-1.6-4-4-1.6 4-1.6z" fill="#fff"/>`);
+    },
+    // 5. Night: dew drops glowing like stars, spider with sparkling eyes
+    night: () => {
+      const sp = jumper({ id: 'n', cx: 50, cy: 58, s: 22, legs: 'rest', seed: 17, pal: { body: '#241d33', hi: '#4b3f66', furc: '#6c5f8a', leg: '#241d33', band: '#bfb3d6' } });
+      return wrap(rgrad('nbg', [[0, '#3c4a8a'], [0.7, '#1b2150'], [1, '#0d1030']], 0.7, 0.2, 1) + sp.defs,
+        `<rect width="100" height="100" fill="url(#nbg)"/>`
+        + `<circle cx="80" cy="20" r="12" fill="#fff6d0" opacity=".16"/><circle cx="80" cy="20" r="8" fill="#fff4c4"/>`
+        + webFrame({ cx: 50, cy: 46, n: 11, rot: -1.3, rings: [0.16, 0.31, 0.46, 0.61, 0.76, 0.91], color: '#cfe3ff', w: 0.65, op: 0.8, dew: 26, dewMax: 0.7, seed: 12 })
+        + `<g filter="url(#sh)">${sp.svg}</g>`);
+    },
+    // 6. Peach jumper sitting on a web tied to all four sides
+    window: () => {
+      const sp = jumper({ id: 'w', cx: 50, cy: 54, s: 23, legs: 'rest', seed: 23, pal: { body: '#b8552e', hi: '#f0955a', furc: '#ffb27a', leg: '#a54b28', band: '#ffe0bf', tuft: '#fff8ee', palp: '#fff8ee', fang1: '#6ef0c8', fang2: '#4a8cff' } });
+      return wrap(rgrad('wbg', [[0, '#fff3ea'], [1, '#ffd2c2']], 0.5, 0.4, 0.8) + sp.defs,
+        `<rect width="100" height="100" fill="url(#wbg)"/>`
+        + webFrame({ cx: 50, cy: 50, n: 12, rot: 0.05, rings: [0.15, 0.29, 0.43, 0.57, 0.71, 0.85], color: '#b98068', w: 0.7, op: 0.75, dew: 0, seed: 2 })
+        + `<g filter="url(#sh)">${sp.svg}</g>`);
+    },
+    // 7. Extreme close-up: the two big eyes, with the web reflected in them
+    macro: () => {
+      const sp = jumper({ id: 'm', cx: 50, cy: 70, s: 46, legs: 'peek', seed: 29, reflect: true });
+      return wrap(rgrad('mbg', [[0, '#fff0b8'], [1, '#ffb347']], 0.5, 0.2, 0.9) + sp.defs,
+        `<rect width="100" height="100" fill="url(#mbg)"/>`
+        + webFrame({ cx: 50, cy: 18, n: 10, rot: -1.4, rings: [0.2, 0.4, 0.6, 0.8], color: '#fff', w: 0.8, op: 0.9, dew: 8, seed: 31 })
+        + `<g filter="url(#sh)">${sp.svg}</g>`);
+    },
+    // 8. On the hunt: a fly is stuck up in the corner, the spider eyes it
+    hunt: () => {
+      const sp = jumper({ id: 'u', cx: 38, cy: 68, s: 21, legs: 'rest', seed: 37, pal: { body: '#33263f', hi: '#614c78', furc: '#7d6898', leg: '#33263f' } });
+      return wrap(grad('ubg', [[0, '#ffd6e5'], [1, '#ff9fb8']], 1, 1) + sp.defs,
+        `<rect width="100" height="100" fill="url(#ubg)"/>`
+        + webFrame({ cx: 74, cy: 28, n: 11, rot: -0.3, rings: [0.15, 0.3, 0.45, 0.6, 0.75, 0.9], color: '#fff', w: 0.7, op: 0.9, dew: 12, seed: 41 })
+        + fly(74, 28, 7, 12)
+        + `<path d="M66 24l10 8M70 34l9-10" stroke="#fff" stroke-width=".8" opacity=".9"/>`
+        + `<g filter="url(#sh)">${sp.svg}</g>`
+      );
+    },
+    // 9. Coming down from the corner on a thread
+    corner: () => {
+      const sp = orb({ id: 'c', cx: 60, cy: 76, s: 13, thread: 30, pal: { ab1: '#ffc2d6', ab2: '#7a3d6a', band: '#ffc2d6', leg: '#5a2d50' } });
+      return wrap(grad('cbg', [[0, '#e6dcff'], [1, '#b9a6f5']], 1, 1) + sp.defs,
+        `<rect width="100" height="100" fill="url(#cbg)"/>`
+        + bokeh([[80, 20, 9, '#fff', 0.5], [20, 85, 7, '#fff', 0.4]])
+        + webFrame({ cx: 4, cy: 4, n: 12, rot: 0.14, rings: [0.15, 0.3, 0.45, 0.6, 0.75], color: '#fff', w: 0.75, op: 0.95, dew: 12, seed: 44, hub: false })
+        + `<g filter="url(#sh)">${sp.svg}</g>`);
+    },
+  };
+  root.ICONS2 = ICONS;
+})(typeof window !== 'undefined' ? window : globalThis);
+
+(() => {
+  const LIST = [
+    ['A1', 'peek', 'ひょっこり', true, '下のふちからハエトリグモが顔を出し、前脚をふちにかけています。上には、枠に張った巣。ホーム画面でいちばん目が合う案です。', ['小さくても分かる', '目が合う']],
+    ['A2', 'macro', 'じーっ', true, '大きな目のどアップ。ひとみに巣が映りこんでいます。ハエトリグモらしさがいちばん出ていて、ストアでも目立ちます。', ['インパクト', 'リアル寄り']],
+    ['A3', 'hello', 'こんにちは', true, '夕焼け色の巣のまんなかで、片方の前脚を上げてあいさつ。全身が見えるので、ゲームのクモとも結びつきます。', ['全身', 'あたたかい色']],
+    ['B1', 'snack', 'おやつ', false, '糸でくるんだ虫をだきかかえるクモ。「つかまえて食べる」ゲームだと伝わります。', ['遊び方が伝わる', '明るい']],
+    ['B2', 'hunt', 'ねらってる', false, '右上の巣にかかったハエを、下からじっと見つめるクモ。狩りのワクワク感を、かわいく。', ['ストーリー', 'ピンク']],
+    ['B3', 'night', '星のしずく', false, '夜空の巣に、星のように光るしずく。ゲームの夜の場面そのままの雰囲気です。', ['夜', '落ち着いた色']],
+    ['C1', 'hang', 'コガネグモ', false, '黄色と黒のしまのコガネグモが、頭を下にして巣にとまっています。ミントの背景でさわやかに。', ['しま模様', 'さわやか']],
+    ['C2', 'corner', 'するする', false, '左上の角に引っかけた巣から、糸でするする下りてくるピンクのクモ。枠に引っかかった感じがいちばん強い案です。', ['枠に引っかかる', 'パステル']],
+    ['C3', 'window', 'キャラメル', false, 'キャラメル色のハエトリグモが、四方のふちに結んだ巣のまんなかに。やさしい色合いです。', ['やさしい', '落ち着いた']],
+  ];
+  const svg = (key, suffix) => {
+    let inner = ICONS2[key]();
+    if (suffix) inner = inner.replace(/id="([\w-]+)"/g, `id="$1${suffix}"`).replace(/url\(#([\w-]+)\)/g, `url(#$1${suffix})`);
+    return `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="${key}">${inner}</svg>`;
+  };
+  const hs = document.getElementById('hs');
+  const cells = [];
+  LIST.forEach(([code, key], i) => {
+    cells.push(`<div class="app">${svg(key, 'h' + i)}<small>${code}</small></div>`);
+    if (i === 1 || i === 5) cells.push(`<div class="app"><div class="dummy"></div><small>アプリ</small></div>`);
+  });
+  hs.innerHTML = cells.join('');
+  document.getElementById('cards').innerHTML = LIST.map(([code, key, name, pick, desc, tags], i) => `
+    <article class="card${pick ? ' pick' : ''}">
+      <div class="big">${svg(key, 'c' + i)}</div>
+      <div class="row"><p class="code">${code}</p>${pick ? '<span class="badge">おすすめ</span>' : ''}</div>
+      <h3>${name}</h3>
+      <p>${desc}</p>
+      <ul class="tags">${tags.map(t => `<li>${t}</li>`).join('')}</ul>
+    </article>`).join('');
+})();
+</script>
+</body></html>

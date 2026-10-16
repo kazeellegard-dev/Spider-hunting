@@ -1,0 +1,247 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head><body><title>クモの巣ハンティング アイコン案</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@700;800&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap">
+<style>
+/* Layout: a contact sheet; four mood bands, each a row of three icon cards shown at store size and home-screen size */
+:root {
+  --bg: #f5f4f8;
+  --panel: #ffffff;
+  --ink: #221d33;
+  --muted: #6b6580;
+  --line: #e2dfea;
+  --accent: #d9792f;
+  --chip: #f1edf7;
+  --font-display: "M PLUS Rounded 1c", "Hiragino Maru Gothic ProN", system-ui, sans-serif;
+  --font-body: "Zen Kaku Gothic New", "Hiragino Sans", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #15121f; --panel: #1f1b2c; --ink: #eeeaf7; --muted: #a49eb8; --line: #322c45; --accent: #f0a160; --chip: #2a2540;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #15121f; --panel: #1f1b2c; --ink: #eeeaf7; --muted: #a49eb8; --line: #322c45; --accent: #f0a160; --chip: #2a2540;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 15px; line-height: 1.7;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 32px 56px;
+}
+.wrap { max-width: 1080px; margin: 0 auto; display: grid; gap: 40px; }
+header { display: grid; gap: 8px; }
+.eyebrow { font-size: 12px; letter-spacing: .14em; color: var(--accent); font-weight: 700; margin: 0; }
+h1 { font-family: var(--font-display); font-weight: 800; font-size: clamp(26px, 5vw, 38px); line-height: 1.25; margin: 0; text-wrap: balance; }
+header p { margin: 0; color: var(--muted); max-width: 62ch; }
+section { display: grid; gap: 16px; }
+.band-head { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; border-bottom: 1px solid var(--line); padding-bottom: 8px; }
+h2 { font-family: var(--font-display); font-size: 22px; margin: 0; }
+.band-head span { color: var(--muted); font-size: 13px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(270px, 1fr)); gap: 16px; }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 18px; padding: 18px; display: grid; gap: 12px; align-content: start; min-width: 0; }
+.shots { display: flex; align-items: flex-end; gap: 18px; }
+.big svg { width: 132px; height: 132px; display: block; border-radius: 30px; box-shadow: 0 6px 18px rgba(20, 10, 40, .18); }
+.home { display: grid; justify-items: center; gap: 4px; padding: 10px 10px 6px; border-radius: 14px; background: #3a4a6b; }
+.home svg { width: 58px; height: 58px; display: block; border-radius: 13px; }
+.home small { color: #fff; font-size: 11px; line-height: 1.2; }
+.code { font-family: var(--font-display); font-size: 12px; color: var(--accent); letter-spacing: .08em; margin: 0; }
+h3 { font-family: var(--font-display); font-size: 18px; margin: 0; line-height: 1.35; }
+.card p { margin: 0; color: var(--muted); font-size: 14px; }
+.tags { display: flex; flex-wrap: wrap; gap: 6px; margin: 0; padding: 0; list-style: none; }
+.tags li { background: var(--chip); border-radius: 99px; padding: 2px 10px; font-size: 12px; }
+footer { color: var(--muted); font-size: 13px; border-top: 1px solid var(--line); padding-top: 16px; }
+footer p { margin: 0 0 4px; }
+</style>
+
+<div class="wrap">
+  <header>
+    <p class="eyebrow">SPIDER WEB CATCH · APP ICON</p>
+    <h1>アイコン案 12点</h1>
+    <p>かわいい・かっこいい・ダーク・スタイリッシュの4つの方向で、3案ずつ描きました。左がApp Storeでの大きさ、右がホーム画面での大きさ（名前は「クモハン」）です。気になる案の記号（例：K1）を教えてください。そこから清書します。</p>
+  </header>
+  <div id="bands"></div>
+  <footer>
+    <p>アイコンは1024×1024の正方形で作り、角の丸みはiPhoneが自動でつけます。ここでの絵はたたき台なので、選んだ案は色や線の太さを整えて仕上げます。</p>
+    <p>小さいサイズで何の絵か分かるかどうかも、選ぶときの目安にしてください。</p>
+  </footer>
+</div>
+
+<script>
+(() => {
+  const f = n => +n.toFixed(2);
+  // A web: spokes plus rings that sag slightly toward the centre.
+  function web(cx, cy, r, n, rings, color, w, rot = 0, sag = 0.88) {
+    const pt = (rr, i) => { const a = rot + i * 2 * Math.PI / n; return [cx + Math.cos(a) * rr, cy + Math.sin(a) * rr]; };
+    let d = '';
+    for (let i = 0; i < n; i++) { const [x, y] = pt(r, i); d += `M${f(cx)} ${f(cy)}L${f(x)} ${f(y)}`; }
+    for (let k = 1; k <= rings; k++) {
+      const rr = r * k / rings;
+      for (let i = 0; i < n; i++) {
+        const [x1, y1] = pt(rr, i), [x2, y2] = pt(rr, i + 1);
+        const mx = (x1 + x2) / 2, my = (y1 + y2) / 2;
+        const qx = cx + (mx - cx) * sag, qy = cy + (my - cy) * sag;
+        d += `M${f(x1)} ${f(y1)}Q${f(qx)} ${f(qy)} ${f(x2)} ${f(y2)}`;
+      }
+    }
+    return `<path d="${d}" fill="none" stroke="${color}" stroke-width="${w}" stroke-linecap="round"/>`;
+  }
+  // Straight-edged web for the minimal looks.
+  function polyWeb(cx, cy, r, n, rings, color, w, rot = 0) {
+    let d = '';
+    for (let i = 0; i < n; i++) { const a = rot + i * 2 * Math.PI / n; d += `M${cx} ${cy}L${f(cx + Math.cos(a) * r)} ${f(cy + Math.sin(a) * r)}`; }
+    for (let k = 1; k <= rings; k++) {
+      const rr = r * k / rings; let s = '';
+      for (let i = 0; i <= n; i++) { const a = rot + i * 2 * Math.PI / n; s += (i ? 'L' : 'M') + f(cx + Math.cos(a) * rr) + ' ' + f(cy + Math.sin(a) * rr); }
+      d += s;
+    }
+    return `<path d="${d}" fill="none" stroke="${color}" stroke-width="${w}" stroke-linejoin="round"/>`;
+  }
+  // Round, friendly spider like the one in the game.
+  function cuteSpider(cx, cy, s, body, leg, opt = {}) {
+    let legs = '';
+    [-1, 1].forEach(side => {
+      [[-0.55, -1.25, -1.6, -0.2], [-0.15, -0.95, -1.75, 0.35], [0.25, -0.8, -1.65, 0.95], [0.6, -0.55, -1.25, 1.45]].forEach(([y0, kx, ex, ey]) => {
+        const x0 = cx + side * s * 0.8, yy = cy + y0 * s;
+        legs += `M${f(x0)} ${f(yy)}Q${f(cx - side * kx * s)} ${f(cy + (y0 - 0.75) * s)} ${f(cx - side * ex * s)} ${f(cy + ey * s)}`;
+      });
+    });
+    const eye = (dx) => `<circle cx="${f(cx + dx * s)}" cy="${f(cy - 0.1 * s)}" r="${f(0.32 * s)}" fill="#fff"/><circle cx="${f(cx + dx * s + 0.05 * s)}" cy="${f(cy - 0.05 * s)}" r="${f(0.17 * s)}" fill="#1b1430"/><circle cx="${f(cx + dx * s + 0.11 * s)}" cy="${f(cy - 0.13 * s)}" r="${f(0.06 * s)}" fill="#fff"/>`;
+    return `<path d="${legs}" fill="none" stroke="${leg}" stroke-width="${f(s * 0.17)}" stroke-linecap="round"/>`
+      + `<ellipse cx="${cx}" cy="${cy}" rx="${f(s)}" ry="${f(s * 0.92)}" fill="${body}"/>`
+      + `<ellipse cx="${f(cx - 0.3 * s)}" cy="${f(cy - 0.5 * s)}" rx="${f(0.35 * s)}" ry="${f(0.2 * s)}" fill="#fff" opacity=".18"/>`
+      + eye(-0.38) + eye(0.38)
+      + (opt.blush === false ? '' : `<ellipse cx="${f(cx - 0.68 * s)}" cy="${f(cy + 0.35 * s)}" rx="${f(0.17 * s)}" ry="${f(0.1 * s)}" fill="#ff8fa8" opacity=".85"/><ellipse cx="${f(cx + 0.68 * s)}" cy="${f(cy + 0.35 * s)}" rx="${f(0.17 * s)}" ry="${f(0.1 * s)}" fill="#ff8fa8" opacity=".85"/>`)
+      + `<path d="M${f(cx - 0.14 * s)} ${f(cy + 0.4 * s)}q${f(0.14 * s)} ${f(0.14 * s)} ${f(0.28 * s)} 0" fill="none" stroke="#1b1430" stroke-width="${f(0.07 * s)}" stroke-linecap="round"/>`;
+  }
+  // Silhouette spider with angular legs.
+  function sharpSpider(cx, cy, s, fill, opt = {}) {
+    let legs = '';
+    [-1, 1].forEach(side => {
+      [[-0.3, 1.1, -1.3, 1.9, -0.6], [-0.05, 1.3, -0.6, 2.1, 0.5], [0.2, 1.2, 0.0, 1.9, 1.3], [0.4, 0.9, 0.5, 1.4, 1.9]].forEach(([y0, kx, ky, ex, ey]) => {
+        legs += `M${cx} ${f(cy + y0 * s)}L${f(cx + side * kx * s)} ${f(cy + ky * s)}L${f(cx + side * ex * s)} ${f(cy + ey * s)}`;
+      });
+    });
+    let out = `<path d="${legs}" fill="none" stroke="${fill}" stroke-width="${f(s * (opt.leg || 0.13))}" stroke-linejoin="round" stroke-linecap="round"/>`
+      + `<ellipse cx="${cx}" cy="${f(cy + 0.55 * s)}" rx="${f(0.62 * s)}" ry="${f(0.8 * s)}" fill="${fill}"/>`
+      + `<ellipse cx="${cx}" cy="${f(cy - 0.35 * s)}" rx="${f(0.45 * s)}" ry="${f(0.42 * s)}" fill="${fill}"/>`;
+    if (opt.eyes) {
+      const e = opt.eyes;
+      out += `<path d="M${f(cx - 0.36 * s)} ${f(cy - 0.42 * s)}l${f(0.26 * s)} ${f(0.1 * s)}l${f(-0.04 * s)} ${f(0.13 * s)}z M${f(cx + 0.36 * s)} ${f(cy - 0.42 * s)}l${f(-0.26 * s)} ${f(0.1 * s)}l${f(0.04 * s)} ${f(0.13 * s)}z" fill="${e}"/>`;
+    }
+    return out;
+  }
+  function heartPts(cx, cy, k, n = 60) {
+    const p = [];
+    for (let i = 0; i < n; i++) {
+      const t = i / n * 2 * Math.PI;
+      const x = 16 * Math.sin(t) ** 3, y = -(13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t));
+      p.push([cx + x * k, cy + y * k]);
+    }
+    return p;
+  }
+  const bg = (id, a, b, dir = 'v') => `<defs><linearGradient id="${id}" x1="0" y1="0" x2="${dir === 'd' ? 1 : 0}" y2="1"><stop offset="0" stop-color="${a}"/><stop offset="1" stop-color="${b}"/></linearGradient></defs><rect width="100" height="100" fill="url(#${id})"/>`;
+
+  const ICONS = {
+    K1: () => bg('k1', '#ffc59a', '#ff8456') + web(50, 50, 47, 9, 4, '#fff', 1.4, -Math.PI / 2, 0.9).replace('stroke="#fff"', 'stroke="#fff" opacity=".75"') + cuteSpider(50, 54, 17, '#3d2f63', '#3d2f63'),
+    K2: () => bg('k2', '#d6f6e6', '#79d4b0') + web(18, 12, 44, 7, 3, '#fff', 1.1, 0.1).replace('stroke="#fff"', 'stroke="#fff" opacity=".8"')
+      + `<g transform="rotate(-18 69 63)"><ellipse cx="69" cy="63" rx="13" ry="17" fill="#fffdf6"/><path d="M57 55q12 5 24 0M56 63q13 5 26 0M57 71q12 5 24 0" fill="none" stroke="#d8d2c2" stroke-width="1.6"/></g>`
+      + cuteSpider(40, 60, 15, '#4b3a7a', '#4b3a7a')
+      + `<path d="M79 33l2 5 5 2-5 2-2 5-2-5-5-2 5-2z" fill="#fff"/>`,
+    K3: () => {
+      let s = bg('k3', '#ffe0ea', '#ff97b9');
+      const rings = [1, 0.68, 0.36].map(k => heartPts(50, 50, 2.6 * k));
+      const outer = rings[0];
+      let d = '';
+      [0, 8, 15, 22, 30, 38, 45, 52].forEach(i => { d += `M50 47L${f(outer[i][0])} ${f(outer[i][1])}`; });
+      rings.forEach(r => { d += 'M' + r.map(p => f(p[0]) + ' ' + f(p[1])).join('L') + 'Z'; });
+      s += `<path d="${d}" fill="none" stroke="#fff" stroke-width="1.6" stroke-linejoin="round"/>`;
+      s += `<path d="M50 0V36" stroke="#fff" stroke-width="1.2"/>` + cuteSpider(50, 44, 11, '#7a2f55', '#7a2f55');
+      return s;
+    },
+    C1: () => `<defs><radialGradient id="c1" cx=".5" cy=".42" r=".7"><stop offset="0" stop-color="#17595a"/><stop offset="1" stop-color="#051516"/></radialGradient></defs><rect width="100" height="100" fill="url(#c1)"/>`
+      + web(50, 42, 60, 10, 5, '#e3b54e', 0.9, 0.2).replace('stroke="#e3b54e"', 'stroke="#e3b54e" opacity=".55"')
+      + `<g stroke="#e3b54e" stroke-width="2.2">${sharpSpider(50, 46, 15, '#e3b54e', { leg: 0.3 })}</g>`
+      + sharpSpider(50, 46, 15, '#0a1112', { eyes: '#ffb22e', leg: 0.15 })
+      + `<circle cx="44.5" cy="38.6" r="1.1" fill="#ffb22e"/><circle cx="55.5" cy="38.6" r="1.1" fill="#ffb22e"/>`,
+    C2: () => `<rect width="100" height="100" fill="#17161c"/>`
+      + `<g fill="none" stroke="#ff6a2b"><circle cx="50" cy="50" r="38" stroke-width="2.6"/><circle cx="50" cy="50" r="24" stroke-width="1.6"/><circle cx="50" cy="50" r="11" stroke-width="1.2"/><path d="M50 4V30M50 70V96M4 50H30M70 50H96" stroke-width="2.6"/><path d="M22 22L36 36M78 22L64 36M22 78L36 64M78 78L64 64" stroke-width="1" opacity=".7"/></g>`
+      + `<g transform="translate(50 50)"><ellipse rx="4.2" ry="5.5" fill="#f2efe8"/><ellipse cx="-5" cy="-2" rx="4.5" ry="2.4" fill="#f2efe8" opacity=".6" transform="rotate(-25)"/><ellipse cx="5" cy="-2" rx="4.5" ry="2.4" fill="#f2efe8" opacity=".6" transform="rotate(25)"/></g>`
+      + sharpSpider(80, 17, 6, '#ff6a2b', { leg: 0.2 }),
+    C3: () => bg('c3', '#24356e', '#0a1029', 'd')
+      + web(100, 0, 70, 6, 4, '#e8c25c', 1, Math.PI / 2, 0.86).replace('stroke="#e8c25c"', 'stroke="#e8c25c" opacity=".5"')
+      + `<path d="M40 0V50" stroke="#ffd86b" stroke-width="1.6"/><circle cx="40" cy="6" r="18" fill="#ffd86b" opacity=".08"/>`
+      + sharpSpider(40, 62, 13, '#0b0f20', { eyes: '#ffd86b' })
+      + `<path d="M33 52a9 9 0 0 1 14 0" fill="none" stroke="#ffd86b" stroke-width="1" opacity=".8"/>`,
+    D1: () => bg('d1', '#141a34', '#020308')
+      + `<circle cx="58" cy="42" r="34" fill="#f2e6b4" opacity=".12"/><circle cx="58" cy="42" r="27" fill="#f2e6b4"/><circle cx="66" cy="34" r="4" fill="#e2d39c"/><circle cx="52" cy="52" r="6" fill="#e2d39c"/>`
+      + web(14, 22, 66, 9, 5, '#05060c', 1.1, 0.0)
+      + `<path d="M46 0V58" stroke="#05060c" stroke-width="0.9"/>` + sharpSpider(46, 66, 9, '#05060c', { leg: 0.16 }),
+    D2: () => `<defs><radialGradient id="d2g"><stop offset="0" stop-color="#ff3b30" stop-opacity=".7"/><stop offset="1" stop-color="#ff3b30" stop-opacity="0"/></radialGradient></defs><rect width="100" height="100" fill="#09080b"/>`
+      + web(50, 50, 62, 12, 6, '#2b2730', 0.9, 0.13)
+      + `<ellipse cx="50" cy="52" rx="30" ry="18" fill="url(#d2g)" opacity=".55"/>`
+      + [[-9, 50, 6.5], [9, 50, 6.5], [-21, 44, 3.6], [21, 44, 3.6], [-5, 40, 2.6], [5, 40, 2.6], [-15, 58, 2.4], [15, 58, 2.4]]
+          .map(([dx, y, r]) => `<circle cx="${50 + dx}" cy="${y}" r="${r}" fill="#ff2a1f"/><circle cx="${50 + dx - r * 0.3}" cy="${y - r * 0.35}" r="${f(r * 0.28)}" fill="#ffd2c8"/>`).join(''),
+    D3: () => bg('d3', '#2a1440', '#0b0512')
+      + `<circle cx="50" cy="50" r="40" fill="none" stroke="#c9c1da" stroke-width="1.4"/><circle cx="50" cy="50" r="36" fill="none" stroke="#c9c1da" stroke-width=".6"/>`
+      + web(50, 50, 36, 8, 3, '#c9c1da', 0.6, Math.PI / 8).replace('stroke="#c9c1da"', 'stroke="#c9c1da" opacity=".45"')
+      + sharpSpider(50, 46, 13, '#d8d1e8', { leg: 0.12 })
+      + `<path d="M50 48l4 6-4 9-4-9z" fill="#2a1440"/><path d="M50 51l2 3-2 4.5-2-4.5z" fill="#b0123a"/>`,
+    S1: () => `<rect width="100" height="100" fill="#ff5b4d"/>`
+      + polyWeb(46, 46, 58, 8, 5, '#fff', 1.6, Math.PI / 8)
+      + `<g transform="translate(69.6 69.6)"><circle r="4.6" fill="#1a1a1a"/><path d="M-4 -2l-5 -3M-4 1l-6 0M-3 3l-5 4M4 -2l5 -3M4 1l6 0M3 3l5 4M-2 -4l-2 -5M2 -4l2 -5" stroke="#1a1a1a" stroke-width="1.3" stroke-linecap="round"/></g>`,
+    S2: () => `<rect width="100" height="100" fill="#111214"/>`
+      + `<path d="M16 26L32 76L50 40L68 76L84 26" fill="none" stroke="#f4f1ea" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"/>`
+      + `<path d="M21 41Q34 50 46 47M26 57Q35 63 44 59M56 47Q67 50 79 41M56 59Q65 63 74 57M38 64Q50 70 62 64" fill="none" stroke="#f4f1ea" stroke-width="1.1" opacity=".75"/>`
+      + `<circle cx="50" cy="40" r="5.2" fill="#ffd23f"/><path d="M50 40V8" stroke="#ffd23f" stroke-width="1.2"/>`,
+    S3: () => `<rect width="100" height="100" fill="#f1ebdf"/>`
+      + `<g fill="none" stroke="#e0a526" stroke-width="2"><path d="M0 34A34 34 0 0 1 34 0M0 54A54 54 0 0 1 54 0M0 74A74 74 0 0 1 74 0"/><path d="M0 0L28 52M0 0L52 28M0 0L44 44" stroke-width="1.2"/></g>`
+      + `<g stroke="#1f2a44" stroke-width="3" stroke-linecap="round" fill="none"><path d="M56 58H34L28 48M56 62H30L26 70M64 58H86L92 48M64 62H90L94 70M58 54L48 38M62 54L72 38M58 66L50 82M62 66L70 82"/></g>`
+      + `<circle cx="60" cy="52" r="7" fill="#1f2a44"/><circle cx="60" cy="68" r="11" fill="#1f2a44"/><circle cx="57.5" cy="51" r="1.6" fill="#f1ebdf"/><circle cx="62.5" cy="51" r="1.6" fill="#f1ebdf"/>`,
+  };
+
+  const BANDS = [
+    { name: 'かわいい', note: '子どもにも手に取ってもらいやすい、ゲームの雰囲気そのまま', items: [
+      ['K1', 'まんまるクモ', '今のアイコンを仕上げた案。夕焼け色の上に、ゲームと同じまるいクモを大きく置きました。', ['ゲームと同じ絵', '小さくても分かる']],
+      ['K2', 'おやつタイム', '糸でくるんだ虫を横に置いて「クモが食べる側」をはっきり見せる案。ミント色でさわやかに。', ['クモ嫌いにもやさしい', '遊び方が伝わる']],
+      ['K3', 'ハートの巣', 'イースターエッグの「ハートの巣」をアイコンに。ピンクの巣から小さなクモがぶら下がります。', ['ギフト感', 'やさしい色']],
+    ] },
+    { name: 'かっこいい', note: '「Bug Hunt」らしい、狩りの緊張感', items: [
+      ['C1', 'ハンターの目', '深い緑の巣のまんなかで、金色の目が光るクモ。正面から見すえる構図です。', ['力強い', '大人向け']],
+      ['C2', '照準の巣', 'クモの巣を照準（スコープ）に見立て、まんなかに獲物の虫。右上にオレンジのクモ。', ['ゲーム性が伝わる', 'ストアで目立つ']],
+      ['C3', '金の糸', '夜空からまっすぐ下りる金の糸と、その先のクモ。ゲーム内の「ひかる糸」がモチーフ。', ['高級感', '静かな迫力']],
+    ] },
+    { name: 'ダーク', note: '夜・ハロウィン寄りの、少しこわい雰囲気', items: [
+      ['D1', '満月の巣', '大きな満月の前に黒い巣とクモのシルエット。ゲームの「満月の日」から。', ['雰囲気重視', 'ハロウィン向き']],
+      ['D2', '赤い八つの目', '暗やみの巣の奥で、赤い目が8つ光る。いちばんこわい案です。', ['インパクト大', '年齢区分に注意']],
+      ['D3', '紋章のクモ', '円の中に、銀色のクモと巣をおさめた紋章風。背中に赤いしるし。', ['ゴシック', '落ち着いた色']],
+    ] },
+    { name: 'スタイリッシュ', note: '線と色をしぼった、デザイン寄りの案', items: [
+      ['S1', 'ミニマルな巣', 'コーラル一色に、白い直線だけの巣と小さな黒いクモ。いちばん記号的な案です。', ['ホーム画面で目立つ', 'すっきり']],
+      ['S2', 'Wの巣', '「Web Catch」の頭文字Wを糸で描き、まんなかに黄色いクモ。', ['名前と結びつく', '英語圏向き']],
+      ['S3', '幾何学クモ', 'クリーム色の上に、円と直線だけで組んだ紺色のクモと、角から広がる金の巣。', ['北欧ポスター風', '大人っぽい']],
+    ] },
+  ];
+
+  const svg = (id) => `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="${id}">${ICONS[id]()}</svg>`;
+  const root = document.getElementById('bands');
+  root.innerHTML = BANDS.map(b => `
+    <section>
+      <div class="band-head"><h2>${b.name}</h2><span>${b.note}</span></div>
+      <div class="grid">${b.items.map(([id, name, desc, tags]) => `
+        <article class="card">
+          <div class="shots"><div class="big">${svg(id)}</div><div class="home">${svg(id).replace(/id="(\w+)"/g, 'id="$1s"').replace(/url\(#(\w+)\)/g, 'url(#$1s)')}<small>クモハン</small></div></div>
+          <p class="code">${id}</p>
+          <h3>${name}</h3>
+          <p>${desc}</p>
+          <ul class="tags">${tags.map(t => `<li>${t}</li>`).join('')}</ul>
+        </article>`).join('')}
+      </div>
+    </section>`).join('');
+  root.style.display = 'grid'; root.style.gap = '40px';
+})();
+</script>
+</body></html>
