@@ -562,12 +562,21 @@
     },
     gameOver(canContinue) {
       $('charmScr').hidden = true; this.pendingCharm = null;
-      if (canContinue) { $('overScr').hidden = false; }
+      if (canContinue) {
+        $('continueBtn').textContent = t(root.SH.platform.continueHasAd ? 'continueAdBtn' : 'continueBtn');
+        $('overScr').hidden = false;
+        this.lockTaps($('overScr'), 800); // a tap meant for the web must not start an ad
+      }
       else this.showResult();
     },
     continueGame() {
+      const scr = $('overScr').querySelector('.sheet');
+      if (scr.classList.contains('locked')) return;
+      clearTimeout(scr.unlockTimer);
+      scr.classList.add('locked'); // no double taps while the ad opens
       audio.play('button');
-      root.SH.platform.showRewarded().then(ok => {
+      root.SH.platform.showContinueAd().then(ok => {
+        scr.classList.remove('locked');
         $('overScr').hidden = true;
         if (ok) this.game.continueRun(); else this.showResult();
       });
