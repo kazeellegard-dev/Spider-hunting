@@ -59,6 +59,8 @@ jobs:
           xcodebuild -project "$PROJECT" -scheme App -configuration Debug \
             -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' \
             CODE_SIGNING_ALLOWED=NO build -quiet
+          APP=$(ls -d ~/Library/Developer/Xcode/DerivedData/App-*/Build/Products/Debug-iphonesimulator/App.app | head -1)
+          echo "APP_BUNDLE=$APP" >> "$GITHUB_ENV"
 
       - name: App Store Connect API キーを用意
         if: env.UPLOAD == 'true'
@@ -107,6 +109,15 @@ jobs:
             -authenticationKeyID "$ASC_KEY_ID" \
             -authenticationKeyIssuerID "$ASC_ISSUER_ID" \
             archive -quiet
+          echo "APP_BUNDLE=$RUNNER_TEMP/App.xcarchive/Products/Applications/App.app" >> "$GITHUB_ENV"
+
+      - name: 広告ネットワーク（Unity Ads）が組み込まれたか確認
+        run: |
+          # AdMob メディエーションは、アダプターのクラスが見つからないと何も言わずにその広告ネットワークを飛ばすので、ここで止める
+          ls "$APP_BUNDLE/Frameworks"
+          grep -rlq GADMediationAdapterUnity "$APP_BUNDLE" || { echo "::error::Unity Ads のアダプターがアプリに入っていません"; exit 1; }
+          [ -d "$APP_BUNDLE/Frameworks/UnityAds.framework" ] || { echo "::error::UnityAds.framework がアプリに入っていません"; exit 1; }
+          echo "Unity Ads のアダプターと SDK が入っています"
 
       - name: TestFlight にアップロード
         if: env.UPLOAD == 'true'
