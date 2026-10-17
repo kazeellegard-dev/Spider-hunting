@@ -87,8 +87,21 @@ const HELPERS = () => {
 
 async function settle(p, ms) { await sleep(ms); }
 
+// outfits for the first scenes (any part can be worn here, owned or not)
+const LOOKS = {
+  title: { body: 'cherry', hat: 'ribbon', face: 'blush', thread: 'pink', knot: 'heart', bg: 'none' },
+  eat: { body: 'bee', hat: 'straw', face: 'none', thread: 'white', knot: 'star', bg: 'none' },
+  night: { body: 'night', hat: 'nightcap', face: 'glasses', thread: 'nightglow', knot: 'moon', bg: 'none' },
+  bonus: { body: 'mint', hat: 'propeller', face: 'hearteyes', thread: 'candy', knot: 'candy', bg: 'none' },
+  glow: { body: 'leaf', hat: 'acorn', face: 'freckles', thread: 'white', knot: 'clover', bg: 'none' },
+};
+const wear = (p, look) => p.evaluate(l => { SH.save.data.look = l; }, look);
+// wardrobe tabs shown side by side on the 7th screenshot
+const DRESS_SLOTS = ['body', 'hat', 'thread', 'knot'];
+
 const SCENES = {
   async title(p) {
+    await wear(p, LOOKS.title);
     await p.evaluate(() => {
       const g = SH.game;
       g.areaIdx = 1; g.bg = g.makeBg(1); g.bgPrev = null;
@@ -102,21 +115,25 @@ const SCENES = {
     });
   },
   async eat(p) {
+    await wear(p, LOOKS.eat);
     await p.evaluate(() => {
       const s = __shot, g = SH.game;
       s.run('evening', { run: { score: 21560, combo: 0, bonusGauge: 22, silk: g.st.maxSilk * 0.6 } });
-      s.stick('redfly', 0.3, 0.36); s.stick('moth', 0.7, 0.34); s.stick('kokuwa', 0.62, 0.62);
-      s.fly('mosquito', 0.85, 0.2, -1); s.fly('moth', 0.1, 0.74, 1);
+      s.stick('redfly', 0.3, 0.36); s.stick('moth', 0.7, 0.32); s.stick('kokuwa', 0.62, 0.62);
+      s.stick('mosquito', 0.24, 0.56); s.stick('silkmoth', 0.48, 0.24); s.stick('tigermosq', 0.78, 0.5);
+      s.stick('moth', 0.4, 0.66);
+      s.fly('mosquito', 0.85, 0.16, -1);
     });
     await settle(p, 900);
-    // wrap the dragonfly: the pop, points and a combo
+    // eat one for the points and the combo, then catch the spider wrapping the next
     await p.evaluate(() => { const g = SH.game; const c = g.insects.find(i => i.type === 'redfly'); g.handleTap(c.x, c.y); });
     await sleep(1500);
-    await p.evaluate(() => { const g = SH.game; const c = g.insects.find(i => i.type === 'moth' && i.state === 'caught'); g.handleTap(c.x, c.y); });
-    await sleep(1150);
+    await p.evaluate(() => { const g = SH.game; const c = g.insects.find(i => i.type === 'silkmoth' && i.state === 'caught'); g.handleTap(c.x, c.y); });
+    await sleep(700);
     await p.evaluate(() => { SH.game.specials = []; __shot.freeze(); });
   },
   async night(p) {
+    await wear(p, LOOKS.night);
     await p.evaluate(() => {
       const s = __shot, g = SH.game;
       s.run('stars', { day: 4, run: { score: 31280, combo: 2, lastEat: 1e9, bonusGauge: 8, silk: g.st.maxSilk * 0.66 } });
@@ -127,11 +144,11 @@ const SCENES = {
     await p.evaluate(() => __shot.freeze());
   },
   async bonus(p) {
+    await wear(p, LOOKS.bonus);
     await p.evaluate(() => {
       const s = __shot, g = SH.game;
       s.run('day', { run: { score: 18720, combo: 6, lastEat: 1e9, silk: g.st.maxSilk * 0.9 } });
-      const run = g.run;
-      run.bonusGauge = 999;
+      g.run.bonusGauge = 999;
     });
     await sleep(2300);
     await p.evaluate(() => { const g = SH.game; if (!g.specials.length) g.spawnSpecial(); });
@@ -139,6 +156,7 @@ const SCENES = {
     await p.evaluate(() => __shot.freeze());
   },
   async glow(p) {
+    await wear(p, LOOKS.glow);
     await p.evaluate(() => {
       const s = __shot, g = SH.game;
       s.run('day', { day: 5, run: { score: 27450, combo: 3, lastEat: 1e9, glow: 11, silk: g.st.maxSilk * 0.7 } });
@@ -151,13 +169,34 @@ const SCENES = {
   async zukan(p) {
     await p.evaluate(() => { SH.ui.open('mainScr'); SH.ui.open('zukanScr'); });
     await sleep(700);
-  },
-  async wardrobe(p) {
+    // the Bugdex grows with updates, so the store pictures never show the total ("27 / 38" -> "27")
     await p.evaluate(() => {
-      const s = SH.save.data; s.look.body = 'cherry'; s.look.hat = 'ribbon'; s.look.face = 'blush'; SH.save.write();
-      SH.ui.open('mainScr'); SH.ui.open('wardrobeScr');
+      for (const el of document.querySelectorAll('#zukanScr *')) {
+        if (el.children.length === 0 && /\d+\s*\/\s*\d+/.test(el.textContent)) el.textContent = el.textContent.replace(/(\d+)\s*\/\s*\d+/, '$1');
+      }
     });
-    await sleep(700);
+  },
+  // 4 crops from the middle of the wardrobe lists; compose.js tiles them
+  async wardrobe(p, dname) {
+    await p.evaluate(l => { SH.save.data.look = l; SH.ui.open('mainScr'); SH.ui.open('wardrobeScr'); }, LOOKS.title);
+    await sleep(500);
+    for (const slot of DRESS_SLOTS) {
+      const clip = await p.evaluate(slot => {
+        SH.ui.wdTab = slot; SH.ui.renderWardrobe();
+        const scr = document.getElementById('wardrobeScr'), list = document.getElementById('wardrobeList');
+        const rows = [...list.children], mid = rows[Math.max(0, Math.floor(rows.length / 2) - 4)];
+        scr.scrollTop = 0;
+        scr.scrollTop = mid.getBoundingClientRect().top - 12;
+        const r = list.getBoundingClientRect(), m = mid.getBoundingClientRect();
+        // exactly 5 whole rows
+        const end = rows[rows.indexOf(mid) + 5] || rows[rows.length - 1];
+        // icon and name only (the price buttons are left out so the 2 x 2 tiles stay readable)
+        return { x: r.left - 6, y: m.top - 6, width: Math.round((r.width + 12) * 0.64), height: end.getBoundingClientRect().top - m.top + 2 };
+      }, slot);
+      await sleep(300);
+      await p.screenshot({ path: `${OUT}/${dname}-wardrobe-${slot}.png`, clip });
+    }
+    return 'done';
   },
   async challenge(p) {
     await p.evaluate(() => { SH.ui.setMode(1); SH.ui.open('challengeScr'); });
@@ -190,8 +229,7 @@ const SCENES = {
       await sleep(400);
       await p.evaluate(() => window.dispatchEvent(new Event('resize')));
       await sleep(300);
-      await fn(p);
-      await p.screenshot({ path: `${OUT}/${dname}-${sname}.png` });
+      if (await fn(p, dname) !== 'done') await p.screenshot({ path: `${OUT}/${dname}-${sname}.png` });
       console.log(dname, sname, errs.length ? errs : 'ok');
       await ctx.close();
     }

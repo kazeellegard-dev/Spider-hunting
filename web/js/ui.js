@@ -805,7 +805,7 @@
         return `${t('threadPower')} ${fmt(now.toFixed(1), after.toFixed(1), '')}\n${line}`;
       }
       if (id === 'silk') return fmt(Math.round(st.maxSilk), Math.round(st.maxSilk + B.silkPerUpgrade), '');
-      if (id === 'sticky') return fmt(st.struggle.toFixed(1), (st.struggle + B.strugglePerUpgrade).toFixed(1), i18n.lang === 'ja' ? '秒' : 's');
+      if (id === 'sticky') return fmt(st.struggle.toFixed(1), (st.struggle + B.strugglePerUpgrade).toFixed(1), i18n.lang === 'ja' ? 'びょう' : 's');
       if (id === 'speed') return fmt(Math.round(st.speed / B.baseSpeed * 100), Math.round((st.speed / B.baseSpeed + B.speedPerUpgrade) * 100), '%');
       if (id === 'appetite') return fmt(Math.round(st.appetite * 100), Math.round((st.appetite + B.appetitePerUpgrade) * 100), '%');
       if (id === 'lure') return `${t('rareTag')} ` + fmt('×' + st.lure.toFixed(1), '×' + (st.lure + B.lurePerUpgrade).toFixed(1), '');
@@ -1262,7 +1262,7 @@
       $('setSound').textContent = s.sound ? t('on') : t('off');
       $('setMusic').textContent = s.music ? t('on') : t('off');
       $('setVib').textContent = s.vibration ? t('on') : t('off');
-      $('setLang').textContent = i18n.lang === 'ja' ? '日本語' : 'English';
+      $('setLang').textContent = i18n.lang === 'ja' ? 'にほんご' : 'English';
     },
   };
 

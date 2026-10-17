@@ -28,6 +28,9 @@ html, body {
   -webkit-user-select: none; user-select: none; -webkit-touch-callout: none;
   overscroll-behavior: none; touch-action: none;
 }
+/* Japanese text is mostly kana with spaces between words (for young children), so longer
+   texts wrap at the spaces instead of mid-word; a word too long for its line still breaks */
+html:lang(ja) :is(.howto, .bubble, .sheet .lead, .item .desc, .charmcard .cdesc) { word-break: keep-all; overflow-wrap: anywhere; }
 button { font-family: inherit; color: inherit; touch-action: manipulation; }
 button:focus-visible { outline: 3px solid var(--sky); outline-offset: 2px; }
 [hidden] { display: none !important; }
