@@ -15,11 +15,11 @@
     useTest: true,
     test: {
       banner: 'ca-app-pub-3940256099942544/2435281174',       // Google's sample iOS banner
-      interstitial: 'ca-app-pub-3940256099942544/4411468910', // Google's sample iOS interstitial
+      rewarded: 'ca-app-pub-3940256099942544/1712485313',     // Google's sample iOS rewarded
     },
     live: {
       banner: 'ca-app-pub-8743645031370957/1267859878',
-      interstitial: 'ca-app-pub-8743645031370957/6451158939',
+      rewarded: 'ca-app-pub-8743645031370957/8720732070',
     },
   };
   const SAVE_PREFIX = 'spiderHunting.';
@@ -66,7 +66,7 @@
     const showBanner = () => call('AdMob', 'showBanner', {
       adId: ids.banner, isTesting: test, adSize: 'ADAPTIVE_BANNER', position: 'BOTTOM_CENTER', margin: 0,
     }).catch(e => log('showBannerError', String(e && e.message || e)));
-    const startAds = () => { ads.allowed = true; ads.id = ids.interstitial; ads.test = test; showBanner(); prepareInterstitial(); };
+    const startAds = () => { ads.allowed = true; ads.id = ids.rewarded; ads.test = test; showBanner(); prepareRewarded(); };
     // iOS only shows the ATT prompt while the app is in the foreground; otherwise it counts as "deny".
     const askTracking = async () => {
       try {
@@ -99,27 +99,35 @@
       if (info.canRequestAds || test) startAds();
     })();
 
-    // Interstitial before a continue: loaded ahead of time, reloaded after each showing.
-    listen('AdMob', 'interstitialAdLoaded', () => { ads.ready = true; ads.loading = false; });
-    listen('AdMob', 'interstitialAdFailedToLoad', e => { ads.ready = false; ads.loading = false; log('interstitialError', e); });
-    listen('AdMob', 'interstitialAdDismissed', () => finishInterstitial());
-    listen('AdMob', 'interstitialAdFailedToShow', e => { log('interstitialShowError', e); finishInterstitial(); });
+    // Rewarded ad behind "Watch an ad to continue". AdMob only allows a reward (the continue)
+    // for viewing an ad through the rewarded formats, and only after the player opts in by tapping.
+    // Loaded ahead of time, reloaded after each showing.
+    listen('AdMob', 'onRewardedVideoAdLoaded', () => { ads.ready = true; ads.loading = false; });
+    listen('AdMob', 'onRewardedVideoAdFailedToLoad', e => { ads.ready = false; ads.loading = false; log('rewardedError', e); });
+    listen('AdMob', 'onRewardedVideoAdReward', () => { ads.earned = true; });
+    listen('AdMob', 'onRewardedVideoAdDismissed', () => finishRewarded());
+    listen('AdMob', 'onRewardedVideoAdFailedToShow', e => { log('rewardedShowError', e); ads.failed = true; finishRewarded(); });
   }
 
-  // ---- interstitial state ----
-  const ads = { allowed: false, id: '', test: true, ready: false, loading: false, done: null };
-  function prepareInterstitial() {
+  // ---- rewarded ad state ----
+  const ads = { allowed: false, id: '', test: true, ready: false, loading: false, earned: false, failed: false, done: null };
+  function prepareRewarded() {
     if (!ads.allowed || ads.ready || ads.loading) return;
     ads.loading = true;
-    call('AdMob', 'prepareInterstitial', { adId: ads.id, isTesting: ads.test })
+    call('AdMob', 'prepareRewardVideoAd', { adId: ads.id, isTesting: ads.test })
       .then(() => { ads.ready = true; ads.loading = false; })
-      .catch(e => { ads.ready = false; ads.loading = false; log('prepareInterstitialError', String(e && e.message || e)); });
+      .catch(e => { ads.ready = false; ads.loading = false; log('prepareRewardedError', String(e && e.message || e)); });
   }
-  function finishInterstitial() {
+  // Continue only when the reward was earned. If the ad could not be shown at all, the player
+  // still continues (nothing was watched, so nothing is being rewarded).
+  function finishRewarded() {
     const done = ads.done; ads.done = null;
+    if (!done) return;
+    const ok = ads.earned || ads.failed;
+    ads.earned = ads.failed = false;
     if (root.SH && root.SH.audio) root.SH.audio.resume();
-    setTimeout(prepareInterstitial, 1000);
-    if (done) done();
+    setTimeout(prepareRewarded, 1000);
+    done(ok);
   }
 
   // ---- save backup: iOS may clear web view storage, so mirror our keys into Preferences ----
@@ -166,15 +174,15 @@
     // Does a continue show an ad first? (only in the app, once ads may be shown)
     get continueHasAd() { return native && ads.allowed; },
 
-    // Interstitial before a continue. Always resolves true: if no ad is ready (offline, no fill),
-    // the player just carries on without one.
+    // Rewarded ad for a continue. Resolves true when the player earned the reward, false when they
+    // closed the ad early. If no ad is ready (offline, no fill), the player carries on without one.
     showContinueAd() {
-      if (!native || !ads.allowed || !ads.ready) { prepareInterstitial(); return Promise.resolve(true); }
-      ads.ready = false;
+      if (!native || !ads.allowed || !ads.ready) { prepareRewarded(); return Promise.resolve(true); }
+      ads.ready = false; ads.earned = ads.failed = false;
       if (root.SH && root.SH.audio) root.SH.audio.suspend();
       return new Promise(resolve => {
-        ads.done = () => resolve(true);
-        call('AdMob', 'showInterstitial', {}).catch(e => { log('showInterstitialError', String(e && e.message || e)); finishInterstitial(); });
+        ads.done = resolve;
+        call('AdMob', 'showRewardVideoAd', {}).catch(e => { log('showRewardedError', String(e && e.message || e)); ads.failed = true; finishRewarded(); });
       });
     },
 

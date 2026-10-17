@@ -577,8 +577,10 @@
       audio.play('button');
       root.SH.platform.showContinueAd().then(ok => {
         scr.classList.remove('locked');
+        // Closed the rewarded ad early: no continue, stay on this sheet so they can try again or give up.
+        if (!ok) { this.lockTaps($('overScr'), 600); return; }
         $('overScr').hidden = true;
-        if (ok) this.game.continueRun(); else this.showResult();
+        this.game.continueRun();
       });
     },
     showResult() {
