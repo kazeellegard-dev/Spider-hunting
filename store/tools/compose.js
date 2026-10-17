@@ -18,7 +18,7 @@ const ORDER = {
     ['bonus', 'ボーナスタイムは、|おかしが いっぱい！'],
     ['glow', 'ひかる糸なら、|ボス虫も つかまえられる！'],
     ['zukan', 'いろんな虫を ずかんに あつめよう。|ごくまれに「いろちがい」も…？'],
-    ['wardrobe', 'くみあわせは むげんだい！|じぶんだけの クモに しよう。'],
+    ['wardrobe', 'これは ほんの いちぶ！|くみあわせは むげんだい。'],
     ['challenge', 'チャレンジモードは 30ステージ。|これからも ふえていくよ！'],
   ],
   en: [
@@ -28,7 +28,7 @@ const ORDER = {
     ['bonus', 'Bonus time rains|sweets on your web.'],
     ['glow', 'Glowing silk catches|even the boss bugs.'],
     ['zukan', 'Fill your Bugdex with bugs.|Spot a rare colour variant?'],
-    ['wardrobe', 'Endless combinations.|Make your spider your own.'],
+    ['wardrobe', 'Just a small taste —|endless combinations!'],
     ['challenge', '30 Challenge stages,|with more on the way!'],
   ],
 }[LANG];

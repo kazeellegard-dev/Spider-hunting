@@ -1,4 +1,4 @@
-# クモの巣ハンティング（英語名: Spider Web Catch）
+# クモのすハンティング（英語名: Spider Web Catch）
 
 飛んでくる虫をクモの巣で捕らえて育てる、タップ操作のカジュアルゲーム。
 Webアプリとして開発してブラウザで動作確認し、Capacitor で iPhone / iPad アプリにする（ねこだるまおとしと同じ構成）。
@@ -25,7 +25,7 @@ npm run sync     # web/ → www/ → ios/App/App/public にコピー
 ```
 
 - `ios/` などを push すると、GitHub Actions（`.github/workflows/ios.yml`）が署名なしのシミュレーター用ビルドで確認する
-- Actions 画面の「Run workflow」で TestFlight にアップロードできる（要: Secrets の `ASC_KEY_ID` / `ASC_ISSUER_ID` / `ASC_KEY_P8` / `APPLE_TEAM_ID`、App Store Connect にバンドルID `com.kazeellegard.spiderwebcatch` のアプリ登録。App Store の名前は英語「Spider Web Catch: Bug Hunt」／日本語「クモの巣ハンティング」）
+- Actions 画面の「Run workflow」で TestFlight にアップロードできる（要: Secrets の `ASC_KEY_ID` / `ASC_ISSUER_ID` / `ASC_KEY_P8` / `APPLE_TEAM_ID`、App Store Connect にバンドルID `com.kazeellegard.spiderwebcatch` のアプリ登録。App Store の名前は英語「Spider Web Catch: Bug Hunt」／日本語「クモのすハンティング」）
 
 ### 広告（AdMob）
 

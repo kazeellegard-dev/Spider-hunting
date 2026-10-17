@@ -4,7 +4,7 @@
 
   const STR = {
     ja: {
-      title1: 'クモの巣', title2: 'ハンティング',
+      title1: 'クモのす', title2: 'ハンティング',
       play: 'あそぶ', upgrade: 'きょうか', wardrobe: 'きせかえ', zukan: 'ずかん', settings: 'せってい',
       back: 'もどる', close: 'とじる', retry: 'もういっかい', home: 'ホーム', resume: 'つづける', quit: 'やめる',
       best: 'ベスト', level: 'Lv', coins: 'コイン', score: 'スコア', silk: 'いと', bonus: 'ボーナス',

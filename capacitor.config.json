@@ -1,6 +1,6 @@
 {
   "appId": "com.kazeellegard.spiderwebcatch",
-  "appName": "クモの巣ハンティング",
+  "appName": "クモのすハンティング",
   "webDir": "www",
   "ios": {
     "contentInset": "never",

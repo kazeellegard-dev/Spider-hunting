@@ -2,7 +2,7 @@
   "name": "spider-hunting",
   "version": "1.0.0",
   "private": true,
-  "description": "クモの巣ハンティング — iPhone / iPad アプリ版（Capacitor）",
+  "description": "クモのすハンティング — iPhone / iPad アプリ版（Capacitor）",
   "scripts": {
     "postinstall": "node scripts/patch-admob.mjs",
     "build": "node scripts/build-web.mjs",
