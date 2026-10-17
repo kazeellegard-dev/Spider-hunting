@@ -72,7 +72,13 @@
     snap() { noise(0.12, { freq: 3000, q: 3, vol: 0.4 }); tone(180, 0.2, { type: 'triangle', to: 90, vol: 0.3 }); },
     escape() { tone(700, 0.35, { type: 'triangle', to: 300, vol: 0.2 }); },
     sting() { tone(1200, 0.15, { type: 'sawtooth', to: 600, vol: 0.18 }); noise(0.1, { freq: 6000, q: 4, vol: 0.2 }); },
-    coin() { tone(988, 0.07, { type: 'square', vol: 0.1 }); tone(1319, 0.18, { type: 'square', vol: 0.1, delay: 0.07 }); },
+    // A dewdrop "ting": soft bell tones a fifth apart with a faint sparkle (not the classic square-wave B-E coin).
+    coin() {
+      tone(1397, 0.06, { type: 'triangle', vol: 0.14 });
+      tone(2093, 0.26, { type: 'sine', to: 2217, vol: 0.16, delay: 0.05 });
+      tone(4186, 0.12, { type: 'sine', vol: 0.04, delay: 0.05 });
+      noise(0.08, { freq: 9000, q: 6, vol: 0.05, delay: 0.05 });
+    },
     treat() { tone(1046, 0.1, { type: 'sine', vol: 0.3 }); tone(1568, 0.14, { type: 'sine', vol: 0.2, delay: 0.05 }); },
     bonus() { [523, 659, 784, 1046, 1318].forEach((f, i) => tone(f, 0.25, { type: 'triangle', vol: 0.25, delay: i * 0.08 })); },
     area() { [392, 523, 659, 784].forEach((f, i) => tone(f, 0.4, { type: 'sine', vol: 0.25, delay: i * 0.12 })); },
