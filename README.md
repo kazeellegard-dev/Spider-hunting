@@ -43,5 +43,5 @@ npm run sync     # web/ → www/ → ios/App/App/public にコピー
   - アダプターを読み込むため、`App` ターゲットのリンク設定に `-ObjC` を入れている
   - iOS のビルドのたびに、アダプターと `UnityAds.framework` がアプリに入ったかを Actions で確認する（入っていないとメディエーションが何も言わずに Unity を飛ばすため）
   - 実際に Unity の広告が出るのは、AdMob 管理画面でメディエーション グループを作り、本番広告に切り替えたあと
-  - Unity の管理画面（cloud.unity.com）のアプリ「Spider Web Catch: Bug Hunt」：iOS の Game ID `800402235`、子ども向け（Child-directed）は「No」。Placement ID はバナー `Banner_iOS`・インタースティシャル `Interstitial_iOS`
+  - Unity の管理画面（cloud.unity.com）のアプリ「Spider Web Catch: Bug Hunt」：iOS の Game ID `800402235`、子ども向け（Child-directed）は「No」。Placement ID（入札用）はバナー `BP_Banner_iOS`・インタースティシャル `BP_Interstitial_iOS`
 - バナーは画面のいちばん下（ホームバーのすぐ上）。ゲーム画面は最初からバナーの高さぶん上に収める。Web版は同じ場所を「AD」の帯であけてある
