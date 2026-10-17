@@ -1,0 +1,255 @@
+# App Store 申請用メモ
+
+App Store Connect の各欄に、そのまま貼り付けられるようにまとめています。
+（ ）内は文字数と上限です。日本語と英語（U.S.）の2つのローカリゼーションを入力します。
+
+---
+
+## 1. App 情報
+
+| 項目 | 日本語 | 英語（U.S.） |
+|---|---|---|
+| 名前 | クモの巣ハンティング （10 / 30） | Spider Web Catch: Bug Hunt （26 / 30） |
+| サブタイトル | 巣をはって虫をつかまえるクモのゲーム （18 / 30） | Spin a web and catch bugs! （26 / 30） |
+
+| 項目 | 入力する内容 |
+|---|---|
+| バンドル ID | com.kazeellegard.spiderwebcatch |
+| プライマリ言語 | アプリ登録のときに選んだもの（日本語なら、英語は「ローカリゼーションを追加」で足す） |
+| カテゴリ | プライマリ：ゲーム ／ サブカテゴリ：カジュアル、アクション |
+| コンテンツ配信権 | 第三者のコンテンツは「含まない」（絵・音はすべてアプリの中で作っています） |
+| 価格 | 無料（App 内課金なし） |
+
+## 2. プロモーションテキスト
+
+日本語（79 / 170）：
+
+```
+巣をはって、かかった虫をタップでぐるぐる巻き！あさからよるへ時間がめぐる中で、何日いきのびられるかな？38種類の虫のずかん集めや、クモのきせかえも楽しめます。
+```
+
+英語（162 / 170）：
+
+```
+Spin a web, then tap stuck bugs to wrap them up! Survive day after day as morning turns to night, fill your Bugdex with 38 kinds of bugs and dress up your spider.
+```
+
+## 3. 説明（4000 字まで）
+
+日本語：
+
+```
+クモになって巣をはり、飛んでくる虫をつかまえよう！
+タップするだけで遊べる、かわいいクモの虫とりゲームです。
+
+■ あそびかた
+・画面をタップすると、クモが糸をひきながらその場所へ移動。糸がつながって巣になります
+・巣にかかった虫をタップすると、クモがかけよってぐるぐる巻きに。ポンと消えて得点！
+・ほうっておくと、虫は糸を切ってにげてしまいます
+・糸巻きの「いと」は、糸をはると減り、時間でも少しずつ減っていきます。虫を食べると回復。0になったらおしまい
+・重い虫は、弱い糸を切ってすりぬけます。糸を強くしてつかまえよう
+・糸どうしがクロスすると自動でむすばれて、じょうぶになります
+
+■ 1日のめぐり
+あさ・ひる・ゆうがた・よると時間がすぎて、夜があけると次の日。
+時間帯ごとに、出てくる虫も景色も変わります。
+かぜやとっぷうにも負けずに、何日いきのびられるかな？
+
+■ ボーナスタイムとひかる糸
+虫を食べるとボーナスゲージがたまり、満タンでボーナスタイム！おかしがたくさん飛んできます。
+ボーナス中にあらわれる「ひかりの糸巻き」をとると糸が光って、ふだんはつかまえられないボス虫もつかまえられます。
+
+■ 集める・育てる
+・チョウ、トンボ、ホタル、カブトムシ、クワガタなど38種類の虫が登場。ずかんを集めよう
+・虫は1ぴきずつ大きさがちがい、大きさの記録も残ります。とてもめずらしい「いろちがい」も
+・コインで、糸のつよさ・糸のりょうなど6種類の強化
+・からだ・ぼうし・かお・糸の色・背景などのパーツを組み合わせる、きせかえ
+・朝ごとにえらぶ「おまもり」、日ごとに変わる天気、むずかしさ★0〜10
+・80こ以上の実績と、毎日の「きょうのおだい」
+・どこかに、ひみつもかくれているかも…？
+
+■ チャレンジモード
+30ステージのミッションに挑戦。ステージをクリアするたびに強化を1つえらんで、少しずつ強くなります。
+
+■ ガチャはありません
+きせかえや強化は、ゲームの中で手に入るコインなどと交換します。
+
+※ 本アプリは広告を表示します。いとがなくなったとき、1プレイに1回だけ、広告を見てつづけることができます。
+※ インターネットに接続しなくても遊べます（広告の表示には通信を使います）。
+```
+
+英語：
+
+```
+Become a spider, spin your web and catch the bugs flying by!
+A cute bug-catching game you play with just a tap.
+
+■ HOW TO PLAY
+• Tap the screen and the spider moves there, spinning silk. Threads join up into a web
+• Tap a bug stuck in the web: the spider rushes over and wraps it up. Pop! Points!
+• Leave it too long and the bug breaks the thread and gets away
+• Your silk spool drains as you spin and slowly over time. Eating bugs refills it. At zero, the run is over
+• Heavy bugs tear through weak threads. Make your silk stronger to catch them
+• Where threads cross, they tie together and get tougher
+
+■ DAY AND NIGHT
+Morning, daytime, evening and night go by, and at dawn a new day begins.
+Each time of day brings different bugs and scenery.
+Breezes and gusts get in the way. How many days can you last?
+
+■ BONUS TIME AND GLOWING SILK
+Eating bugs fills the bonus gauge. When it's full, it's bonus time and sweets come flying in!
+Grab the glowing spool during bonus time and your silk glows, holding even the boss bugs you normally can't catch.
+
+■ COLLECT AND GROW
+• 38 kinds of bugs: butterflies, dragonflies, fireflies, rhinoceros beetles, stag beetles and more. Fill your Bugdex
+• Every bug has its own size, and your biggest and smallest are recorded. Watch out for very rare colour variants
+• 6 upgrades bought with coins, like silk strength and silk capacity
+• Dress up your spider by mixing parts: body, hat, face, silk colour, scenery and more
+• Charms to pick each dawn, weather that changes every day, and difficulty from ★0 to ★10
+• Over 80 achievements and daily tasks
+• There may be a few secrets hidden somewhere...
+
+■ CHALLENGE MODE
+Take on missions across 30 stages. Clear a stage to pick an upgrade and grow a little stronger each time.
+
+■ NO LOOT BOXES
+Outfits and upgrades are traded for coins and other things you earn in the game.
+
+* This app shows ads. When your silk runs out, you can watch an ad to continue, once per run.
+* Playable offline (ads need an internet connection).
+```
+
+## 4. キーワード（半角カンマ区切り、名前に入っている言葉は入れない）
+
+日本語（78 / 100）：
+
+```
+蜘蛛,くも,虫,むし,昆虫,虫とり,虫取り,カブトムシ,クワガタ,チョウ,図鑑,ずかん,育成,きせかえ,タップ,カジュアル,かわいい,暇つぶし,コレクション
+```
+
+英語（99 / 100）：
+
+```
+spider,insect,bugs,beetle,butterfly,firefly,bugdex,collect,casual,tap,cute,arcade,silk,net,survival
+```
+
+## 5. URL
+
+| 項目 | 日本語 | 英語 |
+|---|---|---|
+| サポート URL（必須） | https://kaze-application.kazeellegard.workers.dev/apps/spider-web-catch/ | https://kaze-application.kazeellegard.workers.dev/en/apps/spider-web-catch/ |
+| プライバシーポリシー URL（必須） | https://kaze-application.kazeellegard.workers.dev/policy/ | https://kaze-application.kazeellegard.workers.dev/en/policy/ |
+| マーケティング URL | https://kaze-application.kazeellegard.workers.dev/ | https://kaze-application.kazeellegard.workers.dev/en/ |
+
+- プライバシーポリシーは、2026-10-17 に「クモの巣ハンティングは ATT で許可を聞き、許可されたときだけ IDFA を使う」「Unity Ads にも広告を依頼する」と書き足し済み（ねこだるまおとしは「ATT を使わない」と書いてあったため、却下のあと専用ページに変えた。こちらは共通ページのままでよい）
+- マーケティング URL は、AdMob が app-ads.txt を確かめるので入れておく（`/app-ads.txt` に `pub-8743645031370957` を掲載済み）
+
+## 6. このバージョンの新機能
+
+初回は入力不要です。
+
+## 7. 著作権
+
+```
+© 2026 KAZE Application
+```
+
+## 8. 年齢制限（年齢区分の質問）
+
+| 質問 | 答え |
+|---|---|
+| 漫画やファンタジーの暴力 | **なし**（おすすめ。下の説明） |
+| リアルな暴力・ホラー・性的表現・ギャンブル・アルコールなど | すべて「なし」 |
+| ユーザー作成コンテンツ・チャット・Web の自由閲覧 | 「なし」 |
+| 広告（質問にあれば） | 「あり」 |
+| 子ども向け（Kids カテゴリ） | 選ばない |
+
+→ **4+（4歳以上）** になる見込みです。
+
+- 虫は糸に巻かれて「ポン」と消えるだけで、攻撃・けが・血の表現はありません。食べ物をつかまえる・集めるゲームと同じあつかいで「なし」と答えるのがおすすめです。
+- 慎重にしたい場合は「まれ／軽度」と答えると **9+** になります。どちらでも審査に通らないことはありませんが、Apple から区分の修正を求められたら「まれ／軽度」に直します。
+- 要件定義書では 12+ を想定していましたが、表現を「ライト表現」にしたので、そこまで上げる必要はありません。
+
+## 9. App のプライバシー（「データを収集する」で回答）
+
+ゲーム本体は個人情報を集めませんが、**広告（Google AdMob、メディエーションで Unity Ads）が情報を集める**ため「データを収集する」と答えます。
+アプリは **ATT で許可を取り、許可されたら IDFA を広告に使う（＝トラッキングする）** ので、ねこだるまおとしの再提出と同じ回答にします。
+
+| データの種類 | 用途 | ユーザーに紐づくか | トラッキングに使うか |
+|---|---|---|---|
+| 位置情報 › おおまかな位置情報 | 他社の広告、分析 | いいえ | **はい** |
+| ID › デバイス ID | 他社の広告、分析 | いいえ | **はい** |
+| 使用状況データ › 製品の操作 | 他社の広告、分析 | いいえ | **はい** |
+| 使用状況データ › 広告データ | 他社の広告、分析 | いいえ | **はい** |
+| 診断 › クラッシュデータ・パフォーマンスデータ・その他の診断データ | 分析 | いいえ | いいえ |
+
+## 10. App Review に関する情報（審査メモ）
+
+| 項目 | 入力する内容 |
+|---|---|
+| サインイン情報 | 不要（「サインインが必要」のチェックを外す） |
+| 連絡先 | お名前・電話番号・メールアドレス |
+
+メモ欄（英語と日本語の両方を貼る）：
+
+```
+No login is required. On the title screen, tap the "Normal mode" panel, then "Play" to start.
+Tap the screen to move the spider and spin silk; tap a bug stuck in the web to catch it.
+
+Ads:
+A Google AdMob banner is shown at the bottom of the screen (Unity Ads is used through AdMob mediation).
+When the player's silk runs out, a "Watch an ad to continue (once)" button appears (once per run). It is optional: the player can also tap "Finish". The rewarded ad is shown only when the player taps the button, and the run continues only after the reward is earned.
+
+App Tracking Transparency:
+The App Tracking Transparency permission request appears on first launch, right after the title screen is displayed.
+In the EEA, the UK and Switzerland, Google's GDPR consent message is shown first, and the App Tracking Transparency request appears after it is closed (regardless of the choice).
+Ads are loaded only after the App Tracking Transparency request has been answered.
+
+ログインは不要です。タイトル画面の「ノーマルモード」の台をタップし、「あそぶ」で始まります。
+画面をタップするとクモが糸を張りながら移動し、巣にかかった虫をタップするとつかまえます。
+
+広告：
+画面下部に Google AdMob のバナー広告を表示します（AdMob のメディエーションで Unity Ads も使います）。
+いとがなくなったとき、「広告を見て つづける（1回だけ）」ボタンを表示します（1プレイに1回）。押すかどうかは自由で、「おわる」も選べます。リワード広告はボタンを押したときだけ表示し、報酬が確定したときだけ続きから遊べます。
+
+App Tracking Transparency：
+アプリを初めて起動したとき、タイトル画面が表示されてすぐに App Tracking Transparency の許可の確認を表示します。
+EEA・英国・スイスでは、先に Google の GDPR 同意画面が表示され、それを閉じたあとに App Tracking Transparency の確認が表示されます（同意の結果にかかわらず表示します）。
+広告は、App Tracking Transparency の確認が終わってから読み込みます。
+```
+
+## 11. 輸出コンプライアンス
+
+暗号化は使っていません。`Info.plist` に `ITSAppUsesNonExemptEncryption = NO` を設定済みなので、ビルドごとに質問は出ないはずです（出たら「標準の暗号化のみ」）。
+
+## 12. スクリーンショット
+
+`store/screenshots/ja/`（日本語）と `store/screenshots/en/`（英語）に入っています。広告は写っていません。
+
+| フォルダ | サイズ | App Store Connect の欄 |
+|---|---|---|
+| `iphone/` | 1320 × 2868 | iPhone 6.9 インチディスプレイ |
+| `iphone-6.3/` | 1206 × 2622 | iPhone 6.3 インチディスプレイ |
+| `ipad/` | 2064 × 2752 | iPad 13 インチディスプレイ |
+| `iphone-plain/`・`iphone-6.3-plain/`・`ipad-plain/` | 同上 | 文字なし版（お好みで） |
+
+- 1 枚目から順に 8 枚（タイトル → ぐるぐる巻き → ほしぞらのよる → ボーナスタイム → ひかる糸 → ずかん → きせかえ → チャレンジモード）
+- ほかのサイズの欄は、この 3 サイズから自動で縮小されます
+- 見た目は KAZE Application とねこだるまおとしにそろえて、クリーム色の背景にこげ茶の見出しをつけています
+- 作り直すときは `store/tools/README.md`
+
+---
+
+## 申請前にやること（チェックリスト）
+
+- [x] ATT（トラッキングの許可の確認）を入れる（ねこだるまおとし 1.0 の却下を受けて、最初から入れた）
+- [x] プライバシーポリシーに ATT と Unity Ads のことを書く（KAZE Application の `/policy/`）
+- [x] KAZE Application サイトにアプリのページを作る（`/apps/spider-web-catch/`）
+- [x] スクリーンショット（日本語・英語）
+- [ ] AdMob でメディエーション グループ「クモの巣 リワード」を作る（リワード・iOS・広告ユニット「クモハンリワード広告」、入札に Unity Ads：Game ID `800402235`・Placement `BP_Rewarded_iOS`）
+- [ ] AdMob の「プライバシーとメッセージ」で、GDPR のメッセージの対象にこのアプリを入れる
+- [ ] **本番広告に切り替えたビルドを作る**（作業する人に「本番広告に切り替えて」と伝える → TestFlight に上げる）
+- [ ] 本番広告入りのビルドを TestFlight で確認（自分の広告はタップしない。AdMob の「テストデバイス」に自分の iPhone を登録しておくと安全）
+- [ ] App Store Connect の「1.0 提出準備中」でビルドを選び、上の内容を入力して「審査に提出」
+- [ ] リリースされたら、KAZE Application のアプリのページに App Store へのリンクを足す

@@ -13,6 +13,7 @@ Webアプリとして開発してブラウザで動作確認し、Capacitor で 
 |---|---|
 | `web/` | ゲーム本体（HTML5 Canvas）。GitHub Pages でそのまま公開 |
 | `ios/` | iOS アプリ（Capacitor）。`npm run sync` で `web/` の中身を取り込む |
+| `store/` | App Store 申請用の文面（`metadata-ja.md`）・スクリーンショット・その作り方 |
 | `scripts/` | `www/` を作るスクリプト、AdMob プラグインの修正、証明書の後片付け |
 | `prototype/ios-spritekit/` | 方針転換前の SpriteKit 版プロトタイプ（糸の物理演算の検証用。参考として残している） |
 

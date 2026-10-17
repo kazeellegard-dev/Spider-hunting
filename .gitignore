@@ -11,3 +11,4 @@ DerivedData/
 # Capacitor / npm
 node_modules/
 www/
+store/tools/shots/

@@ -73,7 +73,7 @@ node --test web/tests/*.test.js
 | `js/audio.js` | 効果音とBGM（Web Audioで合成） |
 | `js/i18n.js` | 日本語／英語の文言（端末の言語で自動切替、設定で変更可） |
 | `js/save.js` | セーブデータ（localStorage） |
-| `js/platform.js` | アプリ版との接続口。アプリでは SafeArea（Dynamic Island）・AdMob（バナー・つづける前のインタースティシャル）・セーブの保護を行う。ブラウザでは広告の場所だけあける |
+| `js/platform.js` | アプリ版との接続口。アプリでは SafeArea（Dynamic Island）・AdMob（バナー・つづけるときのリワード広告）・ATT・セーブの保護を行う。ブラウザでは広告の場所だけあける |
 | `js/main.js` | 起動、画面サイズ調整、入力、メインループ |
 | `tools/bundle.mjs` | 1ファイル版HTMLを作る |
 
