@@ -56,7 +56,9 @@
     [300, 1000, 2500].forEach(t => setTimeout(poll, t)); // values settle a moment after launch
     root.addEventListener('orientationchange', () => setTimeout(poll, 300));
 
-    // Banner at the very bottom. In the EEA/UK, ask for consent with Google's UMP first (no ATT).
+    // Banner at the very bottom. In the EEA/UK, ask for consent with Google's UMP first, then ask
+    // for App Tracking Transparency before any ad loads. Without ATT, App Review rejects the app
+    // under guideline 5.1.2(i) (this happened to daruma_game 1.0).
     listen('AdMob', 'bannerAdSizeChanged', size => { adH = Math.max(0, +size.height || 0); log('bannerSize', size); applyInsets(); });
     listen('AdMob', 'bannerAdFailedToLoad', e => log('bannerError', e));
     const test = ADMOB.useTest;
@@ -65,6 +67,20 @@
       adId: ids.banner, isTesting: test, adSize: 'ADAPTIVE_BANNER', position: 'BOTTOM_CENTER', margin: 0,
     }).catch(e => log('showBannerError', String(e && e.message || e)));
     const startAds = () => { ads.allowed = true; ads.id = ids.interstitial; ads.test = test; showBanner(); prepareInterstitial(); };
+    // iOS only shows the ATT prompt while the app is in the foreground; otherwise it counts as "deny".
+    const askTracking = async () => {
+      try {
+        const { status } = await call('AdMob', 'trackingAuthorizationStatus', {});
+        log('tracking', status);
+        if (status !== 'notDetermined') return;
+        if (document.visibilityState !== 'visible') await new Promise(r => document.addEventListener('visibilitychange', function f() {
+          if (document.visibilityState === 'visible') { document.removeEventListener('visibilitychange', f); r(); }
+        }));
+        await new Promise(r => setTimeout(r, 600));
+        await call('AdMob', 'requestTrackingAuthorization', {});
+        log('tracking', (await call('AdMob', 'trackingAuthorizationStatus', {})).status);
+      } catch (e) { log('trackingError', String(e && e.message || e)); }
+    };
     (async () => {
       let info;
       try {
@@ -74,9 +90,12 @@
       } catch (e) {
         log('consentError', String(e && e.message || e));
         // Unknown consent: never show real ads; test ads earn nothing, so they may still show.
+        await askTracking();
         if (test) startAds();
         return;
       }
+      // Always ask, whatever the consent result, so App Review can see the prompt.
+      await askTracking();
       if (info.canRequestAds || test) startAds();
     })();
 

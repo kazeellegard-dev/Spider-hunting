@@ -1,3 +1,5 @@
 /* Home screen name */
 "CFBundleDisplayName" = "クモハン";
 "CFBundleName" = "クモハン";
+/* App Tracking Transparency prompt */
+"NSUserTrackingUsageDescription" = "あなたの好みに合った広告を表示するために使います。許可しなくても、ゲームはすべて遊べます。";

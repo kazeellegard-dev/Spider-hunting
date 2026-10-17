@@ -71,6 +71,8 @@
 	<true/>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<key>NSUserTrackingUsageDescription</key>
+	<string>Used to show ads that match your interests. You can play the whole game even if you don't allow it.</string>
 	<key>GADApplicationIdentifier</key>
 	<string>ca-app-pub-8743645031370957~4534432873</string>
 	<key>SKAdNetworkItems</key>

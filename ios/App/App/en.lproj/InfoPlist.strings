@@ -1,3 +1,5 @@
 /* Home screen name */
 "CFBundleDisplayName" = "Web Catch";
 "CFBundleName" = "Web Catch";
+/* App Tracking Transparency prompt */
+"NSUserTrackingUsageDescription" = "Used to show ads that match your interests. You can play the whole game even if you don't allow it.";
