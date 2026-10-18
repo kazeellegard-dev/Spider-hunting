@@ -25,11 +25,13 @@
   // background) without waking it again. So every tap checks, and a context that will not
   // wake is replaced with a fresh one.
   let held = false; // paused on purpose (background, rewarded ad)
-  let stale = false, checkTimer = 0;
+  let stale = false, suspect = false, checkTimer = 0;
   function unlock() {
     if (held) return;
-    if (stale && ctx && ctx.state !== 'running') rebuild(); // inside the gesture, so the new one may start
-    stale = false;
+    // inside the gesture, so the new one may start. After a return from the background the
+    // first tap rebuilds even a "running" context, in case the one made on return came up silent.
+    if ((stale && ctx && ctx.state !== 'running') || (suspect && ctx)) rebuild();
+    stale = suspect = false;
     const c = ensure();
     if (!c || c.state === 'running') return;
     try { // a silent one-sample sound inside the gesture is what wakes Safari's audio
@@ -124,6 +126,7 @@
   function startMusic(modeName) {
     ensure();
     if (!ctx) return;
+    if (ctx.state === 'suspended' && !held) ctx.resume().catch(() => {}); // works without a tap in the app
     if (music && music.mode === modeName) return;
     stopMusic();
     const mode = MODES[modeName] || MODES.day;
@@ -181,6 +184,10 @@
     suspend() { held = true; if (ctx && ctx.state === 'running') ctx.suspend().catch(() => {}); },
     // may not take outside a gesture on iOS; the next tap's unlock() finishes the job
     resume() { held = false; if (ctx && ctx.state !== 'running' && ctx.state !== 'closed') ctx.resume().catch(() => {}); },
+    // Back from the background, the iOS web view can report "running" yet stay silent, so the
+    // old context is dropped for a fresh one (the music carries on). In the app no gesture is
+    // needed; in a browser the fresh context waits for the next tap.
+    restart() { held = false; if (ctx) { rebuild(); suspect = true; } },
   };
 
   root.SH = root.SH || {};

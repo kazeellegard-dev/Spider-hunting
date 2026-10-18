@@ -106,11 +106,20 @@
       if (!musicStarted) { musicStarted = true; if (game.mode === 'demo') SH.audio.music('title'); }
     };
     ['pointerdown', 'touchend', 'click'].forEach(ev => root.addEventListener(ev, wake, { capture: true, passive: true }));
+    // The app's web view may play without a tap, so the title music starts as the opening ends.
+    if (SH.platform.isNative) SH.introDone.then(() => { if (!musicStarted && game.mode === 'demo') { musicStarted = true; SH.audio.music('title'); } });
 
     document.addEventListener('visibilitychange', () => {
-      if (document.hidden) { ui.pause(); SH.audio.suspend(); }
-      else SH.audio.resume();
+      if (document.hidden) { ui.pause(); SH.audio.suspend(); away = true; }
+      else back();
     });
+    // iOS does not always send visibilitychange (and a system prompt only blurs the page),
+    // so blur/focus count as leaving and coming back too
+    let away = false;
+    const back = () => { if (away) { away = false; SH.audio.restart(); } };
+    root.addEventListener('blur', () => { away = true; });
+    root.addEventListener('focus', back);
+    root.addEventListener('pageshow', back);
 
     let last = performance.now();
     function frame(now) {
