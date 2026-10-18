@@ -20,10 +20,33 @@
     return ctx;
   }
 
-  // iOS only lets audio start inside a user gesture.
+  // iOS only lets audio start inside a user gesture, and it can leave the context
+  // "suspended" or "interrupted" (the tracking prompt, a call, Siri, coming back from the
+  // background) without waking it again. So every tap checks, and a context that will not
+  // wake is replaced with a fresh one.
+  let held = false; // paused on purpose (background, rewarded ad)
+  let stale = false, checkTimer = 0;
   function unlock() {
+    if (held) return;
+    if (stale && ctx && ctx.state !== 'running') rebuild(); // inside the gesture, so the new one may start
+    stale = false;
     const c = ensure();
-    if (c && c.state === 'suspended') c.resume();
+    if (!c || c.state === 'running') return;
+    try { // a silent one-sample sound inside the gesture is what wakes Safari's audio
+      const s = c.createBufferSource(); s.buffer = c.createBuffer(1, 1, 22050); s.connect(c.destination); s.start(0);
+    } catch (e) { /* ignore */ }
+    c.resume().catch(() => {});
+    clearTimeout(checkTimer);
+    checkTimer = setTimeout(() => { if (ctx === c && c.state !== 'running') stale = true; }, 400);
+  }
+  function rebuild() {
+    const mode = music && music.mode;
+    stopMusic();
+    try { ctx.close().catch(() => {}); } catch (e) { /* ignore */ }
+    ctx = null;
+    ensure();
+    if (ctx) ctx.resume().catch(() => {});
+    if (mode) startMusic(mode);
   }
 
   function tone(freq, dur, opt) {
@@ -155,8 +178,9 @@
     stopMusic,
     setSound(on) { soundOn = on; if (sfxBus) sfxBus.gain.value = on ? 0.6 : 0; },
     setMusic(on) { musicOn = on; if (musicBus) musicBus.gain.value = on ? 0.22 : 0; },
-    suspend() { if (ctx && ctx.state === 'running') ctx.suspend(); },
-    resume() { if (ctx && ctx.state === 'suspended') ctx.resume(); },
+    suspend() { held = true; if (ctx && ctx.state === 'running') ctx.suspend().catch(() => {}); },
+    // may not take outside a gesture on iOS; the next tap's unlock() finishes the job
+    resume() { held = false; if (ctx && ctx.state !== 'running' && ctx.state !== 'closed') ctx.resume().catch(() => {}); },
   };
 
   root.SH = root.SH || {};

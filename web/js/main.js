@@ -2,8 +2,36 @@
 (function (root) {
   'use strict';
   const SH = root.SH;
+
+  // The opening plays while the game boots. Texts go in right away (the saved language may
+  // still be on its way from native storage, so this uses whatever is at hand); it lifts once
+  // the game is ready and the scene has played, or on a tap after that.
+  const intro = document.getElementById('intro');
+  const INTRO_MS = 3500;
+  let booted = false, introDone;
+  SH.introDone = new Promise(r => { introDone = r; });
+  try {
+    const saved = JSON.parse(root.localStorage.getItem('spiderHunting.save.v1') || 'null');
+    const lang = saved && saved.settings && saved.settings.lang;
+    SH.i18n.set(lang && lang !== 'auto' ? lang : SH.i18n.detect());
+  } catch (e) { SH.i18n.set(SH.i18n.detect()); }
+  document.querySelectorAll('[data-t]').forEach(el => { el.textContent = SH.i18n.t(el.dataset.t); });
+  function liftIntro() {
+    if (!intro || intro.classList.contains('out')) return;
+    intro.classList.add('out');
+    setTimeout(() => { intro.remove(); }, 500);
+    introDone();
+  }
+  if (intro) {
+    const t0 = performance.now();
+    const tryLift = () => { if (booted && performance.now() - t0 >= INTRO_MS) liftIntro(); else setTimeout(tryLift, 100); };
+    setTimeout(tryLift, INTRO_MS);
+    intro.addEventListener('pointerdown', () => { if (booted && performance.now() - t0 > 600) liftIntro(); });
+  } else introDone();
+
   // On iOS the save is restored from native Preferences before the game boots
-  SH.platform.ready().then(boot);
+  SH.platform.ready().then(boot).finally(() => { booted = true; });
+  setTimeout(liftIntro, 9000); // never hold the player on the opening
 
   function boot() {
     const save = SH.save.load();
@@ -70,13 +98,14 @@
       if (e.key === 'Escape' || e.key === 'p') { if (game.paused) ui.resume(); else ui.pause(); }
     });
 
-    // title music starts on first interaction (audio needs a gesture)
-    const firstTouch = () => {
+    // Audio needs a gesture: every tap makes sure it is awake (iOS can silence it at any time),
+    // and the title music starts on the first one.
+    let musicStarted = false;
+    const wake = () => {
       SH.audio.unlock();
-      if (game.mode === 'demo') SH.audio.music('title');
-      root.removeEventListener('pointerdown', firstTouch);
+      if (!musicStarted) { musicStarted = true; if (game.mode === 'demo') SH.audio.music('title'); }
     };
-    root.addEventListener('pointerdown', firstTouch);
+    ['pointerdown', 'touchend', 'click'].forEach(ev => root.addEventListener(ev, wake, { capture: true, passive: true }));
 
     document.addEventListener('visibilitychange', () => {
       if (document.hidden) { ui.pause(); SH.audio.suspend(); }

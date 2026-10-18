@@ -217,7 +217,7 @@ const SCENES = {
         try { localStorage.setItem('spiderHunting.save.v1', JSON.stringify(save)); } catch (e) {}
         document.addEventListener('DOMContentLoaded', () => {
           const st = document.createElement('style');
-          st.textContent = `#adSlot{display:none!important}:root{--adh:0px!important;--sat:${sat}px!important;--sab:${sab}px!important}`;
+          st.textContent = `#adSlot,#intro{display:none!important}:root{--adh:0px!important;--sat:${sat}px!important;--sab:${sab}px!important}`;
           document.head.append(st);
         });
       }, [SAVE, d.sat, d.sab]);

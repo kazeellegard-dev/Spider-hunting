@@ -76,6 +76,8 @@
         if (document.visibilityState !== 'visible') await new Promise(r => document.addEventListener('visibilitychange', function f() {
           if (document.visibilityState === 'visible') { document.removeEventListener('visibilitychange', f); r(); }
         }));
+        // after the opening, so the prompt does not cut into it
+        if (root.SH && root.SH.introDone) await root.SH.introDone;
         await new Promise(r => setTimeout(r, 600));
         await call('AdMob', 'requestTrackingAuthorization', {});
         log('tracking', (await call('AdMob', 'trackingAuthorizationStatus', {})).status);
