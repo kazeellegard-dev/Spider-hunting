@@ -265,8 +265,8 @@ EEA・英国・スイスでは、先に Google の GDPR 同意画面が表示さ
 - [x] プライバシーポリシーに ATT と Unity Ads のことを書く（KAZE Application の `/policy/`）
 - [x] KAZE Application サイトにアプリのページを作る（`/apps/spider-web-catch/`）
 - [x] スクリーンショット（日本語・英語）
-- [ ] AdMob でメディエーション グループ「クモの巣 リワード」を作る（リワード・iOS・広告ユニット「クモハンリワード広告」、入札に Unity Ads：Game ID `800402235`・Placement `BP_Rewarded_iOS`）
-- [ ] AdMob の「プライバシーとメッセージ」で、GDPR のメッセージの対象にこのアプリを入れる
+- [x] AdMob でメディエーション グループ「クモの巣 リワード」を作る（リワード・iOS・広告ユニット「クモハンリワード広告」、入札に Unity Ads：Game ID `800402235`・Placement `BP_Rewarded_iOS`）
+- [x] AdMob の「プライバシーとメッセージ」で、GDPR のメッセージの対象にこのアプリを入れる
 - [x] **本番広告に切り替えたビルドを作る**（2026-10-18。`web/js/platform.js` の `useTest: false`）
 - [ ] 本番広告入りのビルドを TestFlight で確認（自分の広告はタップしない。AdMob の「テストデバイス」に自分の iPhone を登録しておくと安全）
 - [ ] App Store Connect の「1.0 提出準備中」でビルドを選び、上の内容を入力して「審査に提出」
