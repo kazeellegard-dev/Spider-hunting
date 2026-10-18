@@ -10,9 +10,9 @@
   const listen = (plugin, ev, fn) => cap.addListener(plugin, ev, d => { if (d) fn(d); });
 
   const ADMOB = {
-    // Test ad units until release; set useTest false to serve the live units.
+    // Live ad units (switched for App Store submission). Set useTest true for device tests.
     // The AdMob app ID (Info.plist GADApplicationIdentifier) is already the live one.
-    useTest: true,
+    useTest: false,
     test: {
       banner: 'ca-app-pub-3940256099942544/2435281174',       // Google's sample iOS banner
       rewarded: 'ca-app-pub-3940256099942544/1712485313',     // Google's sample iOS rewarded
