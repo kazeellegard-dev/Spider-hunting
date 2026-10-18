@@ -51,36 +51,36 @@ Spin a web, then tap stuck bugs to wrap them up! Survive day after day as mornin
 Become a spider, spin your web and catch the bugs flying by!
 A cute bug-catching game you play with just a tap.
 
-■ HOW TO PLAY
-• Tap the screen and the spider moves there, spinning silk. Threads join up into a web
-• Tap a bug stuck in the web: the spider rushes over and wraps it up. Pop! Points!
-• Leave it too long and the bug breaks the thread and gets away
-• Your silk spool drains as you spin and slowly over time. Eating bugs refills it. At zero, the run is over
-• Heavy bugs tear through weak threads. Make your silk stronger to catch them
-• Where threads cross, they tie together and get tougher
+HOW TO PLAY
+- Tap the screen and the spider moves there, spinning silk. Threads join up into a web
+- Tap a bug stuck in the web: the spider rushes over and wraps it up. Pop! Points!
+- Leave it too long and the bug breaks the thread and gets away
+- Your silk spool drains as you spin and slowly over time. Eating bugs refills it. At zero, the run is over
+- Heavy bugs tear through weak threads. Make your silk stronger to catch them
+- Where threads cross, they tie together and get tougher
 
-■ DAY AND NIGHT
+DAY AND NIGHT
 Morning, daytime, evening and night go by, and at dawn a new day begins.
 Each time of day brings different bugs and scenery.
 Breezes and gusts get in the way. How many days can you last?
 
-■ BONUS TIME AND GLOWING SILK
+BONUS TIME AND GLOWING SILK
 Eating bugs fills the bonus gauge. When it's full, it's bonus time and sweets come flying in!
 Grab the glowing spool during bonus time and your silk glows, holding even the boss bugs you normally can't catch.
 
-■ COLLECT AND GROW
-• Butterflies, dragonflies, fireflies, rhinoceros beetles, stag beetles and many more. Fill your Bugdex
-• Every bug has its own size, and your biggest and smallest are recorded. Once in a long while, a rare colour variant shows up...
-• 6 upgrades bought with coins, like silk strength and silk capacity
-• Dress up your spider by mixing parts: body, hat, face, silk colour, knots, scenery and more. Endless combinations!
-• Charms to pick each dawn, weather that changes every day, and difficulty from ★0 to ★10
-• Over 80 achievements and daily tasks
-• There may be a few secrets hidden somewhere...
+COLLECT AND GROW
+- Butterflies, dragonflies, fireflies, rhinoceros beetles, stag beetles and many more. Fill your Bugdex
+- Every bug has its own size, and your biggest and smallest are recorded. Once in a long while, a rare colour variant shows up...
+- 6 upgrades bought with coins, like silk strength and silk capacity
+- Dress up your spider by mixing parts: body, hat, face, silk colour, knots, scenery and more. Endless combinations!
+- Charms to pick each dawn, weather that changes every day, and difficulty from 0 to 10 stars
+- Over 80 achievements and daily tasks
+- There may be a few secrets hidden somewhere...
 
-■ CHALLENGE MODE
+CHALLENGE MODE
 Take on missions across 30 stages. Clear a stage to pick an upgrade and grow a little stronger each time. More stages are on the way.
 
-■ NO LOOT BOXES
+NO LOOT BOXES
 Outfits and upgrades are traded for coins and other things you earn in the game.
 
 * This app shows ads. When your silk runs out, you can watch an ad to continue, once per run.
