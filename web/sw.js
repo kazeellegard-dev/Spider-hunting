@@ -1,5 +1,5 @@
 // Offline cache. Bump VERSION whenever shipped files change.
-const VERSION = 'spider-hunting-v27';
+const VERSION = 'spider-hunting-v28';
 const FILES = [
   './', 'index.html', 'style.css', 'manifest.webmanifest', 'icons/icon.svg', 'icons/icon-180.png', 'icons/icon-192.png', 'icons/icon-512.png',
   'fonts/mplus-rounded-700.woff2', 'fonts/mplus-rounded-800.woff2', 'fonts/mplus-rounded-900.woff2',

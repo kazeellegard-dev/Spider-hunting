@@ -5,7 +5,7 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
 const LANG = process.env.LANG_UI || 'ja';
 const URL = process.env.URL || 'http://localhost:8765/';
 const OUT = process.argv[3] || __dirname + '/shots/' + LANG;
-require('fs').mkdirSync(OUT, { recursive: true });
+if (require.main === module) require('fs').mkdirSync(OUT, { recursive: true });
 
 const DEVICES = {
   iphone: { viewport: { width: 440, height: 956 }, deviceScaleFactor: 3, sat: 62, sab: 34 },
@@ -204,7 +204,9 @@ const SCENES = {
   },
 };
 
-(async () => {
+// creative.js (App Store header / search images) reuses the save and the helpers
+module.exports = { SAVE, HELPERS, LOOKS, sleep };
+if (require.main === module) (async () => {
   const b = await chromium.launch();
   const only = process.argv[2] && process.argv[2] !== 'all' ? process.argv[2].split(',') : null;
   for (const [dname, d] of Object.entries(DEVICES)) {

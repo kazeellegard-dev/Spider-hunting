@@ -772,7 +772,9 @@
     }
     if (ins.state === 'caught') {
       g.rotate(Math.sin(time * 25 + ins.seed) * 0.25);
-      // escape timer ring
+    }
+    // escape timer ring (left out for store artwork)
+    if (ins.state === 'caught' && !root.SH.noRings) {
       const r = def.size + 9;
       const frac = Math.max(0, ins.struggle / ins.struggleMax);
       g.lineWidth = 3.5; g.lineCap = 'round';

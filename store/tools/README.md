@@ -17,3 +17,13 @@ LANG_UI=en node store/tools/capture.js && LANG_UI=en node store/tools/compose.js
   `python3 -c "from PIL import Image;import os;[Image.open(f'store/screenshots/ja/iphone/{f}').resize((1206,2622),Image.LANCZOS).save(f'store/screenshots/ja/iphone-6.3/{f}',quality=92) for f in os.listdir('store/screenshots/ja/iphone')]"`（`-plain` と `en` も同じように）
 - 見出しの文字は `compose.js` の `ORDER` で変えられる
 - 場面は、プレイ中の画面をプログラムで作っている（大きな巣・かかった虫・時間帯など）。セーブデータは `capture.js` の `SAVE`（レベル18・ずかん27種類くらいの、遊びこんだ人の想定）
+
+## App Store のヘッダ・検索結果の画像（クリエイティブアセット）
+
+```sh
+node store/tools/creative.js /tmp/cr      # 生の画面を書き出す（3倍・1px 多め）
+```
+
+- ヘッダ（プロダクトページの上部）は 21:9・3840×1646、検索結果は 3:2・3840×2560（iOS 27 以降で表示）
+- できた画像を、上下を少し切ってぴったりのサイズにし、JPEG（透明なし）で `store/creative/` に置く
+- 文字は入れていないので、日本語・英語で同じ画像を使える
