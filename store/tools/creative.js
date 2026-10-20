@@ -1,6 +1,7 @@
-// App Store creative assets (iOS 27+). App Store Connect takes one universal 16:9 PNG
-// (5244 x 2950) and crops it to the product page header (21:9) and the search result (3:2),
-// so the spider and the web stay inside the middle 4425 x 2247 that both crops keep.
+// App Store creative assets (iOS 27+), all PNG (App Store Connect refuses .jpg here):
+// a universal 16:9 picture (5244 x 2950) that App Store Connect crops to the product page
+// header (21:9) and the search result (3:2), so the spider and the web stay inside the middle
+// 4425 x 2247 that both crops keep; and dedicated ones for each (3840 x 1646, 3840 x 2560).
 // No text, so one picture serves every language.
 // Usage: node store/tools/creative.js [outDir]   (serve web/ at URL, like capture.js)
 const { chromium } = require(process.env.PLAYWRIGHT || 'playwright');
@@ -13,6 +14,8 @@ fs.mkdirSync(OUT, { recursive: true });
 // viewports at 3x; the extra pixel row is trimmed by the caller (PIL) to the exact size
 const SIZES = {
   universal: { width: 1748, height: 984, cy: 0.5, size: 0.68, spider: 2.3 },
+  header: { width: 1280, height: 549, cy: 0.5, size: 0.78, spider: 1.9 },
+  search: { width: 1280, height: 854, cy: 0.5, size: 0.74, spider: 2.4 },
 };
 const LOOK = { body: 'classic', hat: 'nightcap', face: 'blush', thread: 'nightglow', knot: 'star', bg: 'none' };
 
