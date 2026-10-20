@@ -21,9 +21,10 @@ LANG_UI=en node store/tools/capture.js && LANG_UI=en node store/tools/compose.js
 ## App Store のヘッダ・検索結果の画像（クリエイティブアセット）
 
 ```sh
-node store/tools/creative.js /tmp/cr      # 生の画面を書き出す（3倍・1px 多め）
+node store/tools/creative.js /tmp/cr      # 生の画面を書き出す（3倍・5244×2952）
 ```
 
-- ヘッダ（プロダクトページの上部）は 21:9・3840×1646、検索結果は 3:2・3840×2560（iOS 27 以降で表示）
-- できた画像を、上下を少し切ってぴったりのサイズにし、JPEG（透明なし）で `store/creative/` に置く
+- App Store Connect が受けつけるのは 16:9・5244×2950 の PNG 1枚。Apple がそこからヘッダ（21:9）と検索結果（3:2）を切り出す
+- 両方で残るのは まんなかの 4425×2247。クモと巣は その中に入れる
+- できた画像の上下を 1px ずつ切って、`store/creative/universal-5244x2950.png`（透明なし）にする
 - 文字は入れていないので、日本語・英語で同じ画像を使える
