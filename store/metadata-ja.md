@@ -286,3 +286,4 @@ iOS 27 以降の App Store で、プロダクトページの上部と検索結�
 - [ ] 本番広告入りのビルドを TestFlight で確認（自分の広告はタップしない。AdMob の「テストデバイス」に自分の iPhone を登録しておくと安全）
 - [x] App Store Connect の「1.0 提出準備中」でビルドを選び、上の内容を入力して「審査に提出」（2026-10-20、ビルド36）
 - [x] リリースされたら、KAZE Application のアプリのページに App Store へのリンクを足す（2026-10-23 リリース、Apple ID 6823732386、https://apps.apple.com/jp/app/id6823732386）
+- [x] AdMob と Unity のアプリの設定に、App Store の ID（6823732386）を登録する（2026-10-23）
